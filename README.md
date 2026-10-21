@@ -36,7 +36,12 @@ Later phases may add GitHub integration, online collaboration, and more platform
 
 ## Prerequisites (Windows)
 
-These come from the official Tauri 2 documentation: <https://v2.tauri.app/start/prerequisites/> (read on 2026-10-20). They have **not yet been checked on the development computer**; that is part of Phase 0.
+These come from the official Tauri 2 documentation: <https://v2.tauri.app/start/prerequisites/> (read on 2026-10-20). They were checked on the development computer on 2026-10-21; see [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the results.
+
+Two problems came up on that computer, and may affect you too:
+
+- **Build Tools installed, but the C++ part missing.** Installing "Build Tools for Visual Studio" is not enough. Open Visual Studio Installer, choose Modify, and tick the **"Desktop development with C++"** workload.
+- **`npm` blocked in PowerShell** with "running scripts is disabled on this system". Run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` once, then try again.
 
 1. **Microsoft C++ Build Tools** with the **"Desktop development with C++"** workload. Rust on Windows needs these to compile.
 2. **Microsoft Edge WebView2.** Tauri uses it to display the interface. It is already included in Windows 10 (version 1803 and later) and in Windows 11.
