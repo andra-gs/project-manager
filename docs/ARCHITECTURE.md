@@ -118,8 +118,8 @@ No Phase 0 or Phase 1 work depends on this choice.
 
 | Item | When to decide |
 |---|---|
-| Tailwind CSS or another styling approach | Start of Phase 1 |
-| Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Start of Phase 1 |
+| Tailwind CSS or another styling approach | Decided: Tailwind CSS 4 (approved 2026-10-22) |
+| Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Proposed: React Router, approved as part of the Phase 1 plan; installed in step 3 |
 | How the "current local user or profile" is represented | Before the first migration (Phase 2) |
 | Date and time storage format ("consistent date handling" is required) | Before the first migration (Phase 2) |
 
@@ -139,15 +139,15 @@ Online features are **Future** (Phase 6). Nothing here is built, and `CLAUDE.md`
 
 ## Actual implementation
 
-Verified from the developer's command output (2026-10-21 and 2026-10-22) and from the tracked files of commit `e523852`. The project is the unmodified `create-tauri-app` template (`react-ts`), renamed from `tauri-temp` to `project-manager`. No services, repositories, database, or SQL plugin exist yet.
+Branch `phase-1-ui`, after Phase 1 steps 1 and 2. Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far is one placeholder page. No services, repositories, database, or SQL plugin exist yet.
 
 ### Folder layout (tracked files)
 
 ```
-index.html, package.json, package-lock.json (not yet committed)
+index.html, package.json, package-lock.json
 tsconfig.json, tsconfig.node.json, vite.config.ts
-public/            tauri.svg, vite.svg
-src/               main.tsx, App.tsx, App.css, vite-env.d.ts, assets/react.svg
+src/               main.tsx, App.tsx, index.css, vite-env.d.ts
+  styles/          tokens.css
 src-tauri/
   Cargo.toml, Cargo.lock, build.rs, tauri.conf.json
   capabilities/    default.json
@@ -156,20 +156,30 @@ src-tauri/
 .vscode/           extensions.json
 ```
 
-Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/` (none appeared in `git status`). The contents of `src/*.tsx`, `src/App.css`, `vite.config.ts`, and `tsconfig*.json` have not been read by Claude.
+Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/`.
+
+### Styling and design tokens (Implemented, Agreed in `CLAUDE.md` section 19)
+
+- Tailwind CSS 4 is used through its Vite plugin (`@tailwindcss/vite`, enabled in `vite.config.ts`). The DM Sans font comes from the package `@fontsource-variable/dm-sans` and is bundled with the app, so it works offline.
+- `src/styles/tokens.css` is the single place for colors, text sizes, and corner radius. It switches off Tailwind's built-in palette, text sizes, and radius, so screens can only use token names such as `text-accent`. Values come from the Figma frame "01 Dashboard". Figma is a reference, not a binding specification.
+- `src/index.css` loads the font, Tailwind, and the tokens, and sets the page defaults from tokens.
+- Verified by the developer on 2026-10-23: changing `--color-accent` in `tokens.css` changed the colored line on the page without editing another file. This is the proof criterion of section 19, tested only on the placeholder page. It must be repeated once real screens exist.
+- Not yet defined as tokens: spacing and layout sizes (sidebar width, top bar height). They are decided in step 3.
 
 ### How the pieces are wired (from the configuration files)
 
-- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 800x600. `bundle.targets` is `all`.
-- `src-tauri/capabilities/default.json`: for the `main` window, the permissions `core:default` and `opener:default`.
-- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` registers the `opener` plugin and one demo command, `greet`. The template's sample page presumably calls it, but `App.tsx` has not been read.
-- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `tauri-plugin-opener` 2, `serde`, `serde_json`.
-- `package.json`: `react` and `react-dom` ^19.1.0, `@tauri-apps/api` ^2, `@tauri-apps/plugin-opener` ^2. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
-- Versions that were actually built (from the logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-plugin-opener` 2.7.2, `tauri-build` 2.7.3.
+- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 1200x680 (minimum 960x600, centered). `bundle.targets` is `all`.
+- `src-tauri/capabilities/default.json`: for the `main` window, only the permission `core:default`.
+- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` starts a bare Tauri app with no plugins and no commands.
+- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `serde`, `serde_json`.
+- `package.json`: dependencies `react` and `react-dom` ^19.1.0, `@tauri-apps/api` ^2, `tailwindcss` and `@tailwindcss/vite` ^4.3.3, `@fontsource-variable/dm-sans` ^5.3.0. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
+- Versions that were actually built (from the Phase 0 logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-build` 2.7.3.
 
 ### Security state
 
-The template defaults are unchanged: no content security policy (`csp` is `null`), and the `core:default` and `opener:default` permissions. Whether to tighten them is **Proposed** for the start of Phase 1 and needs your approval. See known issue 4 in [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md).
+- A Content Security Policy (CSP, rules that limit what the page may load) is set: `csp` for release builds and `devCsp` for development. Both only allow the app's own files, the Tauri connection, and (in development) the Vite dev server. The page loaded without CSP errors in the dev Console and in the release build (reported by the developer, 2026-10-22).
+- `style-src` allows inline styles (`'unsafe-inline'`), which weakens the policy slightly. It is kept so dynamic styles such as progress-bar widths work. To be reviewed when the design needs it.
+- The `opener` plugin and its permission were removed. Only `core:default` remains.
 
 ## Glossary
 

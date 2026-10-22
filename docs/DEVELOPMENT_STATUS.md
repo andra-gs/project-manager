@@ -6,8 +6,8 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress**: step 1 (clean the template) is written on branch `phase-1-ui` and **not yet verified** by the developer. `main` is unchanged.
-- **Application code on `main`:** only the unmodified Tauri 2 + React + TypeScript template (a sample page and one demo Rust command named `greet`). No project features exist. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (clean the template) and 2 (Tailwind, local font, design tokens) are verified by the developer. Step 3 (layout, sidebar, routing) is next. `main` is unchanged and still holds the Phase 0 template.
+- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, a cleaned app with Tailwind, design tokens, and one placeholder page. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
@@ -75,20 +75,19 @@ Fixes applied on the development computer:
 
 ## Not verified
 
-Phase 1 step 1 (branch `phase-1-ui`), still open after the developer's test on 2026-10-22:
+Phase 1, steps 1 and 2 (branch `phase-1-ui`):
 
-- The Console check for Content Security Policy errors (dev and release) was not reported.
-- The minimum window size (960x600) was not reported.
-- Whether `src-tauri/Cargo.lock` changed (opener dependencies removed) was not reported.
 - Inline style attributes, which the design will need later for dynamic progress bars, are untested.
-- Claude's workspace could not run npm, so Claude itself ran no build; all build results below come from the developer.
+- The accent-token proof was done on a placeholder page only. It must be repeated when real screens exist (Phase 1 is not complete until then).
+- Claude's workspace cannot run npm or reach the npm registry, so Claude itself ran no build; all build results come from the developer.
+- Production (release) rendering of Tailwind styles and the bundled font was not reported separately; only the dev run after step 2 was.
 
 Earlier items:
 
 - The two installers were built but never installed or run.
 - The window content was seen only by the developer. No screenshot has been reviewed.
 - Whether a build works without internet access is untested. The first build downloaded the WiX and NSIS tools.
-- Claude has not read the contents of `src/App.tsx`, `src/main.tsx`, `src/App.css`, `index.html`, `vite.config.ts`, or `tsconfig*.json`.
+- Claude has not read `tsconfig*.json`.
 - No data is stored yet, so the application data folder location is untested.
 - Sections 1 to 17 of `CLAUDE.md` were not compared character by character with the Project copy. Only the headings were checked.
 - The Figma design has not been opened.
@@ -106,6 +105,10 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-22 | `npm run tauri dev` on branch `phase-1-ui` | Passed: Rust compiled, window opened and showed the placeholder heading and text |
 | reported 2026-10-22 | `npm run tauri build` on branch `phase-1-ui` | Passed: `tsc` and Vite build succeeded, MSI and NSIS installers produced; the release build showed the same page as dev |
 
+| reported 2026-10-23 | `npm install tailwindcss @tailwindcss/vite @fontsource-variable/dm-sans`, then `npm run tauri dev` | Passed without errors; the accent line showed the token color |
+| reported 2026-10-23 | change `--color-accent` in `src/styles/tokens.css` | Passed: the colored line changed without editing another file; value restored afterwards |
+| reported 2026-10-23 | `npm run build` | Reported as successful without errors |
+
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
 ## Known issues and limitations
@@ -113,8 +116,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 1. **Two copies of `CLAUDE.md`.** The Claude Project's copy does not contain section 18. The repository copy does. Decide which copy is the source of truth, and keep the other in sync.
 2. **Name mismatch.** The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
-4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, not yet verified).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
-5. **Pending commit.** `package-lock.json` and the documentation updates from 2026-10-22 are not yet committed.
+4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
+5. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
 6. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
 ## Roadmap checklist
@@ -126,8 +129,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Confirm it starts in development mode
   - [x] Confirm it builds
 - [ ] **Phase 1:** UI foundation (in progress)
-  - [ ] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
-  - [ ] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (written on branch, awaiting verification)
+  - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
+  - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages
   - [ ] Step 4: base components (button, card, badge, progress bar)
   - [ ] Step 5: Dashboard with temporary mock data
@@ -140,19 +143,9 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 2: verify styling and design tokens (developer, on Windows).** Written on branch `phase-1-ui`, not yet built by anyone. Claude's workspace has no access to the npm registry, so the packages must be installed on your computer.
+**Phase 1, step 3: layout, sidebar, and routing with placeholder pages (Proposed, plan approved on 2026-10-22).**
 
-1. Get the branch and install the three new packages (Tailwind CSS, its Vite plugin, and the DM Sans font):
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm install tailwindcss @tailwindcss/vite @fontsource-variable/dm-sans
-npm run tauri dev
-```
-
-2. Check: the window shows the heading in DM Sans, a gray line, and a **colored (indigo) line** "Token check". No red messages in the Console (F12) about "Content Security Policy" or "font".
-3. Proof of the token system: open `src/styles/tokens.css`, change `--color-accent: #4a3de0;` to `#e03d3d;`, save. The colored line must turn red without editing any other file. Then change it back.
-4. Run `npm run build`, then commit `package.json` and `package-lock.json` (they changed when installing) and push.
-
-Claude then updates `README.md` and `docs/ARCHITECTURE.md` for the verified state of steps 1 and 2 and continues with step 3 (layout, sidebar, routing).
+1. Claude writes the app shell: a sidebar (Dashboard, My Tasks, Calendar, Documents, workspace list, Settings) and a top bar, with the layout sizes added to the design tokens, and one placeholder page per sidebar item.
+2. Routing uses React Router. The developer installs it (`npm install react-router`), because Claude's workspace has no npm registry access. Claude checks that the router mode works inside the packaged Tauri app before relying on it.
+3. Layout is tested at 1366x768, 1536x864, 1920x1080, and the minimum window size 960x600.
+4. The developer tests with `npm run tauri dev` and reports the result. Claude records it here.
