@@ -2,7 +2,7 @@
 
 A local-first desktop application for organizing workspaces, projects, tasks, deadlines, documents, and progress in one place.
 
-> **Status: documentation and planning only.** No application code exists yet. Nothing described under "Setup" or "Development" below has been run or verified. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
+> **Status: Phase 0 complete. The project is still the unmodified Tauri template.** The desktop app starts in development mode and builds a Windows release on the developer's computer (verified 2026-10-21 and 2026-10-22). No project features exist yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
 
 The working product name is **Project Collaboration App**. The final public name has not been decided.
 
@@ -46,7 +46,7 @@ Two problems came up on that computer, and may affect you too:
 1. **Microsoft C++ Build Tools** with the **"Desktop development with C++"** workload. Rust on Windows needs these to compile.
 2. **Microsoft Edge WebView2.** Tauri uses it to display the interface. It is already included in Windows 10 (version 1803 and later) and in Windows 11.
 3. **Rust**, installed with `rustup`, using the **MSVC toolchain** as the default. If Rust is already installed, the Tauri docs say to run `rustup default stable-msvc`.
-4. **Node.js** (the LTS version). It runs the frontend tooling and provides `npm`.
+4. **Node.js** (the LTS version). It runs the frontend tooling and provides `npm`. Verified with Node.js v24.22.0 and npm 11.19.1.
 5. *Only if building MSI installers:* the Windows optional feature **VBSCRIPT** must be enabled.
 
 Later, from Phase 2, the official Tauri SQL plugin documentation lists Rust 1.90 or newer as a requirement. This is not yet confirmed for this project because the database approach is still open (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
@@ -65,25 +65,43 @@ rustup show
 
 `rustup show` also reports the active toolchain. It should mention `msvc`.
 
-## Setup (Planned, not yet run)
+## Setup
 
-Phase 0 will create the project with the official `create-tauri-app` tool and its React + TypeScript template. According to the tool's documentation, the command has this form:
-
-```powershell
-npm create tauri-app@latest project-manager-desktop -- --template react-ts
-```
-
-Open decision: this repository folder already contains documentation files. Whether to scaffold directly into it or to scaffold in a temporary folder and merge is decided during Phase 0, after checking how the tool behaves with a non-empty folder. The exact steps will be recorded here once they have been run successfully.
-
-## Development (Planned, not yet run)
-
-After scaffolding, Tauri projects normally provide these commands. They must be confirmed against the generated `package.json` before being relied on.
+Get the code and install the frontend dependencies:
 
 ```powershell
-npm install          # install frontend dependencies
-npm run tauri dev    # start the desktop app in development mode
-npm run tauri build  # produce a release build and Windows installer
+git clone https://github.com/andra-gs/project-manager.git
+cd project-manager
+npm install
 ```
+
+`npm install` was run on the developer's computer on 2026-10-21: 27 packages added, no reported vulnerabilities, about 2 minutes.
+
+How the project was created: with `create-tauri-app` 4.7.5 (template `react-ts`, package manager npm) in a temporary folder outside the repository, then renamed and copied in. You do not need to repeat this.
+
+## Development
+
+Start the desktop app in development mode:
+
+```powershell
+npm run tauri dev
+```
+
+- The first run compiles all Rust dependencies and took about 18 minutes on the developer's computer. Later runs are expected to be faster because compiled dependencies are cached, but this has not been timed.
+- A window titled "Project Manager Desktop" opens. It currently shows the template's sample page.
+- To stop: close the window, then press `Ctrl+C` in the terminal.
+
+## Build
+
+Produce a Windows release build and installers:
+
+```powershell
+npm run tauri build
+```
+
+- The first build took about 34 minutes on the developer's computer and downloaded the WiX and NSIS packaging tools from GitHub, so it needs internet access the first time.
+- Output goes to `src-tauri\target\release\`: the program `project-manager.exe`, an MSI installer in `bundle\msi\`, and an NSIS installer in `bundle\nsis\`. These files are not committed to Git.
+- The installers were built but have not yet been installed or run.
 
 ## Where data will be stored
 
@@ -91,5 +109,5 @@ The application will keep structured data (workspaces, projects, tasks, and so o
 
 ## Known limitations
 
-- No application code exists yet.
+- The application is still the unmodified Tauri template. No project, task, or database features exist yet.
 - Online features (accounts, sync, shared workspaces, real-time editing) are not part of the first release.

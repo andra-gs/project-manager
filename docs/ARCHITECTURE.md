@@ -1,8 +1,8 @@
 # Architecture
 
-Last updated: 2026-10-20
+Last updated: 2026-10-22
 
-> **Status: no application code exists yet.** This document describes the **Agreed** architecture principles and the **Proposed** structure from `CLAUDE.md`. The "Actual implementation" section stays empty until code exists and has been verified. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
+> **Status: only the Tauri project template exists.** This document describes the **Agreed** architecture principles and the **Proposed** structure from `CLAUDE.md`. The "Actual implementation" section records only what has been verified; none of the layers below (services, repositories, database) is built yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
 ## Technology (Agreed)
 
@@ -57,7 +57,7 @@ This shows the **intended** design. Names are examples, not final.
 
 ## Planned folder layout (Proposed)
 
-`CLAUDE.md` suggests the layout below and says to adapt it as the project grows and not to create folders just to follow a template. **None of it exists yet.**
+`CLAUDE.md` suggests the layout below and says to adapt it as the project grows and not to create folders just to follow a template. **Only part of it exists:** `src/` (holding the template's sample files), `src-tauri/src/`, and `src-tauri/capabilities/`. The folders `components/`, `pages/`, `features/`, `services/`, `repositories/`, `types/`, `hooks/`, `lib/`, and `src-tauri/migrations/` do not exist yet.
 
 ```
 src/
@@ -122,7 +122,6 @@ No Phase 0 or Phase 1 work depends on this choice.
 | Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Start of Phase 1 |
 | How the "current local user or profile" is represented | Before the first migration (Phase 2) |
 | Date and time storage format ("consistent date handling" is required) | Before the first migration (Phase 2) |
-| How to scaffold into a repository folder that already contains documents | Phase 0 |
 
 ## Future online integration strategy
 
@@ -140,7 +139,37 @@ Online features are **Future** (Phase 6). Nothing here is built, and `CLAUDE.md`
 
 ## Actual implementation
 
-None yet. After Phase 0, this section will record verified facts: the real folder tree, dependency versions from `package.json` and `Cargo.toml`, the settings in `tauri.conf.json`, and the capability files in use.
+Verified from the developer's command output (2026-10-21 and 2026-10-22) and from the tracked files of commit `e523852`. The project is the unmodified `create-tauri-app` template (`react-ts`), renamed from `tauri-temp` to `project-manager`. No services, repositories, database, or SQL plugin exist yet.
+
+### Folder layout (tracked files)
+
+```
+index.html, package.json, package-lock.json (not yet committed)
+tsconfig.json, tsconfig.node.json, vite.config.ts
+public/            tauri.svg, vite.svg
+src/               main.tsx, App.tsx, App.css, vite-env.d.ts, assets/react.svg
+src-tauri/
+  Cargo.toml, Cargo.lock, build.rs, tauri.conf.json
+  capabilities/    default.json
+  icons/           application icons
+  src/             main.rs, lib.rs
+.vscode/           extensions.json
+```
+
+Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/` (none appeared in `git status`). The contents of `src/*.tsx`, `src/App.css`, `vite.config.ts`, and `tsconfig*.json` have not been read by Claude.
+
+### How the pieces are wired (from the configuration files)
+
+- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 800x600. `bundle.targets` is `all`.
+- `src-tauri/capabilities/default.json`: for the `main` window, the permissions `core:default` and `opener:default`.
+- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` registers the `opener` plugin and one demo command, `greet`. The template's sample page presumably calls it, but `App.tsx` has not been read.
+- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `tauri-plugin-opener` 2, `serde`, `serde_json`.
+- `package.json`: `react` and `react-dom` ^19.1.0, `@tauri-apps/api` ^2, `@tauri-apps/plugin-opener` ^2. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
+- Versions that were actually built (from the logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-plugin-opener` 2.7.2, `tauri-build` 2.7.3.
+
+### Security state
+
+The template defaults are unchanged: no content security policy (`csp` is `null`), and the `core:default` and `opener:default` permissions. Whether to tighten them is **Proposed** for the start of Phase 1 and needs your approval. See known issue 4 in [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md).
 
 ## Glossary
 
