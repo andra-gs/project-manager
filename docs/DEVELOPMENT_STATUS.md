@@ -6,8 +6,8 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) has **not started**.
-- **Application code:** only the unmodified Tauri 2 + React + TypeScript template (a sample page and one demo Rust command named `greet`). No project features exist. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress**: step 1 (clean the template) is written on branch `phase-1-ui` and **not yet verified** by the developer. `main` is unchanged.
+- **Application code on `main`:** only the unmodified Tauri 2 + React + TypeScript template (a sample page and one demo Rust command named `greet`). No project features exist. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
@@ -75,6 +75,16 @@ Fixes applied on the development computer:
 
 ## Not verified
 
+Phase 1 step 1 (branch `phase-1-ui`, written 2026-10-22):
+
+- Claude's workspace could not install npm packages (`npm` crashed with "Exit handler never called"), so the TypeScript check and the Vite build of the changed code were **not run by Claude**. Only these checks were run: the two edited JSON config files parse, no references to the deleted files remain, and the lockfile change is exactly the 10 lines of the removed `@tauri-apps/plugin-opener` entries.
+- The Rust code was not compiled by Claude.
+- The new Content Security Policy (`csp` for the release build, `devCsp` for development) has not been tested. Inline style attributes, which the design will need later for dynamic progress bars, are specifically untested.
+- The window values (1200x680, minimum 960x600, centered) have not been seen on a screen.
+- `src-tauri/Cargo.lock` still lists `tauri-plugin-opener`. Cargo is expected to remove it on the next build, after which `Cargo.lock` shows as modified and must be committed.
+
+Earlier items:
+
 - The two installers were built but never installed or run.
 - The window content was seen only by the developer. No screenshot has been reviewed.
 - Whether a build works without internet access is untested. The first build downloaded the WiX and NSIS tools.
@@ -100,7 +110,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 1. **Two copies of `CLAUDE.md`.** The Claude Project's copy does not contain section 18. The repository copy does. Decide which copy is the source of truth, and keep the other in sync.
 2. **Name mismatch.** The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
-4. **Template defaults to review (Proposed, nothing changed yet).** `app.security.csp` is `null` (no content security policy). The `opener` plugin and its `opener:default` permission are enabled, and the MVP may not need them. The window is 800x600. `bundle.targets` is `all`, which builds both MSI and NSIS installers. The sample page and the `greet` command are demo code to be replaced in Phase 1.
+4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, not yet verified).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
 5. **Pending commit.** `package-lock.json` and the documentation updates from 2026-10-22 are not yet committed.
 6. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
@@ -112,7 +122,14 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Create the Tauri 2 + React + TypeScript project
   - [x] Confirm it starts in development mode
   - [x] Confirm it builds
-- [ ] Phase 1: UI foundation (layout, sidebar, dashboard and basic screens with temporary mock data)
+- [ ] **Phase 1:** UI foundation (in progress)
+  - [ ] Step 1: clean the template and apply the approved defaults (written, awaiting verification)
+  - [ ] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens
+  - [ ] Step 3: layout, sidebar, and routing with placeholder pages
+  - [ ] Step 4: base components (button, card, badge, progress bar)
+  - [ ] Step 5: Dashboard with temporary mock data
+  - [ ] Step 6: Workspace and project overview screens with temporary mock data
+  - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
@@ -120,19 +137,30 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Step A (developer): commit the pending files.** After placing the updated `README.md`, `docs/ARCHITECTURE.md`, and `docs/DEVELOPMENT_STATUS.md` in the repository, run in `D:\project-manager`:
+**Phase 1, step 1: verify the template cleanup (developer, on Windows).** The changes are on branch `phase-1-ui`, not on `main`.
+
+1. Get the branch and start the app:
 
 ```powershell
-git status
-git add .
-git commit -m "docs: record Phase 0 results; add package-lock.json"
-git push origin main
+cd D:\project-manager
+git fetch origin
+git checkout phase-1-ui
+npm install
+npm run tauri dev
 ```
 
-`git status` should list only `package-lock.json` and the three documents. Stop and report if `node_modules`, `dist`, or `src-tauri/target` appear.
+2. Check, and report what you see:
+   - A window titled "Project Manager Desktop" opens, centered, about 1200x680, with a heading and one line of text.
+   - Right-click inside the window and choose Inspect, then open the Console tab. There must be no red messages mentioning "Content Security Policy" or "Refused to".
+   - Try to shrink the window: it should stop at about 960x600.
+3. Close the app and press `Ctrl+C` in the terminal. Then build the release version, which also tests the strict release policy:
 
-**Step B (Claude, then developer approval): Phase 1, step 1, decisions before any code.**
+```powershell
+npm run build
+npm run tauri build
+```
 
-1. Check whether the Figma file can be read, and summarize the Dashboard screen. If it cannot be read, say so instead of inventing visual details.
-2. Present options with trade-offs for the styling approach (Tailwind CSS or another) and for routing, and wait for approval. No code is written before that.
-3. Propose the review of the template defaults listed in known issue 4.
+   Then start `src-tauri\target\release\project-manager.exe` and check that the same text appears.
+4. Run `git status`. `src-tauri/Cargo.lock` is expected to show as modified. Send the output, and any error in full.
+
+After you confirm, Claude records the verified results here and in `docs/ARCHITECTURE.md` and `README.md`, and continues with step 2 (styling and design tokens). If something fails, Claude diagnoses it from your output before changing anything.
