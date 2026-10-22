@@ -1,0 +1,61 @@
+/*
+ * DESIGN TOKENS: the single place where the look of the app is defined.
+ *
+ * A "token" is a named design value (a color, a font size, a corner radius).
+ * Screens and components use the NAME (for example `text-accent`), never the raw value.
+ * To change the look of the whole app, edit the values in this file only.
+ *
+ * Values come from the Figma reference (frame "01 Dashboard"). Figma is a reference,
+ * not a binding specification (CLAUDE.md section 12).
+ *
+ * Lines like `--color-*: initial;` remove Tailwind's built-in palette on purpose,
+ * so a screen cannot accidentally use a color that is not a token.
+ */
+@theme {
+  /* ---------- Colors ---------- */
+  --color-*: initial;
+
+  /* Accent (indigo). Change this value to re-color every screen. */
+  --color-accent: #4a3de0;
+  --color-accent-soft: #edebff;
+  --color-on-accent: #ffffff;
+
+  /* Surfaces and lines */
+  --color-app-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fafafc;
+  --color-border: #e0e3eb;
+  --color-track: #e5e8f0;
+
+  /* Text */
+  --color-ink: #1a1f29;
+  --color-ink-muted: #667080;
+
+  /* Status colors */
+  --color-success: #21a166;
+  --color-success-strong: #0e7a50;
+  --color-success-soft: #e5f7ed;
+  --color-danger: #b3303a;
+  --color-danger-soft: #fce8eb;
+  --color-info: #2678cc;
+
+  /* ---------- Typography ---------- */
+  --font-sans: "DM Sans Variable", system-ui, sans-serif;
+
+  --text-*: initial;
+  --text-micro: 10px;
+  --text-caption: 11px;
+  --text-small: 12px;
+  --text-body: 13px;
+  --text-body-lg: 15px;
+  --text-heading: 17px;
+  --text-title: 20px;
+  --text-display: 28px;
+
+  /* ---------- Corner radius ---------- */
+  --radius-*: initial;
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --radius-pill: 9999px;
+  --radius-bar: 3px;
+}

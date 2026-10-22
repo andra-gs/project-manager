@@ -126,8 +126,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Confirm it starts in development mode
   - [x] Confirm it builds
 - [ ] **Phase 1:** UI foundation (in progress)
-  - [ ] Step 1: clean the template and apply the approved defaults (page loads in dev and release builds, reported 2026-10-22; Console CSP check, minimum size and Cargo.lock still to confirm)
-  - [ ] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens
+  - [ ] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
+  - [ ] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (written on branch, awaiting verification)
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages
   - [ ] Step 4: base components (button, card, badge, progress bar)
   - [ ] Step 5: Dashboard with temporary mock data
@@ -140,30 +140,19 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 1: verify the template cleanup (developer, on Windows).** The changes are on branch `phase-1-ui`, not on `main`.
+**Phase 1, step 2: verify styling and design tokens (developer, on Windows).** Written on branch `phase-1-ui`, not yet built by anyone. Claude's workspace has no access to the npm registry, so the packages must be installed on your computer.
 
-1. Get the branch and start the app:
+1. Get the branch and install the three new packages (Tailwind CSS, its Vite plugin, and the DM Sans font):
 
 ```powershell
 cd D:\project-manager
-git fetch origin
-git checkout phase-1-ui
-npm install
+git pull origin phase-1-ui
+npm install tailwindcss @tailwindcss/vite @fontsource-variable/dm-sans
 npm run tauri dev
 ```
 
-2. Check, and report what you see:
-   - A window titled "Project Manager Desktop" opens, centered, about 1200x680, with a heading and one line of text.
-   - Right-click inside the window and choose Inspect, then open the Console tab. There must be no red messages mentioning "Content Security Policy" or "Refused to".
-   - Try to shrink the window: it should stop at about 960x600.
-3. Close the app and press `Ctrl+C` in the terminal. Then build the release version, which also tests the strict release policy:
+2. Check: the window shows the heading in DM Sans, a gray line, and a **colored (indigo) line** "Token check". No red messages in the Console (F12) about "Content Security Policy" or "font".
+3. Proof of the token system: open `src/styles/tokens.css`, change `--color-accent: #4a3de0;` to `#e03d3d;`, save. The colored line must turn red without editing any other file. Then change it back.
+4. Run `npm run build`, then commit `package.json` and `package-lock.json` (they changed when installing) and push.
 
-```powershell
-npm run build
-npm run tauri build
-```
-
-   Then start `src-tauri\target\release\project-manager.exe` and check that the same text appears.
-4. Run `git status`. `src-tauri/Cargo.lock` is expected to show as modified. Send the output, and any error in full.
-
-After you confirm, Claude records the verified results here and in `docs/ARCHITECTURE.md` and `README.md`, and continues with step 2 (styling and design tokens). If something fails, Claude diagnoses it from your output before changing anything.
+Claude then updates `README.md` and `docs/ARCHITECTURE.md` for the verified state of steps 1 and 2 and continues with step 3 (layout, sidebar, routing).
