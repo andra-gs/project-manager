@@ -75,13 +75,13 @@ Fixes applied on the development computer:
 
 ## Not verified
 
-Phase 1 step 1 (branch `phase-1-ui`, written 2026-10-22):
+Phase 1 step 1 (branch `phase-1-ui`), still open after the developer's test on 2026-10-22:
 
-- Claude's workspace could not install npm packages (`npm` crashed with "Exit handler never called"), so the TypeScript check and the Vite build of the changed code were **not run by Claude**. Only these checks were run: the two edited JSON config files parse, no references to the deleted files remain, and the lockfile change is exactly the 10 lines of the removed `@tauri-apps/plugin-opener` entries.
-- The Rust code was not compiled by Claude.
-- The new Content Security Policy (`csp` for the release build, `devCsp` for development) has not been tested. Inline style attributes, which the design will need later for dynamic progress bars, are specifically untested.
-- The window values (1200x680, minimum 960x600, centered) have not been seen on a screen.
-- `src-tauri/Cargo.lock` still lists `tauri-plugin-opener`. Cargo is expected to remove it on the next build, after which `Cargo.lock` shows as modified and must be committed.
+- The Console check for Content Security Policy errors (dev and release) was not reported.
+- The minimum window size (960x600) was not reported.
+- Whether `src-tauri/Cargo.lock` changed (opener dependencies removed) was not reported.
+- Inline style attributes, which the design will need later for dynamic progress bars, are untested.
+- Claude's workspace could not run npm, so Claude itself ran no build; all build results below come from the developer.
 
 Earlier items:
 
@@ -103,6 +103,9 @@ No automated tests exist and no test framework is installed. Commands actually r
 | 2026-10-21 | `npm run tauri dev` | Passed: Vite started, Rust compiled, window opened |
 | reported 2026-10-22 | `npm run tauri build` | Passed: TypeScript check and Vite build succeeded, MSI and NSIS installers produced |
 
+| reported 2026-10-22 | `npm run tauri dev` on branch `phase-1-ui` | Passed: Rust compiled, window opened and showed the placeholder heading and text |
+| reported 2026-10-22 | `npm run tauri build` on branch `phase-1-ui` | Passed: `tsc` and Vite build succeeded, MSI and NSIS installers produced; the release build showed the same page as dev |
+
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
 ## Known issues and limitations
@@ -123,7 +126,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Confirm it starts in development mode
   - [x] Confirm it builds
 - [ ] **Phase 1:** UI foundation (in progress)
-  - [ ] Step 1: clean the template and apply the approved defaults (written, awaiting verification)
+  - [ ] Step 1: clean the template and apply the approved defaults (page loads in dev and release builds, reported 2026-10-22; Console CSP check, minimum size and Cargo.lock still to confirm)
   - [ ] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages
   - [ ] Step 4: base components (button, card, badge, progress bar)
