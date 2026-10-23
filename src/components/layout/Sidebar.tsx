@@ -71,7 +71,8 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
         </div>
       )}
 
-      <nav aria-label="Main" className="flex-1 overflow-y-auto px-3.5 pb-4">
+      {/* The top padding leaves room for the focus outline of the first item; a scrolling box cuts off anything outside it. */}
+      <nav aria-label="Main" className="flex-1 overflow-y-auto px-3.5 pt-1.5 pb-4">
         <div className="flex flex-col gap-1">
           {MAIN_NAV.map((item) => (
             <SidebarLink key={item.path} to={item.path} icon={item.icon} label={item.label} collapsed={collapsed} />

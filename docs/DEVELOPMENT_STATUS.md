@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is written and awaiting verification. `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is next. `main` is unchanged and still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -116,6 +116,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-23 | `npm run build`, `npm run tauri build`, run `project-manager.exe` | Passed: every page opens in the release build |
 | reported 2026-10-23 | `npm run tauri dev` (step 4) | Passed: buttons, badges, three progress bars shown; hover and focus outline work; changing `--color-accent` changed the button, badge, first progress bar, and sidebar highlight |
 | reported 2026-10-23 | `npm run build` (step 4) | Passed: `tsc` and Vite build (50 modules) without errors |
+| reported 2026-10-23 | `npm run tauri dev` (step 4b) | Passed: toggle button, tooltips, drag left and right, automatic collapse and expand when resizing, keyboard toggle with Tab and Enter |
+| reported 2026-10-23 | `npm run build` (step 4b) | Passed without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
@@ -125,8 +127,9 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 2. **Name mismatch.** (Also: the product working name changed to Avenqor on 2026-10-23, Proposed. The repository and folder names are separate and were not changed.) The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
 4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
-5. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
-6. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
+5. **Focus outline cut off in the sidebar (found 2026-10-23, fix written, not yet verified).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
+6. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
+7. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
 ## Roadmap checklist
 
@@ -141,7 +144,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
   - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
-  - [ ] Step 4b: collapsible sidebar (written on branch 2026-10-23, awaiting verification)
+  - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [ ] Step 5: Dashboard with temporary mock data
   - [ ] Step 6: Workspace and project overview screens with temporary mock data
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
@@ -152,25 +155,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 4b: verify the collapsible sidebar (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-23. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
+**Phase 1, step 4b follow-up, then step 5.**
 
-What was written: the sidebar has two states, expanded (224px) and icon-only (64px). A toggle button changes the state. Dragging the sidebar border left collapses it and dragging right expands it (only two states, no animation). The sidebar collapses by itself when the window is narrower than 1100px and expands again when it is wider. It opens expanded unless the window is narrow, and the choice is not saved. When collapsed, each item shows its name as a tooltip. Logic is in `src/hooks/useSidebarCollapsed.ts`; the drag strip is `src/components/layout/SidebarResizeHandle.tsx`; the numbers (1100px, 24px drag distance) are in `src/lib/layout.ts`.
-
-Deviations and choices: while no logo exists, the collapsed sidebar shows the first letter of the name as a temporary mark. Tooltips are the browser's own `title` tooltips. The 1100px width is Claude's choice and can be changed in `src/lib/layout.ts`.
-
-Test steps:
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm run tauri dev
-```
-
-1. Click the arrow button at the top of the sidebar: it collapses to icons; click again: it expands.
-2. Collapsed: hover over an icon to see its name; click each icon and check that the page opens and the active icon is highlighted.
-3. Drag the right edge of the sidebar to the left (about 30px or more): it collapses. Drag it to the right: it expands. Nothing in between.
-4. Make the window narrower than about 1100px: the sidebar collapses by itself. Make it wider: it expands again. Check that 960x600 (the minimum) looks right.
-5. Press `Tab` until the toggle button is focused and press `Enter`: it toggles.
-6. Run `npm run build`. Report the result, with the full error text if there is an error.
-
-After your report, Claude records it and starts step 5 (the Dashboard with temporary mock data).
+1. Verify the focus-outline fix (developer): `git pull origin phase-1-ui`, `npm run tauri dev`, collapse the sidebar, press `Tab` until the Dashboard icon is focused, and check that the whole outline is visible. Also check it with the sidebar expanded. Report the result.
+2. Step 5 (Proposed, Claude writes it after the report): the Dashboard from the Figma frame "01 Dashboard", built only from the shared components, with temporary mock data kept in `src/mocks/` and read through hooks. Sections: greeting, "Your Workspaces", "Recent Projects" with progress bars, "My Tasks" with date badges, and "Activity". Mock texts avoid GitHub and pull-request references because GitHub is a future phase.
