@@ -152,9 +152,9 @@ src/
   components/
     layout/        AppShell.tsx, Sidebar.tsx, TopBar.tsx
     icons/         Icon.tsx
-    ui/            Avatar.tsx, PlaceholderNotice.tsx (temporary)
+    ui/            Avatar, Badge, Button, Card, IconButton, PriorityBadge, ProgressBar, StatusBadge, PlaceholderNotice (temporary)
   hooks/           useWorkspaces.ts, useLocalProfile.ts
-  lib/             appInfo.ts (product name)
+  lib/             appInfo.ts (product name), classNames.ts
   mocks/           workspaces.ts, localProfile.ts (TEMPORARY mock data)
   pages/           Dashboard, MyTasks, Calendar, Documents, Workspace, Settings, Help, NotFound
   styles/          tokens.css
@@ -177,6 +177,12 @@ Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/targe
 - **Data rule in practice:** screens read workspaces and the local profile only through the hooks in `src/hooks/`. The hooks currently return mock data from `src/mocks/`. In Phase 2 only the hooks change.
 - **Placeholders:** all pages show a short "not built yet" notice (`PlaceholderNotice`), which is temporary.
 - **Not verified yet:** scrolling of long content at small window sizes (no page has long content yet), and the layout on 1366x768 and 1920x1080 screens.
+
+### Shared base components (Implemented in development mode, verified by the developer on 2026-10-23)
+
+Located in `src/components/ui/`: `Button`, `IconButton`, `Card`, `Badge`, `PriorityBadge`, `StatusBadge`, `ProgressBar`, `Avatar`, and the temporary `PlaceholderNotice`. They take no `className`, so their look can only change inside the component or in `src/styles/tokens.css` (`CLAUDE.md` section 19). `PriorityBadge` and `StatusBadge` own the mapping from a task value to a color and a label. `src/lib/classNames.ts` provides `cx`, which joins class names.
+
+Verified: in `npm run tauri dev` the components render, hover and keyboard focus work, and changing `--color-accent` changes the primary button, the "Today" badge, the first progress bar, and the sidebar highlight together. `npm run build` (TypeScript check and Vite build) passed. Not verified: the components in a release build.
 
 ### Styling and design tokens (Implemented, Agreed in `CLAUDE.md` section 19)
 

@@ -68,5 +68,6 @@
 /* Layout sizes. Plain CSS variables, used in classes as w-(--layout-sidebar-width). */
 :root {
   --layout-sidebar-width: 224px;
+  --layout-sidebar-collapsed-width: 64px;
   --layout-topbar-height: 72px;
 }
