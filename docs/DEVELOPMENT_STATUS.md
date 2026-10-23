@@ -132,7 +132,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 - [ ] **Phase 1:** UI foundation (in progress)
   - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
-  - [ ] Step 3: layout, sidebar, and routing with placeholder pages
+  - [ ] Step 3: layout, sidebar, and routing with placeholder pages (written on branch 2026-10-23, awaiting verification)
   - [ ] Step 4: base components (button, card, badge, progress bar)
   - [ ] Step 5: Dashboard with temporary mock data
   - [ ] Step 6: Workspace and project overview screens with temporary mock data
@@ -144,10 +144,26 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 3: layout, sidebar, and routing with placeholder pages (Proposed, plan approved on 2026-10-22).**
+**Phase 1, step 3: verify layout, sidebar, and routing (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-23. Claude could not build or run it (no npm registry access in Claude's workspace), so nothing here is verified yet.
 
-0. Name: the window title and page title are now "Avenqor" (written, not yet seen by the developer). `productName` stays "Project Manager Desktop" for now, so installer names and install folder do not change yet. The sidebar shows the name from one constant, so renaming later is a one-line change.
-1. Claude writes the app shell: a sidebar (Dashboard, My Tasks, Calendar, Documents, workspace list, Settings) and a top bar, with the layout sizes added to the design tokens, and one placeholder page per sidebar item.
-2. Routing uses React Router. The developer installs it (`npm install react-router`), because Claude's workspace has no npm registry access. Claude checks that the router mode works inside the packaged Tauri app before relying on it.
-3. Layout is tested at 1366x768, 1536x864, 1920x1080, and the minimum window size 960x600.
-4. The developer tests with `npm run tauri dev` and reports the result. Claude records it here.
+What was written: an app frame (sidebar, top bar, content area), routing with React Router (`HashRouter`), a navigation list in `src/app/navigation.ts`, icons drawn as SVG (`src/components/icons/Icon.tsx`), a shared `Avatar`, and placeholder pages. The workspace list and the local profile name are **temporary mock data** in `src/mocks/`, read only through the hooks in `src/hooks/`. The product name is read from `src/lib/appInfo.ts`. The window and page title are "Avenqor"; `productName` is unchanged.
+
+Deviations from Figma (reference only, per `CLAUDE.md` section 12): icons are SVG instead of text symbols; a Help page and a "Page not found" page exist as placeholders; the top bar title changes with the page; sidebar hover color is added.
+
+Test steps:
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm install react-router@7
+npm run tauri dev
+```
+
+1. Window title is "Avenqor". A sidebar shows the name, four menu items, three workspaces, Settings, and Help. A top bar shows the page title and a profile.
+2. Click every menu item and workspace: the top bar title changes and the clicked item is highlighted in the accent color.
+3. Change `--color-accent` in `src/styles/tokens.css`: the name, highlighted item, and avatar change together. Restore it afterwards (`git restore src/styles/tokens.css`).
+4. Resize the window to the minimum (960x600): nothing overlaps, and the page content scrolls instead of being cut off. If you can, also check on a 1366x768 and a 1920x1080 screen.
+5. Run `npm run build` and then `npm run tauri build`. Start `src-tauri\target\release\project-manager.exe`, click through the menu, and check that every page opens (this tests that routing works in the packaged app).
+6. Commit `package.json` and `package-lock.json`, then push.
+
+After your report, Claude records the results, updates `docs/ARCHITECTURE.md` and `README.md`, and continues with step 4 (base components: button, card, badge, progress bar).

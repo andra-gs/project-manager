@@ -1,12 +1,32 @@
-// Temporary placeholder. The real layout, sidebar, and screens are built in the next Phase 1 steps.
-// The accent-colored line below is a temporary check that the design tokens work. Removed in step 4.
+import { HashRouter, Route, Routes } from "react-router";
+import { AppShell } from "./components/layout/AppShell";
+import { CalendarPage } from "./pages/CalendarPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { DocumentsPage } from "./pages/DocumentsPage";
+import { HelpPage } from "./pages/HelpPage";
+import { MyTasksPage } from "./pages/MyTasksPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { WorkspacePage } from "./pages/WorkspacePage";
+
+// HashRouter keeps the current page in the part of the address after "#". A packaged desktop app has
+// no web server to answer other addresses, so this is the safe choice for Tauri.
 function App() {
   return (
-    <main className="p-6">
-      <h1 className="text-display font-bold">Project Manager Desktop</h1>
-      <p className="text-ink-muted">Phase 1 in progress: the interface is being built.</p>
-      <p className="text-accent font-semibold">Token check: this line uses the accent token.</p>
-    </main>
+    <HashRouter>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="my-tasks" element={<MyTasksPage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+          <Route path="documents" element={<DocumentsPage />} />
+          <Route path="workspaces/:workspaceId" element={<WorkspacePage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="help" element={<HelpPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   );
 }
 

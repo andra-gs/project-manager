@@ -59,3 +59,9 @@
   --radius-pill: 9999px;
   --radius-bar: 3px;
 }
+
+/* Layout sizes. Plain CSS variables, used in classes as w-(--layout-sidebar-width). */
+:root {
+  --layout-sidebar-width: 224px;
+  --layout-topbar-height: 72px;
+}
