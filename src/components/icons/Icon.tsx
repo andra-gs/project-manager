@@ -7,7 +7,8 @@ export type IconName =
   | "documents"
   | "workspace"
   | "settings"
-  | "help";
+  | "help"
+  | "plus";
 
 // Simple outline icons drawn for this app. They use the current text color, so they follow tokens.
 const PATHS: Record<IconName, ReactNode> = {
@@ -50,6 +51,7 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="9" cy="17" r="2.5" />
     </>
   ),
+  plus: <path d="M12 5v14M5 12h14" />,
   help: (
     <>
       <circle cx="12" cy="12" r="9" />

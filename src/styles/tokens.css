@@ -38,6 +38,11 @@
   --color-danger: #b3303a;
   --color-danger-soft: #fce8eb;
   --color-info: #2678cc;
+  --color-info-strong: #1f66b3;
+  --color-info-soft: #e8f2fc;
+  /* Warning: the text color is from Figma (Review column). The soft background is derived, not in Figma. */
+  --color-warning-strong: #9a5a0b;
+  --color-warning-soft: #fdf0dc;
 
   /* ---------- Typography ---------- */
   --font-sans: "DM Sans Variable", system-ui, sans-serif;

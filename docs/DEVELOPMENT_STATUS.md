@@ -138,7 +138,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
-  - [ ] Step 4: base components (button, card, badge, progress bar)
+  - [ ] Step 4: base components (button, card, badge, progress bar) (written on branch 2026-10-23, awaiting verification)
   - [ ] Step 4b: collapsible sidebar (details agreed 2026-10-23, see Next task)
   - [ ] Step 5: Dashboard with temporary mock data
   - [ ] Step 6: Workspace and project overview screens with temporary mock data
@@ -150,11 +150,31 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 4: base components (Proposed, waiting for the developer to start it).** Button (including an icon-only button), card, status and priority badge, and progress bar, each built once in `src/components/ui/` and styled only through tokens (`CLAUDE.md` section 19). `PlaceholderNotice` is then rebuilt on the shared card. Claude writes them; the developer tests with `npm run tauri dev`. No new package is needed. Colors for status and priority badges come from the existing tokens; new tokens are added to `tokens.css` only.
+**Phase 1, step 4: verify the base components (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-23. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
+
+What was written, all in `src/components/ui/`: `Button` (primary and secondary, optional icon), `IconButton` (icon only, a label is required), `Card`, `Badge` (tones: neutral, accent, success, danger, info, warning), `PriorityBadge`, `StatusBadge`, `ProgressBar` (value limited to 0 to 100, tones accent, info, success). `PlaceholderNotice` now uses `Card`. Components do not accept a `className`, so their look can only change in the component or in `src/styles/tokens.css`. New tokens: `info-strong`, `info-soft`, `warning-strong` (from Figma), and `warning-soft` (**derived by Claude**, not in Figma). The Dashboard page temporarily shows every component once.
+
+Deviations from Figma: the secondary button, the neutral badge, and the hover effect are not defined in the Figma frames Claude read, so they are Claude's choices. The Review color uses a derived soft background.
+
+Test steps:
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run tauri dev
+```
+
+1. Open the Dashboard (the first menu item). You should see buttons, colored badges, and three progress bars (indigo, blue, green).
+2. Hover over each button: it should react. Press `Tab`: a visible outline should move between the buttons.
+3. Change `--color-accent` in `src/styles/tokens.css` and save: the primary button, the "Today" badge, the first progress bar, and the sidebar highlight must all change. Restore it afterwards (`git restore src/styles/tokens.css`).
+4. Run `npm run build`. It must finish without errors (this runs the TypeScript check).
+5. Commit and push if you changed anything. Report the result.
+
+After your report, Claude records it and moves to step 4b.
 
 **Step 4b: collapsible sidebar (details agreed by the developer on 2026-10-23).**
 - A toggle button collapses the sidebar to an icon-only strip (about 64px) and expands it again. Collapsed items show their name as a tooltip.
 - The sidebar is always expanded when the app opens. The choice is not saved.
-- The developer also wants to drag the sidebar border to shrink it. Proposed: dragging snaps between the two states (expanded and collapsed) instead of free resizing, to keep it simple. Needs the developer's confirmation when step 4b starts.
+- Dragging the sidebar border (agreed 2026-10-23): dragging left collapses the sidebar and dragging right expands it. There are only two states, expanded and icon-only; the width is never free. No transition animation.
 - The sidebar collapses automatically when the window is narrow (the exact width is chosen and tested at 960x600).
 - Keyboard access: the toggle is a real button, focusable, with an accessible label.
