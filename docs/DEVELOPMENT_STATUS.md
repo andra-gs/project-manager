@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is next. `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is written and awaiting verification. `main` is unchanged and still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -114,6 +114,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-23 | change `--color-accent` again | Passed: name, active item, and avatar changed together; restored afterwards |
 | reported 2026-10-23 | resize window to minimum and full screen | Passed: no problem reported. Scrolling was not tested |
 | reported 2026-10-23 | `npm run build`, `npm run tauri build`, run `project-manager.exe` | Passed: every page opens in the release build |
+| reported 2026-10-23 | `npm run tauri dev` (step 4) | Passed: buttons, badges, three progress bars shown; hover and focus outline work; changing `--color-accent` changed the button, badge, first progress bar, and sidebar highlight |
+| reported 2026-10-23 | `npm run build` (step 4) | Passed: `tsc` and Vite build (50 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
@@ -138,8 +140,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
-  - [ ] Step 4: base components (button, card, badge, progress bar) (written on branch 2026-10-23, awaiting verification)
-  - [ ] Step 4b: collapsible sidebar (details agreed 2026-10-23, see Next task)
+  - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
+  - [ ] Step 4b: collapsible sidebar (written on branch 2026-10-23, awaiting verification)
   - [ ] Step 5: Dashboard with temporary mock data
   - [ ] Step 6: Workspace and project overview screens with temporary mock data
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
@@ -150,11 +152,11 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 4: verify the base components (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-23. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
+**Phase 1, step 4b: verify the collapsible sidebar (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-23. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
 
-What was written, all in `src/components/ui/`: `Button` (primary and secondary, optional icon), `IconButton` (icon only, a label is required), `Card`, `Badge` (tones: neutral, accent, success, danger, info, warning), `PriorityBadge`, `StatusBadge`, `ProgressBar` (value limited to 0 to 100, tones accent, info, success). `PlaceholderNotice` now uses `Card`. Components do not accept a `className`, so their look can only change in the component or in `src/styles/tokens.css`. New tokens: `info-strong`, `info-soft`, `warning-strong` (from Figma), and `warning-soft` (**derived by Claude**, not in Figma). The Dashboard page temporarily shows every component once.
+What was written: the sidebar has two states, expanded (224px) and icon-only (64px). A toggle button changes the state. Dragging the sidebar border left collapses it and dragging right expands it (only two states, no animation). The sidebar collapses by itself when the window is narrower than 1100px and expands again when it is wider. It opens expanded unless the window is narrow, and the choice is not saved. When collapsed, each item shows its name as a tooltip. Logic is in `src/hooks/useSidebarCollapsed.ts`; the drag strip is `src/components/layout/SidebarResizeHandle.tsx`; the numbers (1100px, 24px drag distance) are in `src/lib/layout.ts`.
 
-Deviations from Figma: the secondary button, the neutral badge, and the hover effect are not defined in the Figma frames Claude read, so they are Claude's choices. The Review color uses a derived soft background.
+Deviations and choices: while no logo exists, the collapsed sidebar shows the first letter of the name as a temporary mark. Tooltips are the browser's own `title` tooltips. The 1100px width is Claude's choice and can be changed in `src/lib/layout.ts`.
 
 Test steps:
 
@@ -164,17 +166,11 @@ git pull origin phase-1-ui
 npm run tauri dev
 ```
 
-1. Open the Dashboard (the first menu item). You should see buttons, colored badges, and three progress bars (indigo, blue, green).
-2. Hover over each button: it should react. Press `Tab`: a visible outline should move between the buttons.
-3. Change `--color-accent` in `src/styles/tokens.css` and save: the primary button, the "Today" badge, the first progress bar, and the sidebar highlight must all change. Restore it afterwards (`git restore src/styles/tokens.css`).
-4. Run `npm run build`. It must finish without errors (this runs the TypeScript check).
-5. Commit and push if you changed anything. Report the result.
+1. Click the arrow button at the top of the sidebar: it collapses to icons; click again: it expands.
+2. Collapsed: hover over an icon to see its name; click each icon and check that the page opens and the active icon is highlighted.
+3. Drag the right edge of the sidebar to the left (about 30px or more): it collapses. Drag it to the right: it expands. Nothing in between.
+4. Make the window narrower than about 1100px: the sidebar collapses by itself. Make it wider: it expands again. Check that 960x600 (the minimum) looks right.
+5. Press `Tab` until the toggle button is focused and press `Enter`: it toggles.
+6. Run `npm run build`. Report the result, with the full error text if there is an error.
 
-After your report, Claude records it and moves to step 4b.
-
-**Step 4b: collapsible sidebar (details agreed by the developer on 2026-10-23).**
-- A toggle button collapses the sidebar to an icon-only strip (about 64px) and expands it again. Collapsed items show their name as a tooltip.
-- The sidebar is always expanded when the app opens. The choice is not saved.
-- Dragging the sidebar border (agreed 2026-10-23): dragging left collapses the sidebar and dragging right expands it. There are only two states, expanded and icon-only; the width is never free. No transition animation.
-- The sidebar collapses automatically when the window is narrow (the exact width is chosen and tested at 960x600).
-- Keyboard access: the toggle is a real button, focusable, with an accessible label.
+After your report, Claude records it and starts step 5 (the Dashboard with temporary mock data).
