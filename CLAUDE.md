@@ -16,7 +16,7 @@ Project name: Project Manager Desktop
 
 Repository and folder name: project-manager-desktop
 
-Working product name: Project Collaboration App
+Working product name: Avenqor (Proposed on 2026-10-23, pending trademark checks; previously "Project Collaboration App"). Brand notes: docs/BRAND.md.
 
 The final public product name has not been decided yet. Do not treat the working name as permanent branding.
 
@@ -493,7 +493,7 @@ Build a useful local-first project management application first. Keep the archit
 
 ## 18. DOCUMENTATION SYSTEM
 
-The project keeps six documentation files. They are part of the codebase and must stay accurate.
+The project keeps seven documentation files. They are part of the codebase and must stay accurate.
 
 | File | Purpose |
 |---|---|
@@ -503,6 +503,7 @@ The project keeps six documentation files. They are part of the codebase and mus
 | `docs/ARCHITECTURE.md` | Actual application architecture, module responsibilities, data flow, and future online integration strategy. |
 | `docs/DATABASE_SCHEMA.md` | SQLite tables, columns, relationships, constraints, and migrations. |
 | `docs/DEVELOPMENT_STATUS.md` | Completed work, current state, known issues, test results, and next steps. |
+| `docs/BRAND.md` | Brand identity notes (name, meaning, personality, colors, logo direction). Reference only; not an implementation record. |
 
 Rules:
 

@@ -26,6 +26,7 @@ The documents were drafted in a Claude workspace, which cannot reach the Windows
 | Phase 0, step 2: created the project with `create-tauri-app` 4.7.5 (template `react-ts`, npm) in a temporary folder, renamed it from `tauri-temp` to `project-manager`, and copied it into the repository without overwriting existing files | 2026-10-21 |
 | Committed and pushed the scaffold (`e523852`) | 2026-10-21 |
 | Phase 0, step 3: `npm install` and `npm run tauri dev` worked | 2026-10-21 |
+| Decisions 2026-10-23: working product name **Avenqor** (Proposed, pending trademark checks); brand notes saved as `docs/BRAND.md` (identity only); color palette and logo not applied while the logo is being reconsidered; app `identifier` change postponed until before Phase 2 | 2026-10-23 |
 | Phase 0, step 4: `npm run tauri build` produced a Windows release build and two installers | reported 2026-10-22 |
 
 ## Verification performed
@@ -114,7 +115,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 ## Known issues and limitations
 
 1. **Two copies of `CLAUDE.md`.** The Claude Project's copy does not contain section 18. The repository copy does. Decide which copy is the source of truth, and keep the other in sync.
-2. **Name mismatch.** The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
+2. **Name mismatch.** (Also: the product working name changed to Avenqor on 2026-10-23, Proposed. The repository and folder names are separate and were not changed.) The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
 4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
 5. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
@@ -145,6 +146,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 **Phase 1, step 3: layout, sidebar, and routing with placeholder pages (Proposed, plan approved on 2026-10-22).**
 
+0. Name: the window title and page title are now "Avenqor" (written, not yet seen by the developer). `productName` stays "Project Manager Desktop" for now, so installer names and install folder do not change yet. The sidebar shows the name from one constant, so renaming later is a one-line change.
 1. Claude writes the app shell: a sidebar (Dashboard, My Tasks, Calendar, Documents, workspace list, Settings) and a top bar, with the layout sizes added to the design tokens, and one placeholder page per sidebar item.
 2. Routing uses React Router. The developer installs it (`npm install react-router`), because Claude's workspace has no npm registry access. Claude checks that the router mode works inside the packaged Tauri app before relying on it.
 3. Layout is tested at 1366x768, 1536x864, 1920x1080, and the minimum window size 960x600.
