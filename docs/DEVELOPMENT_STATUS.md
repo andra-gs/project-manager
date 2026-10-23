@@ -6,8 +6,8 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (clean the template) and 2 (Tailwind, local font, design tokens) are verified by the developer. Step 3 (layout, sidebar, routing) is next. `main` is unchanged and still holds the Phase 0 template.
-- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, a cleaned app with Tailwind, design tokens, and one placeholder page. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is next. `main` is unchanged and still holds the Phase 0 template.
+- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
@@ -76,10 +76,11 @@ Fixes applied on the development computer:
 
 ## Not verified
 
-Phase 1, steps 1 and 2 (branch `phase-1-ui`):
+Phase 1, steps 1 to 3 (branch `phase-1-ui`):
 
 - Inline style attributes, which the design will need later for dynamic progress bars, are untested.
-- The accent-token proof was done on a placeholder page only. It must be repeated when real screens exist (Phase 1 is not complete until then).
+- Scrolling at small window sizes was not tested (no mouse; no page has long content yet). The layout on 1366x768 and 1920x1080 screens was not reported.
+- The accent-token proof was done on the frame and placeholder pages only. It must be repeated when real screens exist (Phase 1 is not complete until then).
 - Claude's workspace cannot run npm or reach the npm registry, so Claude itself ran no build; all build results come from the developer.
 - Production (release) rendering of Tailwind styles and the bundled font was not reported separately; only the dev run after step 2 was.
 
@@ -109,6 +110,10 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-23 | `npm install tailwindcss @tailwindcss/vite @fontsource-variable/dm-sans`, then `npm run tauri dev` | Passed without errors; the accent line showed the token color |
 | reported 2026-10-23 | change `--color-accent` in `src/styles/tokens.css` | Passed: the colored line changed without editing another file; value restored afterwards |
 | reported 2026-10-23 | `npm run build` | Reported as successful without errors |
+| reported 2026-10-23 | `npm install react-router@7`, `npm run tauri dev` | Passed: sidebar, top bar, all menu items and workspaces clickable, title changes, active item uses the accent color |
+| reported 2026-10-23 | change `--color-accent` again | Passed: name, active item, and avatar changed together; restored afterwards |
+| reported 2026-10-23 | resize window to minimum and full screen | Passed: no problem reported. Scrolling was not tested |
+| reported 2026-10-23 | `npm run build`, `npm run tauri build`, run `project-manager.exe` | Passed: every page opens in the release build |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
@@ -132,8 +137,9 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 - [ ] **Phase 1:** UI foundation (in progress)
   - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
-  - [ ] Step 3: layout, sidebar, and routing with placeholder pages (written on branch 2026-10-23, awaiting verification)
+  - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
   - [ ] Step 4: base components (button, card, badge, progress bar)
+  - [ ] Step 4b: collapsible sidebar (details agreed 2026-10-23, see Next task)
   - [ ] Step 5: Dashboard with temporary mock data
   - [ ] Step 6: Workspace and project overview screens with temporary mock data
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
@@ -144,26 +150,11 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 3: verify layout, sidebar, and routing (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-23. Claude could not build or run it (no npm registry access in Claude's workspace), so nothing here is verified yet.
+**Phase 1, step 4: base components (Proposed, waiting for the developer to start it).** Button (including an icon-only button), card, status and priority badge, and progress bar, each built once in `src/components/ui/` and styled only through tokens (`CLAUDE.md` section 19). `PlaceholderNotice` is then rebuilt on the shared card. Claude writes them; the developer tests with `npm run tauri dev`. No new package is needed. Colors for status and priority badges come from the existing tokens; new tokens are added to `tokens.css` only.
 
-What was written: an app frame (sidebar, top bar, content area), routing with React Router (`HashRouter`), a navigation list in `src/app/navigation.ts`, icons drawn as SVG (`src/components/icons/Icon.tsx`), a shared `Avatar`, and placeholder pages. The workspace list and the local profile name are **temporary mock data** in `src/mocks/`, read only through the hooks in `src/hooks/`. The product name is read from `src/lib/appInfo.ts`. The window and page title are "Avenqor"; `productName` is unchanged.
-
-Deviations from Figma (reference only, per `CLAUDE.md` section 12): icons are SVG instead of text symbols; a Help page and a "Page not found" page exist as placeholders; the top bar title changes with the page; sidebar hover color is added.
-
-Test steps:
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm install react-router@7
-npm run tauri dev
-```
-
-1. Window title is "Avenqor". A sidebar shows the name, four menu items, three workspaces, Settings, and Help. A top bar shows the page title and a profile.
-2. Click every menu item and workspace: the top bar title changes and the clicked item is highlighted in the accent color.
-3. Change `--color-accent` in `src/styles/tokens.css`: the name, highlighted item, and avatar change together. Restore it afterwards (`git restore src/styles/tokens.css`).
-4. Resize the window to the minimum (960x600): nothing overlaps, and the page content scrolls instead of being cut off. If you can, also check on a 1366x768 and a 1920x1080 screen.
-5. Run `npm run build` and then `npm run tauri build`. Start `src-tauri\target\release\project-manager.exe`, click through the menu, and check that every page opens (this tests that routing works in the packaged app).
-6. Commit `package.json` and `package-lock.json`, then push.
-
-After your report, Claude records the results, updates `docs/ARCHITECTURE.md` and `README.md`, and continues with step 4 (base components: button, card, badge, progress bar).
+**Step 4b: collapsible sidebar (details agreed by the developer on 2026-10-23).**
+- A toggle button collapses the sidebar to an icon-only strip (about 64px) and expands it again. Collapsed items show their name as a tooltip.
+- The sidebar is always expanded when the app opens. The choice is not saved.
+- The developer also wants to drag the sidebar border to shrink it. Proposed: dragging snaps between the two states (expanded and collapsed) instead of free resizing, to keep it simple. Needs the developer's confirmation when step 4b starts.
+- The sidebar collapses automatically when the window is narrow (the exact width is chosen and tested at 960x600).
+- Keyboard access: the toggle is a real button, focusable, with an accessible label.
