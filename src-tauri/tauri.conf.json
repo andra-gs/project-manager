@@ -39,6 +39,11 @@
       }
     }
   },
+  "plugins": {
+    "sql": {
+      "preload": ["sqlite:avenqor.db"]
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

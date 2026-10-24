@@ -49,7 +49,7 @@ Two problems came up on that computer, and may affect you too:
 4. **Node.js** (the LTS version). It runs the frontend tooling and provides `npm`. Verified with Node.js v24.22.0 and npm 11.19.1.
 5. *Only if building MSI installers:* the Windows optional feature **VBSCRIPT** must be enabled.
 
-Later, from Phase 2, the official Tauri SQL plugin documentation lists Rust 1.90 or newer as a requirement. This is not yet confirmed for this project because the database approach is still open (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
+From Phase 2 the app uses the official Tauri SQL plugin (`tauri-plugin-sql` 2.x, SQLite). Its documentation asks for Rust 1.90 or newer; the development computer has 1.99.1.
 
 ### Check what is installed
 
