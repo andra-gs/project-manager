@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is verified in development mode; the first `npm run build` failed on an unused variable, fixed, and awaits a re-run. `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is verified by the developer in development mode and with `npm run build` (the first build failed on an unused variable; fixed and re-run). `main` is unchanged and still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -80,7 +80,7 @@ Phase 1, steps 1 to 3 (branch `phase-1-ui`):
 
 - Inline style attributes, which the design will need later for dynamic progress bars, are untested.
 - Scrolling was verified on the Dashboard (2026-10-24). The layout on 1366x768 and 1920x1080 screens was not reported.
-- The accent-token proof was repeated on the Dashboard (2026-10-24). It must still be repeated on the step 6 screens.
+- The accent-token proof was repeated on the Dashboard and the step 6 screens (2026-10-24). It is still to be done once on the remaining screens built in step 7.
 - The empty states (no projects, no activity, unknown workspace or project) exist, but only the workspace "Content Creator" (no projects) shows one.
 - Claude's workspace cannot run npm or reach the npm registry, so Claude itself ran no build; all build results come from the developer.
 - Production (release) rendering of Tailwind styles and the bundled font was not reported separately; only the dev run after step 2 was.
@@ -122,7 +122,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-24 | `npm run tauri dev` (step 5) | Passed: five Dashboard sections shown; workspace card opens the workspace page; the sidebar closes when the window is made small, and page content scrolls; changing the accent color changed the Dashboard together with the sidebar; no errors |
 | reported 2026-10-24 | `npm run build` (step 5) | Reported without errors |
 | reported 2026-10-24 | `npm run tauri dev` (step 6) | Passed: workspace stats (4 projects, 103 tasks, 54 completed, 4 members), project cards, activity; project page (72%, 18 of 25); empty workspace message; 960x600 with sidebar open and collapsed; accent change on all three pages; no errors |
-| reported 2026-10-24 | `npm run build` (step 6) | **Failed**: `src/pages/WorkspacePage.tsx:25:9 - error TS6133: 'activeProjects' is declared but its value is never read.` Fixed by showing `activeProjects` in the "Projects" stat. Re-run pending |
+| reported 2026-10-24 | `npm run build` (step 6) | **Failed**: `src/pages/WorkspacePage.tsx:25:9 - error TS6133: 'activeProjects' is declared but its value is never read.` Fixed by showing `activeProjects` in the "Projects" stat |
+| reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
@@ -151,7 +152,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
-  - [ ] Step 6: Workspace and project overview screens with temporary mock data (verified in dev mode 2026-10-24; `npm run build` re-run pending after a fix)
+  - [x] Step 6: Workspace and project overview screens with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
@@ -160,12 +161,4 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 6: re-run the build (developer, on Windows).** Fix pushed on branch `phase-1-ui` on 2026-10-24 (unused variable in `WorkspacePage.tsx`).
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm run build
-```
-
-Report the result. If it passes, Claude marks step 6 verified and proposes step 7 (finish Phase 1: remaining placeholder pages and the final accent proof).
+**Phase 1, step 7 (Proposed, needs the developer's approval): finish Phase 1.** Replace the remaining placeholder pages (My Tasks, Calendar, Documents, Settings, Help) with basic screens on temporary mock data, or decide which stay placeholders until Phase 3. Then run the final accent-color proof on all screens, a release build check (`npm run tauri build`), and the 1366x768 and 1920x1080 layout check. The scope of this step is to be agreed before any code is written.
