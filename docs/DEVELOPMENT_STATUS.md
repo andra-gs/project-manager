@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is written and awaiting verification. `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is verified in development mode; the first `npm run build` failed on an unused variable, fixed, and awaits a re-run. `main` is unchanged and still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -121,6 +121,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-23 | `npm run build` (step 4b) | Passed without errors |
 | reported 2026-10-24 | `npm run tauri dev` (step 5) | Passed: five Dashboard sections shown; workspace card opens the workspace page; the sidebar closes when the window is made small, and page content scrolls; changing the accent color changed the Dashboard together with the sidebar; no errors |
 | reported 2026-10-24 | `npm run build` (step 5) | Reported without errors |
+| reported 2026-10-24 | `npm run tauri dev` (step 6) | Passed: workspace stats (4 projects, 103 tasks, 54 completed, 4 members), project cards, activity; project page (72%, 18 of 25); empty workspace message; 960x600 with sidebar open and collapsed; accent change on all three pages; no errors |
+| reported 2026-10-24 | `npm run build` (step 6) | **Failed**: `src/pages/WorkspacePage.tsx:25:9 - error TS6133: 'activeProjects' is declared but its value is never read.` Fixed by showing `activeProjects` in the "Projects" stat. Re-run pending |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
@@ -149,7 +151,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
-  - [ ] Step 6: Workspace and project overview screens with temporary mock data (written on branch 2026-10-24, awaiting verification)
+  - [ ] Step 6: Workspace and project overview screens with temporary mock data (verified in dev mode 2026-10-24; `npm run build` re-run pending after a fix)
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
@@ -158,29 +160,12 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 6: verify the Workspace and Project overview screens (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-24. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
-
-What was written:
-- `src/pages/WorkspacePage.tsx`: "Workspace Overview" with a stats card (projects, tasks, members, deadlines), a grid of project cards, and Workspace Activity. Data comes from `src/hooks/useWorkspaceDetail.ts`.
-- `src/pages/ProjectPage.tsx` at the new route `/projects/:projectId`: project header, overall progress, and Activity. Data comes from `src/hooks/useProjectDetail.ts`.
-- New shared pieces: `Stat` component, `ProjectCard` (used on the Dashboard and the workspace page, so Dashboard project cards now open the project), `size="lg"` for `ProgressBar`, `src/lib/progress.ts`, `countDeadlines` in `src/lib/dueDate.ts`. Mock projects are in `src/mocks/projects.ts`; progress and deadline counts are calculated from them, not typed in.
-- The top bar title now follows the workspace or project being shown.
-
-Deviations from Figma (reference only): the GitHub and Repository Stats sections of the project screen are left out (Future, Phase 5); "Edit Workspace" and "Project Settings" are shown but disabled (Phase 2); the project screen has no Board, Calendar, or Documents menu yet; Workspace Activity shows "N min ago" instead of "Today, 18:42"; the project card colors cycle by position; the amber bar of "Security Lab" is not used (that color is not a token yet).
-
-Test steps:
+**Phase 1, step 6: re-run the build (developer, on Windows).** Fix pushed on branch `phase-1-ui` on 2026-10-24 (unused variable in `WorkspacePage.tsx`).
 
 ```powershell
 cd D:\project-manager
 git pull origin phase-1-ui
-npm run tauri dev
+npm run build
 ```
 
-1. Click "Kelompok Informatika" in the sidebar: stats card (4 projects, 91 tasks, 4 members), four project cards, and activity entries are shown.
-2. Click a project card, for example "Website Perpustakaan": the project page shows 72% complete, "18 of 25 tasks completed", and activity. The same card on the Dashboard opens the same page.
-3. Click "Content Creator" (no projects): the empty message "No projects in this workspace yet." appears and nothing breaks.
-4. Resize to 960x600 with the sidebar open and collapsed: nothing overlaps or is cut off.
-5. Change `--color-accent` in `src/styles/tokens.css`: the progress bars, "complete" badge, and sidebar highlight change on all three pages. Restore it afterwards.
-6. Run `npm run build` and report the result, with the full error text if there is one.
-
-After your report, Claude records it and proposes step 7 (finishing Phase 1: remaining placeholder pages and the final accent proof).
+Report the result. If it passes, Claude marks step 6 verified and proposes step 7 (finish Phase 1: remaining placeholder pages and the final accent proof).

@@ -37,7 +37,7 @@ export function WorkspacePage() {
 
       <Card>
         <div className="grid grid-cols-4 gap-6">
-          <Stat label="Projects" value={workspace.projects.length} note="active projects" noteTone="accent" />
+          <Stat label="Projects" value={activeProjects} note="active projects" noteTone="accent" />
           <Stat
             label="Tasks"
             value={workspace.taskCount}
