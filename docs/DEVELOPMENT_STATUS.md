@@ -1,12 +1,12 @@
 # Development Status
 
-Last updated: 2026-10-22
+Last updated: 2026-10-24
 
 This file is the project's memory between sessions. It must be updated before every coding session ends, and it records only what was actually done and checked.
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is written and awaiting verification. `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is written and awaiting verification. `main` is unchanged and still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -79,8 +79,9 @@ Fixes applied on the development computer:
 Phase 1, steps 1 to 3 (branch `phase-1-ui`):
 
 - Inline style attributes, which the design will need later for dynamic progress bars, are untested.
-- Scrolling at small window sizes was not tested (no mouse; no page has long content yet). The layout on 1366x768 and 1920x1080 screens was not reported.
-- The accent-token proof was done on the frame and placeholder pages only. It must be repeated when real screens exist (Phase 1 is not complete until then).
+- Scrolling was verified on the Dashboard (2026-10-24). The layout on 1366x768 and 1920x1080 screens was not reported.
+- The accent-token proof was repeated on the Dashboard (2026-10-24). It must still be repeated on the step 6 screens.
+- The empty states (no projects, no activity, unknown workspace or project) exist, but only the workspace "Content Creator" (no projects) shows one.
 - Claude's workspace cannot run npm or reach the npm registry, so Claude itself ran no build; all build results come from the developer.
 - Production (release) rendering of Tailwind styles and the bundled font was not reported separately; only the dev run after step 2 was.
 
@@ -118,6 +119,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-23 | `npm run build` (step 4) | Passed: `tsc` and Vite build (50 modules) without errors |
 | reported 2026-10-23 | `npm run tauri dev` (step 4b) | Passed: toggle button, tooltips, drag left and right, automatic collapse and expand when resizing, keyboard toggle with Tab and Enter |
 | reported 2026-10-23 | `npm run build` (step 4b) | Passed without errors |
+| reported 2026-10-24 | `npm run tauri dev` (step 5) | Passed: five Dashboard sections shown; workspace card opens the workspace page; the sidebar closes when the window is made small, and page content scrolls; changing the accent color changed the Dashboard together with the sidebar; no errors |
+| reported 2026-10-24 | `npm run build` (step 5) | Reported without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
@@ -145,8 +148,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
   - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
-  - [ ] Step 5: Dashboard with temporary mock data (written on branch 2026-10-24, awaiting verification)
-  - [ ] Step 6: Workspace and project overview screens with temporary mock data
+  - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
+  - [ ] Step 6: Workspace and project overview screens with temporary mock data (written on branch 2026-10-24, awaiting verification)
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
@@ -155,11 +158,15 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 5: verify the Dashboard (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-24. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
+**Phase 1, step 6: verify the Workspace and Project overview screens (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-24. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
 
-What was written: the Dashboard page (`src/pages/DashboardPage.tsx`) only arranges five sections from `src/features/dashboard/` (greeting and "New Project" button, Your Workspaces, Recent Projects, My Tasks, Activity). It reads data through `src/hooks/useDashboardData.ts`, which returns **temporary mock data** from `src/mocks/dashboard.ts`. Deadlines are computed from today's date (`src/lib/dueDate.ts`), so a task two days ago shows "Overdue", one today shows "Today", and one tomorrow shows "Tomorrow". The greeting follows the clock (`src/lib/greeting.ts`). New shared components: `SectionHeading`, `EmptyMessage`, `LinkCard`, `ListRow`; `Avatar` gained tone and size options.
+What was written:
+- `src/pages/WorkspacePage.tsx`: "Workspace Overview" with a stats card (projects, tasks, members, deadlines), a grid of project cards, and Workspace Activity. Data comes from `src/hooks/useWorkspaceDetail.ts`.
+- `src/pages/ProjectPage.tsx` at the new route `/projects/:projectId`: project header, overall progress, and Activity. Data comes from `src/hooks/useProjectDetail.ts`.
+- New shared pieces: `Stat` component, `ProjectCard` (used on the Dashboard and the workspace page, so Dashboard project cards now open the project), `size="lg"` for `ProgressBar`, `src/lib/progress.ts`, `countDeadlines` in `src/lib/dueDate.ts`. Mock projects are in `src/mocks/projects.ts`; progress and deadline counts are calculated from them, not typed in.
+- The top bar title now follows the workspace or project being shown.
 
-Deviations from Figma (reference only): the mock texts have no GitHub or pull-request wording (GitHub is a later phase); the third task and the activity lines are different texts; the "New Project" button is shown but disabled, because creating projects arrives in Phase 2; the workspace card opens the workspace page; each section shows an empty-state message when it has no data, but the mock data never triggers it, so the empty states are not visible yet.
+Deviations from Figma (reference only): the GitHub and Repository Stats sections of the project screen are left out (Future, Phase 5); "Edit Workspace" and "Project Settings" are shown but disabled (Phase 2); the project screen has no Board, Calendar, or Documents menu yet; Workspace Activity shows "N min ago" instead of "Today, 18:42"; the project card colors cycle by position; the amber bar of "Security Lab" is not used (that color is not a token yet).
 
 Test steps:
 
@@ -169,10 +176,11 @@ git pull origin phase-1-ui
 npm run tauri dev
 ```
 
-1. The Dashboard shows the five sections in this order: greeting, Your Workspaces (one card), Recent Projects (three cards with indigo, blue, and green bars), My Tasks (three rows with the badges Overdue, Today, Tomorrow), Activity (three entries with colored avatars).
-2. Click the workspace card: the workspace page opens. Use the sidebar to come back.
-3. Resize the window to 960x600, with the sidebar open and collapsed, and to your full screen: nothing should overlap or be cut off, and the page content should scroll when it is taller than the window (this is the scroll test that was pending).
-4. Change `--color-accent` in `src/styles/tokens.css`: the first progress bar, the "Today" badge, the first avatar, and the sidebar highlight must change together. Restore it afterwards.
-5. Run `npm run build` and report the result with the full error text if there is an error.
+1. Click "Kelompok Informatika" in the sidebar: stats card (4 projects, 91 tasks, 4 members), four project cards, and activity entries are shown.
+2. Click a project card, for example "Website Perpustakaan": the project page shows 72% complete, "18 of 25 tasks completed", and activity. The same card on the Dashboard opens the same page.
+3. Click "Content Creator" (no projects): the empty message "No projects in this workspace yet." appears and nothing breaks.
+4. Resize to 960x600 with the sidebar open and collapsed: nothing overlaps or is cut off.
+5. Change `--color-accent` in `src/styles/tokens.css`: the progress bars, "complete" badge, and sidebar highlight change on all three pages. Restore it afterwards.
+6. Run `npm run build` and report the result, with the full error text if there is one.
 
-After your report, Claude records it and moves to step 6 (basic Workspace and Project overview screens).
+After your report, Claude records it and proposes step 7 (finishing Phase 1: remaining placeholder pages and the final accent proof).

@@ -1,5 +1,5 @@
 import { Button } from "../components/ui/Button";
-import { ActivitySection } from "../features/dashboard/ActivitySection";
+import { ActivitySection } from "../features/activity/ActivitySection";
 import { MyTasksSection } from "../features/dashboard/MyTasksSection";
 import { RecentProjectsSection } from "../features/dashboard/RecentProjectsSection";
 import { WorkspacesSection } from "../features/dashboard/WorkspacesSection";

@@ -1,17 +1,13 @@
 // What the dashboard needs. The database model is designed in Phase 2 and may refine these shapes.
+import type { ActivityEntry } from "./activity";
+import type { ProjectSummary } from "./project";
+
 export interface WorkspaceOverview {
   id: string;
   name: string;
   memberCount: number;
   activeProjectCount: number;
   status: "active" | "archived";
-}
-
-export interface RecentProject {
-  id: string;
-  name: string;
-  description: string;
-  progressPercent: number;
 }
 
 export interface DashboardTask {
@@ -22,17 +18,9 @@ export interface DashboardTask {
   dueDate: string;
 }
 
-export interface ActivityEntry {
-  id: string;
-  actorName: string;
-  action: string;
-  // ISO date-time text.
-  occurredAt: string;
-}
-
 export interface DashboardData {
   workspaces: WorkspaceOverview[];
-  recentProjects: RecentProject[];
+  recentProjects: ProjectSummary[];
   myTasks: DashboardTask[];
   activity: ActivityEntry[];
 }

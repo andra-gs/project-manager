@@ -1,14 +1,16 @@
 import { useLocation } from "react-router";
-import { getPageHeading } from "../../app/navigation";
+import { getPageHeading, getProjectIdFromPath, getWorkspaceIdFromPath } from "../../app/navigation";
 import { useLocalProfile } from "../../hooks/useLocalProfile";
-import { useWorkspaces } from "../../hooks/useWorkspaces";
+import { useProjectDetail } from "../../hooks/useProjectDetail";
+import { useWorkspaceDetail } from "../../hooks/useWorkspaceDetail";
 import { Avatar } from "../ui/Avatar";
 
 export function TopBar() {
   const { pathname } = useLocation();
-  const workspaces = useWorkspaces();
+  const workspace = useWorkspaceDetail(getWorkspaceIdFromPath(pathname));
+  const project = useProjectDetail(getProjectIdFromPath(pathname));
   const profile = useLocalProfile();
-  const heading = getPageHeading(pathname, workspaces);
+  const heading = getPageHeading(pathname, { workspace, project });
 
   return (
     <header className="flex h-(--layout-topbar-height) shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-9">

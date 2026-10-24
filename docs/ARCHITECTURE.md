@@ -139,7 +139,7 @@ Online features are **Future** (Phase 6). Nothing here is built, and `CLAUDE.md`
 
 ## Actual implementation
 
-Branch `phase-1-ui`, after Phase 1 steps 1 and 2. Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far is one placeholder page. No services, repositories, database, or SQL plugin exist yet.
+Branch `phase-1-ui`, after Phase 1 steps 1 to 5 (step 6 awaiting verification). Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far has an app frame, a Dashboard, and two overview screens (the last two unverified) on mock data. No services, repositories, database, or SQL plugin exist yet.
 
 ### Folder layout (tracked files)
 
@@ -148,17 +148,18 @@ index.html, package.json, package-lock.json
 tsconfig.json, tsconfig.node.json, vite.config.ts
 src/
   main.tsx, App.tsx, index.css, vite-env.d.ts
-  app/             navigation.ts (the list of sidebar destinations)
+  app/             navigation.ts (sidebar destinations and page headings)
   components/
     layout/        AppShell.tsx, Sidebar.tsx, TopBar.tsx
     icons/         Icon.tsx
-    ui/            Avatar, Badge, Button, Card, IconButton, PriorityBadge, ProgressBar, StatusBadge, PlaceholderNotice (temporary)
-  hooks/           useWorkspaces.ts, useLocalProfile.ts
-  lib/             appInfo.ts (product name), classNames.ts
-  mocks/           workspaces.ts, localProfile.ts (TEMPORARY mock data)
-  pages/           Dashboard, MyTasks, Calendar, Documents, Workspace, Settings, Help, NotFound
+    ui/            Avatar, Badge, Button, Card, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, Stat, StatusBadge, PlaceholderNotice (temporary)
+  features/        activity/, dashboard/, projects/, workspaces/ (sections and cards that screens compose)
+  hooks/           useWorkspaces, useWorkspaceDetail, useProjectDetail, useDashboardData, useLocalProfile, useSidebarCollapsed
+  lib/             appInfo, classNames, dueDate, greeting, layout, progress, relativeTime, text
+  mocks/           workspaces, projects, dashboard, helpers, localProfile (TEMPORARY mock data)
+  pages/           Dashboard, Workspace, Project, MyTasks, Calendar, Documents, Settings, Help, NotFound
   styles/          tokens.css
-  types/           workspace.ts
+  types/           activity, dashboard, project, task, workspace
 src-tauri/
   Cargo.toml, Cargo.lock, build.rs, tauri.conf.json
   capabilities/    default.json
@@ -172,11 +173,13 @@ Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/targe
 
 ### Interface structure (Implemented, verified by the developer on 2026-10-23)
 
-- **Routing:** React Router 7 (`react-router`, `^7.18.4` in `package.json`) in `HashRouter` mode. The current page is kept after `#` in the address, because a packaged desktop app has no web server to answer other addresses. Routes: `/`, `/my-tasks`, `/calendar`, `/documents`, `/workspaces/:workspaceId`, `/settings`, `/help`, and a "not found" fallback. Verified in the release build: all menu items open their pages.
+- **Routing:** React Router 7 (`react-router`, `^7.18.4` in `package.json`) in `HashRouter` mode. The current page is kept after `#` in the address, because a packaged desktop app has no web server to answer other addresses. Routes: `/`, `/my-tasks`, `/calendar`, `/documents`, `/workspaces/:workspaceId`, `/projects/:projectId`, `/settings`, `/help`, and a "not found" fallback. Verified in the release build: all menu items open their pages.
 - **Frame:** `AppShell` places `Sidebar` on the left and `TopBar` plus the page content on the right. The page title in the top bar comes from `src/app/navigation.ts`.
 - **Data rule in practice:** screens read workspaces and the local profile only through the hooks in `src/hooks/`. The hooks currently return mock data from `src/mocks/`. In Phase 2 only the hooks change.
-- **Placeholders:** all pages show a short "not built yet" notice (`PlaceholderNotice`), which is temporary.
-- **Not verified yet:** scrolling of long content at small window sizes (no page has long content yet), and the layout on 1366x768 and 1920x1080 screens.
+- **Screens (Phase 1):** Dashboard (verified by the developer 2026-10-24). Workspace and Project overview are written and awaiting verification. My Tasks, Calendar, Documents, Settings, and Help are still placeholders (`PlaceholderNotice`, temporary).
+- **Screens compose, hooks fetch:** pages arrange sections from `src/features/`; the sections and cards use the shared components. Progress percentages and deadline counts are calculated from task counts and dates (`src/lib/progress.ts`, `src/lib/dueDate.ts`), never typed in.
+- **Collapsible sidebar:** it collapses to icons below a window width of 1100px, by the toggle button, or by dragging its edge (two states only, no stored choice).
+- **Not verified yet:** the layout on 1366x768 and 1920x1080 screens. Scrolling was verified on the Dashboard.
 
 ### Shared base components (Implemented in development mode, verified by the developer on 2026-10-23)
 

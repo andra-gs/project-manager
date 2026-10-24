@@ -8,6 +8,7 @@ interface ProgressBarProps {
   // What the bar measures, for screen readers. Example: "Campus Game progress".
   label: string;
   tone?: ProgressTone;
+  size?: "md" | "lg";
 }
 
 const FILLS: Record<ProgressTone, string> = {
@@ -16,7 +17,12 @@ const FILLS: Record<ProgressTone, string> = {
   success: "bg-success",
 };
 
-export function ProgressBar({ value, label, tone = "accent" }: ProgressBarProps) {
+const SIZES = {
+  md: "h-1.5",
+  lg: "h-2.5",
+};
+
+export function ProgressBar({ value, label, tone = "accent", size = "md" }: ProgressBarProps) {
   const percent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
   return (
     <div
@@ -25,7 +31,7 @@ export function ProgressBar({ value, label, tone = "accent" }: ProgressBarProps)
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(percent)}
-      className="h-1.5 w-full overflow-hidden rounded-bar bg-track"
+      className={cx("w-full overflow-hidden rounded-bar bg-track", SIZES[size])}
     >
       <div className={cx("h-full rounded-bar", FILLS[tone])} style={{ width: `${percent}%` }} />
     </div>

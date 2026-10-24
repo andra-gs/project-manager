@@ -5,7 +5,7 @@ import { ListRow } from "../../components/ui/ListRow";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 import { formatRelativeTime } from "../../lib/relativeTime";
 import { getInitials } from "../../lib/text";
-import type { ActivityEntry } from "../../types/dashboard";
+import type { ActivityEntry } from "../../types/activity";
 
 const AVATAR_TONES = ["accent", "info", "success"] as const;
 

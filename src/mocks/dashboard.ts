@@ -1,29 +1,20 @@
 // TEMPORARY MOCK DATA for building the interface (Phase 1). Replaced by database data in Phase 2.
-// Dates are computed from today, so the overdue, today, and tomorrow labels always make sense.
 import type { DashboardData } from "../types/dashboard";
-
-function dateFromToday(offsetDays: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-function minutesAgo(minutes: number): string {
-  return new Date(Date.now() - minutes * 60000).toISOString();
-}
+import { dateFromToday, minutesAgo } from "./helpers";
+import { createMockProjects, toProjectSummary } from "./projects";
+import { MOCK_WORKSPACES } from "./workspaces";
 
 export function createMockDashboardData(): DashboardData {
+  const projects = createMockProjects();
   return {
-    workspaces: [
-      { id: "kelompok-informatika", name: "Kelompok Informatika", memberCount: 4, activeProjectCount: 4, status: "active" },
-    ],
-    recentProjects: [
-      { id: "website-perpustakaan", name: "Website Perpustakaan", description: "Web application · React + Node.js", progressPercent: 72 },
-      { id: "mobile-task-manager", name: "Mobile Task Manager", description: "Android / iOS · Flutter", progressPercent: 46 },
-      { id: "campus-game", name: "Campus Game", description: "2D game · Unity", progressPercent: 28 },
-    ],
+    workspaces: MOCK_WORKSPACES.map((workspace) => ({
+      id: workspace.id,
+      name: workspace.name,
+      memberCount: workspace.memberCount,
+      activeProjectCount: projects.filter((project) => project.workspaceId === workspace.id && project.status === "active").length,
+      status: "active",
+    })),
+    recentProjects: projects.slice(0, 3).map(toProjectSummary),
     myTasks: [
       { id: "task-1", title: "Write game design document", projectName: "Campus Game", dueDate: dateFromToday(-2) },
       { id: "task-2", title: "Implement login API", projectName: "Website Perpustakaan", dueDate: dateFromToday(0) },

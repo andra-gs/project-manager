@@ -18,10 +18,21 @@ function formatShortDate(date: Date): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export function getDueInfo(dueDate: string, now: Date = new Date()): DueInfo {
+// Whole days from today to the deadline: negative when it is in the past, 0 for today.
+export function getDaysUntil(dueDate: string, now: Date = new Date()): number {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((parseLocalDate(dueDate).getTime() - today.getTime()) / MS_PER_DAY);
+}
+
+// Counts deadlines that are today or later ("upcoming") and those already past ("overdue").
+export function countDeadlines(dueDates: string[], now: Date = new Date()): { upcoming: number; overdue: number } {
+  const overdue = dueDates.filter((dueDate) => getDaysUntil(dueDate, now) < 0).length;
+  return { upcoming: dueDates.length - overdue, overdue };
+}
+
+export function getDueInfo(dueDate: string, now: Date = new Date()): DueInfo {
   const due = parseLocalDate(dueDate);
-  const days = Math.round((due.getTime() - today.getTime()) / MS_PER_DAY);
+  const days = getDaysUntil(dueDate, now);
 
   if (days < 0) return { label: `Overdue · ${formatShortDate(due)}`, tone: "danger" };
   if (days === 0) return { label: "Today", tone: "accent" };
