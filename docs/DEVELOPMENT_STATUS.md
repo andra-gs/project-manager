@@ -129,6 +129,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-24 | release program `project-manager.exe` | All pages opened and the layout was fine, but Settings and Help still showed the old placeholder text. Likely cause (Claude's reading, not confirmed): the installers had been built before step 7 was pulled, so the program was older code. To be confirmed by rebuilding |
 | reported 2026-10-24 | `npm run tauri build`, then `project-manager.exe` (closing check) | Passed: Settings and Help show their real content in the release program |
 | reported 2026-10-25 | `npm run tauri dev` after the Avenqor rename (step 1a) | Passed: no errors |
+| reported 2026-10-25 | `npm run tauri dev` after adding the SQL plugin (step 1b) | Passed: compiled, all pages look the same, no errors |
+| reported 2026-10-25 | `Get-ChildItem -Recurse -Filter avenqor.db $env:APPDATA` | Found `C:\Users\<user>\AppData\Roaming\io.github.andra-gs.avenqor\avenqor.db`, 4096 bytes, created 2026-10-25 06:08. The empty database file is created at startup, as expected |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -141,7 +143,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
 5. **Focus outline cut off in the sidebar (found 2026-10-23, fix verified by the developer on 2026-10-23).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
 6. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
-7. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
+7. **Database folder is Roaming (found 2026-10-25).** The plugin puts `avenqor.db` in `%APPDATA%` (Roaming), the app config folder. On a company or school computer with roaming profiles, Windows may copy that folder to a server at logon. For a personal computer this is harmless. Moving it to the Local folder would need a Rust-side path setting; decide before release.
+8. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
 ## Roadmap checklist
 
@@ -168,21 +171,6 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 1b: verify the SQL plugin installation (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; Claude could not compile it, so it is unverified.
+**Phase 2, step 2 (Proposed, needs approval): first database schema.** Step 1b (SQL plugin, empty database file) is verified by the developer. Claude presents the table design for approval; no migration is written until it is approved. Then: migration 1, the JavaScript package `@tauri-apps/plugin-sql`, the `execute` permission, and the first repository and hook (workspaces).
 
-What changed: `src-tauri/Cargo.toml` gets `tauri-plugin-sql` 2.x with the `sqlite` feature (checked on crates.io 2026-10-25: latest stable 2.6.0; the npm package `@tauri-apps/plugin-sql` is also 2.6.0). `src-tauri/src/lib.rs` registers the plugin. `src-tauri/tauri.conf.json` preloads `sqlite:avenqor.db`, so an empty database file is created at startup. No tables, no JavaScript package, and no permissions for the frontend yet (least privilege: the next step adds only what it needs).
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm run tauri dev
-```
-
-The first run compiles the SQLite libraries and takes several minutes. Then check:
-1. The app starts and every page still looks the same. Report any compile error with its full text.
-2. Find the database file: `Get-ChildItem -Recurse -Filter avenqor.db $env:APPDATA`. The plugin documentation says the path is relative to the app config folder, which on Windows is expected to be under `%APPDATA%\io.github.andra-gs.avenqor` (not confirmed). Report where it is, or that it was not found.
-3. `git status` will show `src-tauri/Cargo.lock` as modified. That is expected: commit it with the other changes.
-
-Open point to check in step 2: the plugin permissions found in its documentation are per command (load, select, execute, close), not per database file, so "limited to the app's own database" cannot be assumed. Safety then rests on the frontend never building SQL from raw user input (parameters only) and on the services-layer validation.
-
-Then step 2: first migration (schema design is presented for approval first), the JavaScript package, and the first repository.
+Also: commit and push `src-tauri/Cargo.lock` (modified by the plugin installation).
