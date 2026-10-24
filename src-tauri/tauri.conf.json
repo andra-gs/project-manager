@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Project Manager Desktop",
+  "productName": "Avenqor",
   "version": "0.1.0",
-  "identifier": "io.github.andra-gs.project-manager",
+  "identifier": "io.github.andra-gs.avenqor",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",

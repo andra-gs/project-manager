@@ -198,7 +198,7 @@ Verified: in `npm run tauri dev` the components render, hover and keyboard focus
 
 ### How the pieces are wired (from the configuration files)
 
-- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 1200x680 (minimum 960x600, centered). `bundle.targets` is `all`.
+- `src-tauri/tauri.conf.json`: product name `Avenqor`, version `0.1.0`, identifier `io.github.andra-gs.avenqor` (both changed 2026-10-25, before any data is stored; awaiting verification). In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 1200x680 (minimum 960x600, centered). `bundle.targets` is `all`.
 - `src-tauri/capabilities/default.json`: for the `main` window, only the permission `core:default`.
 - `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` starts a bare Tauri app with no plugins and no commands.
 - `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `serde`, `serde_json`.

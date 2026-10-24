@@ -88,7 +88,7 @@ npm run tauri dev
 ```
 
 - The first run compiles all Rust dependencies and took about 18 minutes on the developer's computer. Later runs are expected to be faster because compiled dependencies are cached, but this has not been timed.
-- A window titled "Project Manager Desktop" opens (1200x680, centered). It shows the application frame (sidebar, top bar) with placeholder pages while the screens are being built.
+- A window titled "Avenqor" opens (1200x680, centered). It shows the application frame (sidebar, top bar) with placeholder pages while the screens are being built.
 - To stop: close the window, then press `Ctrl+C` in the terminal.
 
 ## Build

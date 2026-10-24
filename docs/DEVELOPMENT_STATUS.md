@@ -167,16 +167,14 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 1 (waiting for one confirmation): rename the app identifier, then install the SQL plugin.**
+**Phase 2, step 1a: verify the rename (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`: in `src-tauri/tauri.conf.json`, `productName` is now `Avenqor` and `identifier` is `io.github.andra-gs.avenqor` (approved 2026-10-25). Nothing else changed. Claude could not run it, so it is unverified.
 
-Decisions approved by the developer on 2026-10-25:
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run tauri dev
+```
 
-| Decision | Result |
-|---|---|
-| D1 database access | Option A: official Tauri SQL plugin called from TypeScript, with validation in the services layer and permissions limited to the app's own database |
-| Local profile | One profile row in the database; tasks refer to it by ID |
-| Dates | Deadlines as text `YYYY-MM-DD`; event times as UTC ISO 8601 text |
-| IDs | UUID text, created in the app |
-| Product name | Avenqor is final (Agreed) |
+Expected: the app starts and looks the same. Rust may recompile because the configuration changed. Report any error with its full text. Installer file names should now start with "Avenqor"; this is only visible after the next `npm run tauri build` and is not required for this test.
 
-Open: the exact new `identifier` (proposed `io.github.andra-gs.avenqor`) and whether `productName` and the Cargo package names also change. Nothing is changed until the developer confirms.
+Then step 1b: install the Tauri SQL plugin (Claude first explains the packages and permissions and verifies the current plugin version).
