@@ -4,7 +4,7 @@ A local-first desktop application for organizing workspaces, projects, tasks, de
 
 > **Status: Phase 0 complete. The project is still the unmodified Tauri template.** The desktop app starts in development mode and builds a Windows release on the developer's computer (verified 2026-10-21 and 2026-10-22). No project features exist yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
 
-The working product name is **Avenqor** (Proposed, pending trademark checks; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App. The final public name has not been decided.
+The product name is **Avenqor** (Agreed by the developer on 2026-10-25; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App.
 
 ## What this project is
 

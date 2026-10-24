@@ -19,7 +19,7 @@ Today, every feature below is **Agreed** or **Future**. Nothing is **Implemented
 
 - Project name: **Project Manager Desktop**
 - Repository and folder name: `project-manager-desktop`
-- Working product name: **Avenqor** (**Proposed** on 2026-10-23, pending trademark checks; earlier name: Project Collaboration App). The final public name is **not decided**, so the working name must not be treated as final branding. Brand notes are in [BRAND.md](BRAND.md).
+- Product name: **Avenqor** (**Agreed** by the developer on 2026-10-25; earlier name: Project Collaboration App). Whether trademark checks were done is not recorded.
 
 ## Product goals (Agreed)
 

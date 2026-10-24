@@ -96,7 +96,7 @@ src-tauri/
 
 Nothing below is decided. `CLAUDE.md` rule 16 requires options and approval for decisions with long-term consequences.
 
-### D1. How the application accesses SQLite (decide at the start of Phase 2)
+### D1. How the application accesses SQLite (decided 2026-10-25: Option A)
 
 `CLAUDE.md` says to use "a Tauri 2-compatible SQLite plugin or another well-maintained compatible solution" and to verify compatibility first. Two options exist.
 
@@ -120,8 +120,9 @@ No Phase 0 or Phase 1 work depends on this choice.
 |---|---|
 | Tailwind CSS or another styling approach | Decided: Tailwind CSS 4 (approved 2026-10-22) |
 | Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Decided: React Router 7, `HashRouter` (approved as part of the Phase 1 plan, 2026-10-22; installed and verified in step 3) |
-| How the "current local user or profile" is represented | Before the first migration (Phase 2) |
-| Date and time storage format ("consistent date handling" is required) | Before the first migration (Phase 2) |
+| How the "current local user or profile" is represented | Decided 2026-10-25: one profile row in the database; tasks refer to it by ID |
+| Date and time storage format | Decided 2026-10-25: deadlines `YYYY-MM-DD` text; event times UTC ISO 8601 text |
+| ID format | Decided 2026-10-25: UUID text created in the app |
 
 ## Future online integration strategy
 

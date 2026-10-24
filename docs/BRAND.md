@@ -1,4 +1,4 @@
-> **Status of this document (2026-10-23):** brand identity notes written by the developer and kept here for reference. The name **Avenqor** is **Proposed** as the working product name, pending the trademark checks listed in section 15. The wiki below is in Indonesian, as written. It is not an implementation record.
+> **Status of this document (2026-10-25):** brand identity notes written by the developer, kept here for reference. The name **Avenqor** is **Agreed** as the product name (2026-10-25). Colors, logo, and tagline are not applied and remain undecided.
 >
 > **Not applied to the application yet:** the colors, the logo direction, and the tagline. The developer is still reconsidering the logo, so the color palette in section 9 is **not** yet applied. The design tokens in `src/styles/tokens.css` still use the values from the Figma reference. Contrast note from the review on 2026-10-23: `#3B82F6` (2.5 to 3.7 against white) and `#10B981` are too light for small text on a white background (WCAG AA asks for 4.5:1); they are fine for fills and icons.
 

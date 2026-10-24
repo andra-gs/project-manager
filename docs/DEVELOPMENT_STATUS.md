@@ -167,4 +167,16 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, decisions before any code (developer approval needed):** D1 (database access approach), the local profile model, the date and time storage format, the ID format, and the app `identifier`. Claude presents the options; nothing is installed or written until they are approved. Also open: merge `phase-1-ui` into `main` (the developer's action).
+**Phase 2, step 1 (waiting for one confirmation): rename the app identifier, then install the SQL plugin.**
+
+Decisions approved by the developer on 2026-10-25:
+
+| Decision | Result |
+|---|---|
+| D1 database access | Option A: official Tauri SQL plugin called from TypeScript, with validation in the services layer and permissions limited to the app's own database |
+| Local profile | One profile row in the database; tasks refer to it by ID |
+| Dates | Deadlines as text `YYYY-MM-DD`; event times as UTC ISO 8601 text |
+| IDs | UUID text, created in the app |
+| Product name | Avenqor is final (Agreed) |
+
+Open: the exact new `identifier` (proposed `io.github.andra-gs.avenqor`) and whether `productName` and the Cargo package names also change. Nothing is changed until the developer confirms.
