@@ -4,7 +4,7 @@ A local-first desktop application for organizing workspaces, projects, tasks, de
 
 > **Status: Phase 0 complete. The project is still the unmodified Tauri template.** The desktop app starts in development mode and builds a Windows release on the developer's computer (verified 2026-10-21 and 2026-10-22). No project features exist yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
 
-The working product name is **Project Collaboration App**. The final public name has not been decided.
+The working product name is **Avenqor** (Proposed, pending trademark checks; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App. The final public name has not been decided.
 
 ## What this project is
 
@@ -30,7 +30,7 @@ Later phases may add GitHub integration, online collaboration, and more platform
 | Frontend | React, TypeScript, Vite |
 | Native backend | Rust (Tauri commands) |
 | Database | SQLite (local file) |
-| Styling | Tailwind CSS is the preferred option if it fits the design |
+| Styling | Tailwind CSS 4, with design tokens in `src/styles/tokens.css` and the DM Sans font bundled locally |
 | Version control | Git |
 | First release target | Windows |
 
@@ -88,7 +88,7 @@ npm run tauri dev
 ```
 
 - The first run compiles all Rust dependencies and took about 18 minutes on the developer's computer. Later runs are expected to be faster because compiled dependencies are cached, but this has not been timed.
-- A window titled "Project Manager Desktop" opens. It currently shows the template's sample page.
+- A window titled "Project Manager Desktop" opens (1200x680, centered). It shows the application frame (sidebar, top bar) with placeholder pages while the screens are being built.
 - To stop: close the window, then press `Ctrl+C` in the terminal.
 
 ## Build
@@ -101,7 +101,7 @@ npm run tauri build
 
 - The first build took about 34 minutes on the developer's computer and downloaded the WiX and NSIS packaging tools from GitHub, so it needs internet access the first time.
 - Output goes to `src-tauri\target\release\`: the program `project-manager.exe`, an MSI installer in `bundle\msi\`, and an NSIS installer in `bundle\nsis\`. These files are not committed to Git.
-- The installers were built but have not yet been installed or run.
+- The installers were built but have not yet been installed or run. The release program `project-manager.exe` was started and showed the same page as development (reported by the developer, 2026-10-22).
 
 ## Where data will be stored
 
@@ -109,5 +109,6 @@ The application will keep structured data (workspaces, projects, tasks, and so o
 
 ## Known limitations
 
-- The application is still the unmodified Tauri template. No project, task, or database features exist yet.
+- The application shows only a placeholder page (Phase 1, in progress). No project, task, or database features exist yet.
+- Changing the look: edit the values in `src/styles/tokens.css`.
 - Online features (accounts, sync, shared workspaces, real-time editing) are not part of the first release.

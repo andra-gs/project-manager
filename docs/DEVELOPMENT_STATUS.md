@@ -1,13 +1,13 @@
 # Development Status
 
-Last updated: 2026-10-22
+Last updated: 2026-10-24
 
 This file is the project's memory between sessions. It must be updated before every coding session ends, and it records only what was actually done and checked.
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) has **not started**.
-- **Application code:** only the unmodified Tauri 2 + React + TypeScript template (a sample page and one demo Rust command named `greet`). No project features exist. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is verified in development mode; the first `npm run build` failed on an unused variable, fixed, and awaits a re-run. `main` is unchanged and still holds the Phase 0 template.
+- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
@@ -26,6 +26,7 @@ The documents were drafted in a Claude workspace, which cannot reach the Windows
 | Phase 0, step 2: created the project with `create-tauri-app` 4.7.5 (template `react-ts`, npm) in a temporary folder, renamed it from `tauri-temp` to `project-manager`, and copied it into the repository without overwriting existing files | 2026-10-21 |
 | Committed and pushed the scaffold (`e523852`) | 2026-10-21 |
 | Phase 0, step 3: `npm install` and `npm run tauri dev` worked | 2026-10-21 |
+| Decisions 2026-10-23: working product name **Avenqor** (Proposed, pending trademark checks); brand notes saved as `docs/BRAND.md` (identity only); color palette and logo not applied while the logo is being reconsidered; app `identifier` change postponed until before Phase 2 | 2026-10-23 |
 | Phase 0, step 4: `npm run tauri build` produced a Windows release build and two installers | reported 2026-10-22 |
 
 ## Verification performed
@@ -75,10 +76,21 @@ Fixes applied on the development computer:
 
 ## Not verified
 
+Phase 1, steps 1 to 3 (branch `phase-1-ui`):
+
+- Inline style attributes, which the design will need later for dynamic progress bars, are untested.
+- Scrolling was verified on the Dashboard (2026-10-24). The layout on 1366x768 and 1920x1080 screens was not reported.
+- The accent-token proof was repeated on the Dashboard (2026-10-24). It must still be repeated on the step 6 screens.
+- The empty states (no projects, no activity, unknown workspace or project) exist, but only the workspace "Content Creator" (no projects) shows one.
+- Claude's workspace cannot run npm or reach the npm registry, so Claude itself ran no build; all build results come from the developer.
+- Production (release) rendering of Tailwind styles and the bundled font was not reported separately; only the dev run after step 2 was.
+
+Earlier items:
+
 - The two installers were built but never installed or run.
 - The window content was seen only by the developer. No screenshot has been reviewed.
 - Whether a build works without internet access is untested. The first build downloaded the WiX and NSIS tools.
-- Claude has not read the contents of `src/App.tsx`, `src/main.tsx`, `src/App.css`, `index.html`, `vite.config.ts`, or `tsconfig*.json`.
+- Claude has not read `tsconfig*.json`.
 - No data is stored yet, so the application data folder location is untested.
 - Sections 1 to 17 of `CLAUDE.md` were not compared character by character with the Project copy. Only the headings were checked.
 - The Figma design has not been opened.
@@ -93,16 +105,36 @@ No automated tests exist and no test framework is installed. Commands actually r
 | 2026-10-21 | `npm run tauri dev` | Passed: Vite started, Rust compiled, window opened |
 | reported 2026-10-22 | `npm run tauri build` | Passed: TypeScript check and Vite build succeeded, MSI and NSIS installers produced |
 
+| reported 2026-10-22 | `npm run tauri dev` on branch `phase-1-ui` | Passed: Rust compiled, window opened and showed the placeholder heading and text |
+| reported 2026-10-22 | `npm run tauri build` on branch `phase-1-ui` | Passed: `tsc` and Vite build succeeded, MSI and NSIS installers produced; the release build showed the same page as dev |
+
+| reported 2026-10-23 | `npm install tailwindcss @tailwindcss/vite @fontsource-variable/dm-sans`, then `npm run tauri dev` | Passed without errors; the accent line showed the token color |
+| reported 2026-10-23 | change `--color-accent` in `src/styles/tokens.css` | Passed: the colored line changed without editing another file; value restored afterwards |
+| reported 2026-10-23 | `npm run build` | Reported as successful without errors |
+| reported 2026-10-23 | `npm install react-router@7`, `npm run tauri dev` | Passed: sidebar, top bar, all menu items and workspaces clickable, title changes, active item uses the accent color |
+| reported 2026-10-23 | change `--color-accent` again | Passed: name, active item, and avatar changed together; restored afterwards |
+| reported 2026-10-23 | resize window to minimum and full screen | Passed: no problem reported. Scrolling was not tested |
+| reported 2026-10-23 | `npm run build`, `npm run tauri build`, run `project-manager.exe` | Passed: every page opens in the release build |
+| reported 2026-10-23 | `npm run tauri dev` (step 4) | Passed: buttons, badges, three progress bars shown; hover and focus outline work; changing `--color-accent` changed the button, badge, first progress bar, and sidebar highlight |
+| reported 2026-10-23 | `npm run build` (step 4) | Passed: `tsc` and Vite build (50 modules) without errors |
+| reported 2026-10-23 | `npm run tauri dev` (step 4b) | Passed: toggle button, tooltips, drag left and right, automatic collapse and expand when resizing, keyboard toggle with Tab and Enter |
+| reported 2026-10-23 | `npm run build` (step 4b) | Passed without errors |
+| reported 2026-10-24 | `npm run tauri dev` (step 5) | Passed: five Dashboard sections shown; workspace card opens the workspace page; the sidebar closes when the window is made small, and page content scrolls; changing the accent color changed the Dashboard together with the sidebar; no errors |
+| reported 2026-10-24 | `npm run build` (step 5) | Reported without errors |
+| reported 2026-10-24 | `npm run tauri dev` (step 6) | Passed: workspace stats (4 projects, 103 tasks, 54 completed, 4 members), project cards, activity; project page (72%, 18 of 25); empty workspace message; 960x600 with sidebar open and collapsed; accent change on all three pages; no errors |
+| reported 2026-10-24 | `npm run build` (step 6) | **Failed**: `src/pages/WorkspacePage.tsx:25:9 - error TS6133: 'activeProjects' is declared but its value is never read.` Fixed by showing `activeProjects` in the "Projects" stat. Re-run pending |
+
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
 
 ## Known issues and limitations
 
 1. **Two copies of `CLAUDE.md`.** The Claude Project's copy does not contain section 18. The repository copy does. Decide which copy is the source of truth, and keep the other in sync.
-2. **Name mismatch.** The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
+2. **Name mismatch.** (Also: the product working name changed to Avenqor on 2026-10-23, Proposed. The repository and folder names are separate and were not changed.) The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
-4. **Template defaults to review (Proposed, nothing changed yet).** `app.security.csp` is `null` (no content security policy). The `opener` plugin and its `opener:default` permission are enabled, and the MVP may not need them. The window is 800x600. `bundle.targets` is `all`, which builds both MSI and NSIS installers. The sample page and the `greet` command are demo code to be replaced in Phase 1.
-5. **Pending commit.** `package-lock.json` and the documentation updates from 2026-10-22 are not yet committed.
-6. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
+4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
+5. **Focus outline cut off in the sidebar (found 2026-10-23, fix verified by the developer on 2026-10-23).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
+6. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
+7. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
 ## Roadmap checklist
 
@@ -112,7 +144,15 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Create the Tauri 2 + React + TypeScript project
   - [x] Confirm it starts in development mode
   - [x] Confirm it builds
-- [ ] Phase 1: UI foundation (layout, sidebar, dashboard and basic screens with temporary mock data)
+- [ ] **Phase 1:** UI foundation (in progress)
+  - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
+  - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
+  - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
+  - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
+  - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
+  - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
+  - [ ] Step 6: Workspace and project overview screens with temporary mock data (verified in dev mode 2026-10-24; `npm run build` re-run pending after a fix)
+  - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
@@ -120,19 +160,12 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Step A (developer): commit the pending files.** After placing the updated `README.md`, `docs/ARCHITECTURE.md`, and `docs/DEVELOPMENT_STATUS.md` in the repository, run in `D:\project-manager`:
+**Phase 1, step 6: re-run the build (developer, on Windows).** Fix pushed on branch `phase-1-ui` on 2026-10-24 (unused variable in `WorkspacePage.tsx`).
 
 ```powershell
-git status
-git add .
-git commit -m "docs: record Phase 0 results; add package-lock.json"
-git push origin main
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run build
 ```
 
-`git status` should list only `package-lock.json` and the three documents. Stop and report if `node_modules`, `dist`, or `src-tauri/target` appear.
-
-**Step B (Claude, then developer approval): Phase 1, step 1, decisions before any code.**
-
-1. Check whether the Figma file can be read, and summarize the Dashboard screen. If it cannot be read, say so instead of inventing visual details.
-2. Present options with trade-offs for the styling approach (Tailwind CSS or another) and for routing, and wait for approval. No code is written before that.
-3. Propose the review of the template defaults listed in known issue 4.
+Report the result. If it passes, Claude marks step 6 verified and proposes step 7 (finish Phase 1: remaining placeholder pages and the final accent proof).

@@ -118,8 +118,8 @@ No Phase 0 or Phase 1 work depends on this choice.
 
 | Item | When to decide |
 |---|---|
-| Tailwind CSS or another styling approach | Start of Phase 1 |
-| Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Start of Phase 1 |
+| Tailwind CSS or another styling approach | Decided: Tailwind CSS 4 (approved 2026-10-22) |
+| Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Decided: React Router 7, `HashRouter` (approved as part of the Phase 1 plan, 2026-10-22; installed and verified in step 3) |
 | How the "current local user or profile" is represented | Before the first migration (Phase 2) |
 | Date and time storage format ("consistent date handling" is required) | Before the first migration (Phase 2) |
 
@@ -139,37 +139,76 @@ Online features are **Future** (Phase 6). Nothing here is built, and `CLAUDE.md`
 
 ## Actual implementation
 
-Verified from the developer's command output (2026-10-21 and 2026-10-22) and from the tracked files of commit `e523852`. The project is the unmodified `create-tauri-app` template (`react-ts`), renamed from `tauri-temp` to `project-manager`. No services, repositories, database, or SQL plugin exist yet.
+Branch `phase-1-ui`, after Phase 1 steps 1 to 5 (step 6 awaiting verification). Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far has an app frame, a Dashboard, and two overview screens (the last two unverified) on mock data. No services, repositories, database, or SQL plugin exist yet.
 
 ### Folder layout (tracked files)
 
 ```
-index.html, package.json, package-lock.json (not yet committed)
+index.html, package.json, package-lock.json
 tsconfig.json, tsconfig.node.json, vite.config.ts
-public/            tauri.svg, vite.svg
-src/               main.tsx, App.tsx, App.css, vite-env.d.ts, assets/react.svg
+src/
+  main.tsx, App.tsx, index.css, vite-env.d.ts
+  app/             navigation.ts (sidebar destinations and page headings)
+  components/
+    layout/        AppShell.tsx, Sidebar.tsx, TopBar.tsx
+    icons/         Icon.tsx
+    ui/            Avatar, Badge, Button, Card, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, Stat, StatusBadge, PlaceholderNotice (temporary)
+  features/        activity/, dashboard/, projects/, workspaces/ (sections and cards that screens compose)
+  hooks/           useWorkspaces, useWorkspaceDetail, useProjectDetail, useDashboardData, useLocalProfile, useSidebarCollapsed
+  lib/             appInfo, classNames, dueDate, greeting, layout, progress, relativeTime, text
+  mocks/           workspaces, projects, dashboard, helpers, localProfile (TEMPORARY mock data)
+  pages/           Dashboard, Workspace, Project, MyTasks, Calendar, Documents, Settings, Help, NotFound
+  styles/          tokens.css
+  types/           activity, dashboard, project, task, workspace
 src-tauri/
   Cargo.toml, Cargo.lock, build.rs, tauri.conf.json
   capabilities/    default.json
   icons/           application icons
   src/             main.rs, lib.rs
 .vscode/           extensions.json
+docs/              the documentation files
 ```
 
-Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/` (none appeared in `git status`). The contents of `src/*.tsx`, `src/App.css`, `vite.config.ts`, and `tsconfig*.json` have not been read by Claude.
+Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/`. The folders `services/` and `repositories/` from the suggested layout do not exist yet; they are created in Phase 2 when real data access is added.
+
+### Interface structure (Implemented, verified by the developer on 2026-10-23)
+
+- **Routing:** React Router 7 (`react-router`, `^7.18.4` in `package.json`) in `HashRouter` mode. The current page is kept after `#` in the address, because a packaged desktop app has no web server to answer other addresses. Routes: `/`, `/my-tasks`, `/calendar`, `/documents`, `/workspaces/:workspaceId`, `/projects/:projectId`, `/settings`, `/help`, and a "not found" fallback. Verified in the release build: all menu items open their pages.
+- **Frame:** `AppShell` places `Sidebar` on the left and `TopBar` plus the page content on the right. The page title in the top bar comes from `src/app/navigation.ts`.
+- **Data rule in practice:** screens read workspaces and the local profile only through the hooks in `src/hooks/`. The hooks currently return mock data from `src/mocks/`. In Phase 2 only the hooks change.
+- **Screens (Phase 1):** Dashboard (verified by the developer 2026-10-24). Workspace and Project overview are written and awaiting verification. My Tasks, Calendar, Documents, Settings, and Help are still placeholders (`PlaceholderNotice`, temporary).
+- **Screens compose, hooks fetch:** pages arrange sections from `src/features/`; the sections and cards use the shared components. Progress percentages and deadline counts are calculated from task counts and dates (`src/lib/progress.ts`, `src/lib/dueDate.ts`), never typed in.
+- **Collapsible sidebar:** it collapses to icons below a window width of 1100px, by the toggle button, or by dragging its edge (two states only, no stored choice).
+- **Not verified yet:** the layout on 1366x768 and 1920x1080 screens. Scrolling was verified on the Dashboard.
+
+### Shared base components (Implemented in development mode, verified by the developer on 2026-10-23)
+
+Located in `src/components/ui/`: `Button`, `IconButton`, `Card`, `Badge`, `PriorityBadge`, `StatusBadge`, `ProgressBar`, `Avatar`, and the temporary `PlaceholderNotice`. They take no `className`, so their look can only change inside the component or in `src/styles/tokens.css` (`CLAUDE.md` section 19). `PriorityBadge` and `StatusBadge` own the mapping from a task value to a color and a label. `src/lib/classNames.ts` provides `cx`, which joins class names.
+
+Verified: in `npm run tauri dev` the components render, hover and keyboard focus work, and changing `--color-accent` changes the primary button, the "Today" badge, the first progress bar, and the sidebar highlight together. `npm run build` (TypeScript check and Vite build) passed. Not verified: the components in a release build.
+
+### Styling and design tokens (Implemented, Agreed in `CLAUDE.md` section 19)
+
+- Tailwind CSS 4 is used through its Vite plugin (`@tailwindcss/vite`, enabled in `vite.config.ts`). The DM Sans font comes from the package `@fontsource-variable/dm-sans` and is bundled with the app, so it works offline.
+- `src/styles/tokens.css` is the single place for colors, text sizes, and corner radius. It switches off Tailwind's built-in palette, text sizes, and radius, so screens can only use token names such as `text-accent`. Values come from the Figma frame "01 Dashboard". Figma is a reference, not a binding specification.
+- `src/index.css` loads the font, Tailwind, and the tokens, and sets the page defaults from tokens.
+- Verified by the developer on 2026-10-23: changing `--color-accent` in `tokens.css` changed the colored line on the page without editing another file. This is the proof criterion of section 19, tested only on the placeholder page. It must be repeated once real screens exist.
+- Layout sizes (sidebar width 224px, top bar height 72px) are plain CSS variables at the end of `tokens.css`. General spacing uses Tailwind's default scale.
 
 ### How the pieces are wired (from the configuration files)
 
-- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 800x600. `bundle.targets` is `all`.
-- `src-tauri/capabilities/default.json`: for the `main` window, the permissions `core:default` and `opener:default`.
-- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` registers the `opener` plugin and one demo command, `greet`. The template's sample page presumably calls it, but `App.tsx` has not been read.
-- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `tauri-plugin-opener` 2, `serde`, `serde_json`.
-- `package.json`: `react` and `react-dom` ^19.1.0, `@tauri-apps/api` ^2, `@tauri-apps/plugin-opener` ^2. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
-- Versions that were actually built (from the logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-plugin-opener` 2.7.2, `tauri-build` 2.7.3.
+- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 1200x680 (minimum 960x600, centered). `bundle.targets` is `all`.
+- `src-tauri/capabilities/default.json`: for the `main` window, only the permission `core:default`.
+- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` starts a bare Tauri app with no plugins and no commands.
+- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `serde`, `serde_json`.
+- `package.json`: dependencies `react` and `react-dom` ^19.1.0, `react-router` ^7.18.4, `@tauri-apps/api` ^2, `tailwindcss` and `@tailwindcss/vite` ^4.3.3, `@fontsource-variable/dm-sans` ^5.3.0. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
+- Versions that were actually built (from the Phase 0 logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-build` 2.7.3.
 
 ### Security state
 
-The template defaults are unchanged: no content security policy (`csp` is `null`), and the `core:default` and `opener:default` permissions. Whether to tighten them is **Proposed** for the start of Phase 1 and needs your approval. See known issue 4 in [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md).
+- A Content Security Policy (CSP, rules that limit what the page may load) is set: `csp` for release builds and `devCsp` for development. Both only allow the app's own files, the Tauri connection, and (in development) the Vite dev server. The page loaded without CSP errors in the dev Console and in the release build (reported by the developer, 2026-10-22).
+- `style-src` allows inline styles (`'unsafe-inline'`), which weakens the policy slightly. It is kept so dynamic styles such as progress-bar widths work. To be reviewed when the design needs it.
+- The `opener` plugin and its permission were removed. Only `core:default` remains.
 
 ## Glossary
 
