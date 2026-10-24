@@ -124,6 +124,9 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-24 | `npm run tauri dev` (step 6) | Passed: workspace stats (4 projects, 103 tasks, 54 completed, 4 members), project cards, activity; project page (72%, 18 of 25); empty workspace message; 960x600 with sidebar open and collapsed; accent change on all three pages; no errors |
 | reported 2026-10-24 | `npm run build` (step 6) | **Failed**: `src/pages/WorkspacePage.tsx:25:9 - error TS6133: 'activeProjects' is declared but its value is never read.` Fixed by showing `activeProjects` in the "Projects" stat |
 | reported 2026-10-24 | `npm run tauri build` (after step 6) | Passed: `tsc` and Vite build, release profile compiled in 15m 00s, MSI (2.05 MiB) and NSIS (1.42 MiB) installers produced. Whether the release program was started and the pages checked was not reported |
+| reported 2026-10-24 | `npm run tauri dev` (step 7) | Passed: Settings and Help open and are readable at the minimum size; accent change shows on the sidebar; no problems reported |
+| reported 2026-10-24 | `npm run build` (step 7) | Passed: `tsc` and Vite build (74 modules) without errors. The JavaScript file name differs from the earlier build (`index-CN5xRskZ.js`), so it contains the step 7 code |
+| reported 2026-10-24 | release program `project-manager.exe` | All pages opened and the layout was fine, but Settings and Help still showed the old placeholder text. Likely cause (Claude's reading, not confirmed): the installers had been built before step 7 was pulled, so the program was older code. To be confirmed by rebuilding |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -154,7 +157,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [x] Step 6: Workspace and project overview screens with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
-  - [ ] Step 7: Settings and Help screens (written on branch 2026-10-24, awaiting verification)
+  - [ ] Step 7: Settings and Help screens (verified in development mode and with `npm run build` 2026-10-24; release build still to be rebuilt and checked)
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
@@ -163,20 +166,12 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 7 (Agreed: option B, 2026-10-24): verify Settings and Help (developer, on Windows).** Written on branch `phase-1-ui`; Claude could not build or run it, so nothing is verified yet. My Tasks, Calendar, and Documents stay placeholders until Phase 3.
-
-What was written: `src/pages/SettingsPage.tsx` (read-only: local profile name, theme "Light", data note) and `src/pages/HelpPage.tsx` (about, current state, feedback). Both use shared components only. Deviation: no Figma frame exists for these two screens, so the layout reuses existing components; every control is read-only because nothing can be saved before Phase 2.
+**Phase 1, closing check (developer, on Windows): rebuild the release program and confirm Settings and Help.** The earlier release program probably predates step 7.
 
 ```powershell
 cd D:\project-manager
 git pull origin phase-1-ui
-npm run tauri dev
+npm run tauri build
 ```
 
-1. Open Settings and Help from the sidebar: text is readable, nothing is cut off at 960x600.
-2. Change `--color-accent` in `src/styles/tokens.css`: the active sidebar item changes on both pages (the pages use no accent elsewhere). Restore it afterwards.
-3. Run `npm run build`.
-4. Start the release program `src-tauri\target\release\project-manager.exe`, open every sidebar page and one workspace and project, and report any difference from development mode.
-5. If you can, set Windows display scaling or use a 1366x768 and a 1920x1080 screen and report the layout.
-
-After your report, Claude records it and closes Phase 1 if everything passes.
+Then start `src-tauri\target\release\project-manager.exe` and open Settings and Help: they should show real content (local profile, appearance, data; about, current state, feedback), not the placeholder text. Report the result. If it passes, Claude marks step 7 and the accent proof done, closes Phase 1, and proposes the Phase 2 starting point (decisions D1 database access, local profile, date format, ID format, app identifier). The 1366x768 and 1920x1080 check was reported as fine on 2026-10-24.
