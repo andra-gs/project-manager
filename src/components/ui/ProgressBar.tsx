@@ -1,6 +1,6 @@
 import { cx } from "../../lib/classNames";
 
-type ProgressTone = "accent" | "info" | "success";
+export type ProgressTone = "accent" | "info" | "success";
 
 interface ProgressBarProps {
   // 0 to 100. Values outside the range are limited to it.

@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is next. `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is written and awaiting verification. `main` is unchanged and still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -127,7 +127,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 2. **Name mismatch.** (Also: the product working name changed to Avenqor on 2026-10-23, Proposed. The repository and folder names are separate and were not changed.) The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
 4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
-5. **Focus outline cut off in the sidebar (found 2026-10-23, fix written, not yet verified).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
+5. **Focus outline cut off in the sidebar (found 2026-10-23, fix verified by the developer on 2026-10-23).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
 6. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
 7. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
@@ -145,7 +145,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
   - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
-  - [ ] Step 5: Dashboard with temporary mock data
+  - [ ] Step 5: Dashboard with temporary mock data (written on branch 2026-10-24, awaiting verification)
   - [ ] Step 6: Workspace and project overview screens with temporary mock data
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
@@ -155,7 +155,24 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 4b follow-up, then step 5.**
+**Phase 1, step 5: verify the Dashboard (developer, on Windows).** Written on branch `phase-1-ui` on 2026-10-24. Claude could not build or run it, so nothing here is verified yet. No new package is needed.
 
-1. Verify the focus-outline fix (developer): `git pull origin phase-1-ui`, `npm run tauri dev`, collapse the sidebar, press `Tab` until the Dashboard icon is focused, and check that the whole outline is visible. Also check it with the sidebar expanded. Report the result.
-2. Step 5 (Proposed, Claude writes it after the report): the Dashboard from the Figma frame "01 Dashboard", built only from the shared components, with temporary mock data kept in `src/mocks/` and read through hooks. Sections: greeting, "Your Workspaces", "Recent Projects" with progress bars, "My Tasks" with date badges, and "Activity". Mock texts avoid GitHub and pull-request references because GitHub is a future phase.
+What was written: the Dashboard page (`src/pages/DashboardPage.tsx`) only arranges five sections from `src/features/dashboard/` (greeting and "New Project" button, Your Workspaces, Recent Projects, My Tasks, Activity). It reads data through `src/hooks/useDashboardData.ts`, which returns **temporary mock data** from `src/mocks/dashboard.ts`. Deadlines are computed from today's date (`src/lib/dueDate.ts`), so a task two days ago shows "Overdue", one today shows "Today", and one tomorrow shows "Tomorrow". The greeting follows the clock (`src/lib/greeting.ts`). New shared components: `SectionHeading`, `EmptyMessage`, `LinkCard`, `ListRow`; `Avatar` gained tone and size options.
+
+Deviations from Figma (reference only): the mock texts have no GitHub or pull-request wording (GitHub is a later phase); the third task and the activity lines are different texts; the "New Project" button is shown but disabled, because creating projects arrives in Phase 2; the workspace card opens the workspace page; each section shows an empty-state message when it has no data, but the mock data never triggers it, so the empty states are not visible yet.
+
+Test steps:
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run tauri dev
+```
+
+1. The Dashboard shows the five sections in this order: greeting, Your Workspaces (one card), Recent Projects (three cards with indigo, blue, and green bars), My Tasks (three rows with the badges Overdue, Today, Tomorrow), Activity (three entries with colored avatars).
+2. Click the workspace card: the workspace page opens. Use the sidebar to come back.
+3. Resize the window to 960x600, with the sidebar open and collapsed, and to your full screen: nothing should overlap or be cut off, and the page content should scroll when it is taller than the window (this is the scroll test that was pending).
+4. Change `--color-accent` in `src/styles/tokens.css`: the first progress bar, the "Today" badge, the first avatar, and the sidebar highlight must change together. Restore it afterwards.
+5. Run `npm run build` and report the result with the full error text if there is an error.
+
+After your report, Claude records it and moves to step 6 (basic Workspace and Project overview screens).
