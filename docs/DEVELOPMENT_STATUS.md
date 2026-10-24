@@ -123,6 +123,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-24 | `npm run build` (step 5) | Reported without errors |
 | reported 2026-10-24 | `npm run tauri dev` (step 6) | Passed: workspace stats (4 projects, 103 tasks, 54 completed, 4 members), project cards, activity; project page (72%, 18 of 25); empty workspace message; 960x600 with sidebar open and collapsed; accent change on all three pages; no errors |
 | reported 2026-10-24 | `npm run build` (step 6) | **Failed**: `src/pages/WorkspacePage.tsx:25:9 - error TS6133: 'activeProjects' is declared but its value is never read.` Fixed by showing `activeProjects` in the "Projects" stat |
+| reported 2026-10-24 | `npm run tauri build` (after step 6) | Passed: `tsc` and Vite build, release profile compiled in 15m 00s, MSI (2.05 MiB) and NSIS (1.42 MiB) installers produced. Whether the release program was started and the pages checked was not reported |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -153,6 +154,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [x] Step 6: Workspace and project overview screens with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
+  - [ ] Step 7: Settings and Help screens (written on branch 2026-10-24, awaiting verification)
   - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
@@ -161,4 +163,20 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, step 7 (Proposed, needs the developer's approval): finish Phase 1.** Replace the remaining placeholder pages (My Tasks, Calendar, Documents, Settings, Help) with basic screens on temporary mock data, or decide which stay placeholders until Phase 3. Then run the final accent-color proof on all screens, a release build check (`npm run tauri build`), and the 1366x768 and 1920x1080 layout check. The scope of this step is to be agreed before any code is written.
+**Phase 1, step 7 (Agreed: option B, 2026-10-24): verify Settings and Help (developer, on Windows).** Written on branch `phase-1-ui`; Claude could not build or run it, so nothing is verified yet. My Tasks, Calendar, and Documents stay placeholders until Phase 3.
+
+What was written: `src/pages/SettingsPage.tsx` (read-only: local profile name, theme "Light", data note) and `src/pages/HelpPage.tsx` (about, current state, feedback). Both use shared components only. Deviation: no Figma frame exists for these two screens, so the layout reuses existing components; every control is read-only because nothing can be saved before Phase 2.
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run tauri dev
+```
+
+1. Open Settings and Help from the sidebar: text is readable, nothing is cut off at 960x600.
+2. Change `--color-accent` in `src/styles/tokens.css`: the active sidebar item changes on both pages (the pages use no accent elsewhere). Restore it afterwards.
+3. Run `npm run build`.
+4. Start the release program `src-tauri\target\release\project-manager.exe`, open every sidebar page and one workspace and project, and report any difference from development mode.
+5. If you can, set Windows display scaling or use a 1366x768 and a 1920x1080 screen and report the layout.
+
+After your report, Claude records it and closes Phase 1 if everything passes.
