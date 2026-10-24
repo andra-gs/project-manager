@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phase 0 (environment and project setup) is **complete**. Phase 1 (UI foundation) is **in progress** on branch `phase-1-ui`: steps 1 (template cleanup), 2 (Tailwind, local font, design tokens), and 3 (layout, sidebar, routing) are verified by the developer. Step 4 (base components) is verified in development mode. Step 4b (collapsible sidebar) is verified in development mode. Step 5 (Dashboard) is verified by the developer in development mode and with `npm run build`. Step 6 (Workspace and Project overview screens) is verified by the developer in development mode and with `npm run build` (the first build failed on an unused variable; fixed and re-run). `main` is unchanged and still holds the Phase 0 template.
+- **Phase:** Phase 0 and Phase 1 are **complete** (Phase 1 on branch `phase-1-ui`, verified by the developer 2026-10-24; not yet merged into `main`). Phase 2 (local database) starts with approval of the open decisions. `main` still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
@@ -127,6 +127,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-24 | `npm run tauri dev` (step 7) | Passed: Settings and Help open and are readable at the minimum size; accent change shows on the sidebar; no problems reported |
 | reported 2026-10-24 | `npm run build` (step 7) | Passed: `tsc` and Vite build (74 modules) without errors. The JavaScript file name differs from the earlier build (`index-CN5xRskZ.js`), so it contains the step 7 code |
 | reported 2026-10-24 | release program `project-manager.exe` | All pages opened and the layout was fine, but Settings and Help still showed the old placeholder text. Likely cause (Claude's reading, not confirmed): the installers had been built before step 7 was pulled, so the program was older code. To be confirmed by rebuilding |
+| reported 2026-10-24 | `npm run tauri build`, then `project-manager.exe` (closing check) | Passed: Settings and Help show their real content in the release program |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -149,7 +150,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Create the Tauri 2 + React + TypeScript project
   - [x] Confirm it starts in development mode
   - [x] Confirm it builds
-- [ ] **Phase 1:** UI foundation (in progress)
+- [x] **Phase 1:** UI foundation (complete 2026-10-24, on branch `phase-1-ui`, not yet merged into `main`)
   - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
   - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
@@ -157,8 +158,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [x] Step 6: Workspace and project overview screens with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
-  - [ ] Step 7: Settings and Help screens (verified in development mode and with `npm run build` 2026-10-24; release build still to be rebuilt and checked)
-  - [ ] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
+  - [x] Step 7: Settings and Help screens (verified by the developer 2026-10-24 in development mode, with `npm run build`, and in a rebuilt release program)
+  - [x] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
 - [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
@@ -166,12 +167,4 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 1, closing check (developer, on Windows): rebuild the release program and confirm Settings and Help.** The earlier release program probably predates step 7.
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm run tauri build
-```
-
-Then start `src-tauri\target\release\project-manager.exe` and open Settings and Help: they should show real content (local profile, appearance, data; about, current state, feedback), not the placeholder text. Report the result. If it passes, Claude marks step 7 and the accent proof done, closes Phase 1, and proposes the Phase 2 starting point (decisions D1 database access, local profile, date format, ID format, app identifier). The 1366x768 and 1920x1080 check was reported as fine on 2026-10-24.
+**Phase 2, decisions before any code (developer approval needed):** D1 (database access approach), the local profile model, the date and time storage format, the ID format, and the app `identifier`. Claude presents the options; nothing is installed or written until they are approved. Also open: merge `phase-1-ui` into `main` (the developer's action).
