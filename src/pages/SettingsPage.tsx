@@ -1,11 +1,21 @@
 import { Card } from "../components/ui/Card";
 import { ListRow } from "../components/ui/ListRow";
 import { SectionHeading } from "../components/ui/SectionHeading";
+import { useDatabaseStatus, type DatabaseStatusState } from "../hooks/useDatabaseStatus";
 import { useLocalProfile } from "../hooks/useLocalProfile";
+import { pluralize } from "../lib/text";
+
+function describeDatabase(state: DatabaseStatusState): string {
+  if (state.kind === "loading") return "Checking the database…";
+  if (state.kind === "error") return `Not available: ${state.message}`;
+  const { schemaVersion, tableCount, foreignKeysEnabled } = state.status;
+  return `Connected · schema version ${schemaVersion ?? "none"} · ${pluralize(tableCount, "table")} · foreign keys ${foreignKeysEnabled ? "on" : "off"}`;
+}
 
 // Read-only for now: nothing here can be changed until the database exists (Phase 2).
 export function SettingsPage() {
   const profile = useLocalProfile();
+  const database = useDatabaseStatus();
 
   return (
     <div className="flex flex-col gap-8">
@@ -33,8 +43,9 @@ export function SettingsPage() {
           <div className="flex flex-col gap-3">
             <ListRow
               title="Storage"
-              subtitle="The app is built to keep your data on this computer. Saving data arrives in Phase 2, so nothing is stored yet; the screens show sample data."
+              subtitle="Your data will be kept in a database file on this computer. The screens still show sample data until saving is built (Phase 2)."
             />
+            <ListRow title="Database" subtitle={describeDatabase(database)} />
             <ListRow title="Backup and restore" subtitle="Planned for Phase 4." />
           </div>
         </Card>

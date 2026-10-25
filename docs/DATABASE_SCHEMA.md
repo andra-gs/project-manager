@@ -1,8 +1,8 @@
 # Database Schema
 
-Last updated: 2026-10-20
+Last updated: 2026-10-25
 
-> **Status: no database exists yet.** There are no tables, no migrations, and no database library has been chosen (see decision D1 in [ARCHITECTURE.md](ARCHITECTURE.md)). This file must **not** list a table until a migration that creates it exists in the repository.
+> **Status (2026-10-25): migration 1 is written and awaiting verification.** The tables below exist in `src-tauri/migrations/0001_initial.sql`, but nothing is **Implemented** until the developer has run the app and confirmed them (see [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md)). Only tables from a migration in the repository are listed here.
 
 ## Rules for the schema (Agreed)
 
@@ -48,40 +48,34 @@ A workspace contains projects, and a project contains tasks and related resource
 
 ## Tables
 
-None yet.
+Conventions (Agreed 2026-10-25): IDs are UUID text created by the app; deadlines are text `YYYY-MM-DD`; timestamps are UTC ISO 8601 text supplied by the app. Project progress is not stored: it is calculated from tasks.
 
-When a table is added, document it in this format:
+All five tables were created in migration 1.
 
-```
-### table_name
-Purpose: one sentence.
-Created in migration: <version>
+| Table | Purpose | Key columns |
+|---|---|---|
+| `profiles` | The local user (one row now; accounts come in a later phase) | `id`, `display_name`, `created_at` |
+| `workspaces` | A group of projects | `id`, `name`, `description`, `owner_profile_id` (to `profiles`, RESTRICT), `created_at`, `updated_at` |
+| `workspace_members` | Who belongs to a workspace and with which role (`owner`, `admin`, `member`, `guest`); stored for future collaboration, with no permission system | `workspace_id` (CASCADE), `profile_id` (CASCADE), `role`; primary key is the pair |
+| `projects` | A project in a workspace | `id`, `workspace_id` (CASCADE), `name`, `description`, `status` (`active`, `archived`), `created_at`, `updated_at` |
+| `tasks` | A task in a project | `id`, `project_id` (CASCADE), `title`, `description`, `status` (`todo`, `in_progress`, `review`, `done`), `priority` (`low`, `medium`, `high`), `due_date` (optional), `assignee_profile_id` (optional, SET NULL), `created_at`, `updated_at`, `completed_at` |
 
-| Column | Type | Null? | Default | Notes |
-|---|---|---|---|---|
+Constraints: names and titles must not be empty (checked after trimming spaces); status, priority, and role values are limited by `CHECK`; `due_date` must look like `YYYY-MM-DD`. Indexes: `projects(workspace_id)`, `tasks(project_id)`, `tasks(assignee_profile_id)`, `tasks(due_date)`, `workspace_members(profile_id)`.
 
-Primary key:
-Foreign keys:
-Constraints:
-Indexes:
-Deletion behavior:
-```
+Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects and their tasks; deleting a project deletes its tasks; deleting a profile that owns a workspace is blocked; deleting a profile that is only an assignee clears the assignee of its tasks. The screens must ask for confirmation first. This depends on SQLite foreign keys being on for every connection, which the Settings screen reports (to be verified).
+
+Deferred to Phase 3 (no tables yet): labels, checklists and subtasks, comments, documents, activity history, preferences.
 
 ## Migrations
 
 | Version | Description | Applied in | Status |
 |---|---|---|---|
-| (none) | No migrations exist yet. | n/a | n/a |
+| 1 | `create_initial_tables` (`src-tauri/migrations/0001_initial.sql`) | on app start, when the database is opened | written, awaiting verification |
 
-Migration files are suggested to live in `src-tauri/migrations/` (Proposed in `CLAUDE.md`). The exact mechanism depends on decision D1.
+Migration files live in `src-tauri/migrations/` and are registered in `src-tauri/src/lib.rs` for the connection `sqlite:avenqor.db`. Each change is a new file with the next version number; existing migrations are never edited. The database file is `%APPDATA%\io.github.andra-gs.avenqor\avenqor.db` (Roaming; see the known issue in DEVELOPMENT_STATUS.md).
 
 ## Open questions
 
-Decide these before the first migration is written (Phase 2). None is decided.
+Decided on 2026-10-25: ID format (UUID text), date format, local profile (a row in `profiles`), deletion behavior (above), database file location (app config folder, see above).
 
-1. **ID format:** simple counting numbers or globally unique IDs? See the proposed design considerations in [ARCHITECTURE.md](ARCHITECTURE.md).
-2. **Date and time format** used for deadlines and timestamps, so date handling stays consistent.
-3. **How the current local user or profile is stored** in a single-user offline application.
-4. **Deletion behavior:** what happens to tasks when a project is deleted, and to projects when a workspace is deleted (remove them, block the delete, or archive).
-5. **Whether attachments are supported** in the MVP, and if so, how their metadata is stored.
-6. **Where the database file is stored** inside the operating system's application data directory.
+Still open: whether attachments are supported in the MVP, and how their metadata is stored (Phase 3).

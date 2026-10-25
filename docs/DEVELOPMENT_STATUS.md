@@ -171,6 +171,22 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2 (Proposed, needs approval): first database schema.** Step 1b (SQL plugin, empty database file) is verified by the developer. Claude presents the table design for approval; no migration is written until it is approved. Then: migration 1, the JavaScript package `@tauri-apps/plugin-sql`, the `execute` permission, and the first repository and hook (workspaces).
+**Phase 2, step 2a: verify migration 1 and the database check (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified. Schema approved by the developer 2026-10-25 (cascade deletes, `workspace_members` now, Activity stays mock until Phase 3).
 
-Also: commit and push `src-tauri/Cargo.lock` (modified by the plugin installation).
+What changed: `src-tauri/migrations/0001_initial.sql` (five tables, see [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)); `src-tauri/src/lib.rs` registers it; `src-tauri/capabilities/default.json` adds `sql:default` (load, select, close; no write permission yet); `package.json` adds `@tauri-apps/plugin-sql`; new `src/lib/database.ts`, `src/repositories/databaseStatusRepository.ts`, `src/hooks/useDatabaseStatus.ts`; the Settings page shows a "Database" line.
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm install
+npm run tauri dev
+```
+
+1. Open Settings. The Database line should read: `Connected · schema version 1 · 5 tables · foreign keys on`. Report the exact text, or the error text if it says "Not available".
+2. `git status` should show `package-lock.json` modified: commit it. Then `npm run build` should pass.
+
+Known risk: the version query reads the plugin's internal table `_sqlx_migrations`; if its name differs, the Database line shows an error and Claude fixes the query.
+
+If the database file already holds an older empty schema, nothing needs deleting: the file was created empty on 2026-10-25 and migration 1 runs on it. If the migration fails, report the error. Do not delete `avenqor.db` unless told; there is no user data in it yet, but the plugin tracks applied migrations there.
+
+Then step 2b: write permission (`sql:allow-execute`), the local profile, and the workspace repository with create, edit, and delete.
