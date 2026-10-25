@@ -131,6 +131,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-25 | `npm run tauri dev` after the Avenqor rename (step 1a) | Passed: no errors |
 | reported 2026-10-25 | `npm run tauri dev` after adding the SQL plugin (step 1b) | Passed: compiled, all pages look the same, no errors |
 | reported 2026-10-25 | `Get-ChildItem -Recurse -Filter avenqor.db $env:APPDATA` | Found `C:\Users\<user>\AppData\Roaming\io.github.andra-gs.avenqor\avenqor.db`, 4096 bytes, created 2026-10-25 06:08. The empty database file is created at startup, as expected |
+| reported 2026-10-25 | `npm install`, `npm run tauri dev` (Phase 2 step 2a), Settings page | Passed: the Database line read `Connected · schema version 1 · 5 tables · foreign keys on` |
+| reported 2026-10-25 | `npm run build` (Phase 2 step 2a) | Passed: `tsc` and Vite build (80 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -171,22 +173,4 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2a: verify migration 1 and the database check (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified. Schema approved by the developer 2026-10-25 (cascade deletes, `workspace_members` now, Activity stays mock until Phase 3).
-
-What changed: `src-tauri/migrations/0001_initial.sql` (five tables, see [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)); `src-tauri/src/lib.rs` registers it; `src-tauri/capabilities/default.json` adds `sql:default` (load, select, close; no write permission yet); `package.json` adds `@tauri-apps/plugin-sql`; new `src/lib/database.ts`, `src/repositories/databaseStatusRepository.ts`, `src/hooks/useDatabaseStatus.ts`; the Settings page shows a "Database" line.
-
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm install
-npm run tauri dev
-```
-
-1. Open Settings. The Database line should read: `Connected · schema version 1 · 5 tables · foreign keys on`. Report the exact text, or the error text if it says "Not available".
-2. `git status` should show `package-lock.json` modified: commit it. Then `npm run build` should pass.
-
-Known risk: the version query reads the plugin's internal table `_sqlx_migrations`; if its name differs, the Database line shows an error and Claude fixes the query.
-
-If the database file already holds an older empty schema, nothing needs deleting: the file was created empty on 2026-10-25 and migration 1 runs on it. If the migration fails, report the error. Do not delete `avenqor.db` unless told; there is no user data in it yet, but the plugin tracks applied migrations there.
-
-Then step 2b: write permission (`sql:allow-execute`), the local profile, and the workspace repository with create, edit, and delete.
+**Phase 2, step 2b (Proposed, waiting for approval): write access, local profile, workspace repository.** Step 2a is verified. Plan: add `sql:allow-execute`; create the local profile row on first start; add `src/repositories/workspaceRepository.ts` and `src/services/workspaceService.ts` (validation, UUID creation, create, list, rename, delete); make `useWorkspaces` read the database. Tests: invalid input, empty state, data persists after restart, delete cascades.

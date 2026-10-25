@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-25
 
-> **Status (2026-10-25): migration 1 is written and awaiting verification.** The tables below exist in `src-tauri/migrations/0001_initial.sql`, but nothing is **Implemented** until the developer has run the app and confirmed them (see [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md)). Only tables from a migration in the repository are listed here.
+> **Status (2026-10-25): migration 1 is applied.** The developer reported schema version 1, 5 tables, and foreign keys on (Settings page, 2026-10-25). The tables exist and are empty; no screen reads or writes them yet, so no feature is Implemented on top of them. The constraints and delete behavior are written in the migration but not yet tested with data. Only tables from a migration in the repository are listed here.
 
 ## Rules for the schema (Agreed)
 
@@ -62,7 +62,7 @@ All five tables were created in migration 1.
 
 Constraints: names and titles must not be empty (checked after trimming spaces); status, priority, and role values are limited by `CHECK`; `due_date` must look like `YYYY-MM-DD`. Indexes: `projects(workspace_id)`, `tasks(project_id)`, `tasks(assignee_profile_id)`, `tasks(due_date)`, `workspace_members(profile_id)`.
 
-Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects and their tasks; deleting a project deletes its tasks; deleting a profile that owns a workspace is blocked; deleting a profile that is only an assignee clears the assignee of its tasks. The screens must ask for confirmation first. This depends on SQLite foreign keys being on for every connection, which the Settings screen reports (to be verified).
+Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects and their tasks; deleting a project deletes its tasks; deleting a profile that owns a workspace is blocked; deleting a profile that is only an assignee clears the assignee of its tasks. The screens must ask for confirmation first. This depends on SQLite foreign keys being on for every connection, which the Settings screen reports (foreign keys reported on 2026-10-25; the delete behavior itself is untested).
 
 Deferred to Phase 3 (no tables yet): labels, checklists and subtasks, comments, documents, activity history, preferences.
 
@@ -70,7 +70,7 @@ Deferred to Phase 3 (no tables yet): labels, checklists and subtasks, comments, 
 
 | Version | Description | Applied in | Status |
 |---|---|---|---|
-| 1 | `create_initial_tables` (`src-tauri/migrations/0001_initial.sql`) | on app start, when the database is opened | written, awaiting verification |
+| 1 | `create_initial_tables` (`src-tauri/migrations/0001_initial.sql`) | on app start, when the database is opened | applied (reported by the developer 2026-10-25) |
 
 Migration files live in `src-tauri/migrations/` and are registered in `src-tauri/src/lib.rs` for the connection `sqlite:avenqor.db`. Each change is a new file with the next version number; existing migrations are never edited. The database file is `%APPDATA%\io.github.andra-gs.avenqor\avenqor.db` (Roaming; see the known issue in DEVELOPMENT_STATUS.md).
 
