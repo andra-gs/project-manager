@@ -208,7 +208,7 @@ Verified: in `npm run tauri dev` the components render, hover and keyboard focus
 - `package.json`: dependencies `react` and `react-dom` ^19.1.0, `react-router` ^7.18.4, `@tauri-apps/api` ^2, `tailwindcss` and `@tailwindcss/vite` ^4.3.3, `@fontsource-variable/dm-sans` ^5.3.0. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
 - Versions that were actually built (from the Phase 0 logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-build` 2.7.3.
 
-### Data access in practice (written 2026-10-25, awaiting verification)
+### Data access in practice (workspaces verified by the developer 2026-10-25)
 
 Flow for creating a workspace: the Settings form (`features/workspaces/WorkspaceManager`) calls the hook `useWorkspaces`, which calls `services/workspaceService` (checks the name, creates a UUID, gets the local profile), which calls `repositories/workspaceRepository` (parameterized SQL through `lib/database`). The hook keeps one shared list outside any screen and reloads it from the database after every change, so the sidebar and Settings stay in step. Only files in `src/repositories/` import `lib/database`. Errors that the user can fix are `ValidationError`s (`lib/errors.ts`) and are shown as written; other errors show a general sentence with the technical detail.
 
