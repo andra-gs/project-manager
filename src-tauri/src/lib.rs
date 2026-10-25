@@ -3,12 +3,20 @@ use tauri_plugin_sql::{Migration, MigrationKind};
 // Table definitions. Each schema change is a NEW migration with the next version number.
 // Existing migrations are never edited, so users' data survives updates.
 fn migrations() -> Vec<Migration> {
-    vec![Migration {
-        version: 1,
-        description: "create_initial_tables",
-        sql: include_str!("../migrations/0001_initial.sql"),
-        kind: MigrationKind::Up,
-    }]
+    vec![
+        Migration {
+            version: 1,
+            description: "create_initial_tables",
+            sql: include_str!("../migrations/0001_initial.sql"),
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 2,
+            description: "workspace_owner_member_trigger",
+            sql: include_str!("../migrations/0002_workspace_owner_member.sql"),
+            kind: MigrationKind::Up,
+        },
+    ]
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

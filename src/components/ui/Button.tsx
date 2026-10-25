@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 import { cx } from "../../lib/classNames";
 import { Icon, type IconName } from "../icons/Icon";
 
-type ButtonVariant = "primary" | "secondary";
+type ButtonVariant = "primary" | "secondary" | "danger";
 
 // className is not accepted on purpose: the look of a button lives here and in the tokens.
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> {
@@ -16,6 +16,7 @@ const BASE =
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-accent text-on-accent hover:opacity-90",
   secondary: "border border-border bg-surface text-ink hover:bg-surface-muted",
+  danger: "bg-danger text-on-accent hover:opacity-90",
 };
 
 export function Button({ variant = "primary", icon, type = "button", children, ...rest }: ButtonProps) {

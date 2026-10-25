@@ -43,7 +43,7 @@ function SidebarLink({ to, icon, label, collapsed }: SidebarLinkProps) {
 }
 
 export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
-  const workspaces = useWorkspaces();
+  const { state: workspacesState } = useWorkspaces();
   const toggleLabel = collapsed ? "Expand sidebar" : "Collapse sidebar";
 
   return (
@@ -84,8 +84,14 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
         ) : (
           <p className="mt-6 mb-2 px-3 text-micro font-bold uppercase text-ink-muted">Workspaces</p>
         )}
+        {!collapsed && workspacesState.kind === "ready" && workspacesState.workspaces.length === 0 && (
+          <p className="px-3 text-caption text-ink-muted">No workspaces yet. Create one in Settings.</p>
+        )}
+        {!collapsed && workspacesState.kind === "error" && (
+          <p className="px-3 text-caption text-danger">Workspaces could not be loaded.</p>
+        )}
         <div className="flex flex-col gap-1">
-          {workspaces.map((workspace) => (
+          {(workspacesState.kind === "ready" ? workspacesState.workspaces : []).map((workspace) => (
             <SidebarLink
               key={workspace.id}
               to={workspacePath(workspace.id)}

@@ -173,4 +173,25 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2b (Proposed, waiting for approval): write access, local profile, workspace repository.** Step 2a is verified. Plan: add `sql:allow-execute`; create the local profile row on first start; add `src/repositories/workspaceRepository.ts` and `src/services/workspaceService.ts` (validation, UUID creation, create, list, rename, delete); make `useWorkspaces` read the database. Tests: invalid input, empty state, data persists after restart, delete cascades.
+**Phase 2, step 2b: verify workspaces saved in the database (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified.
+
+What changed: migration 2 (a trigger that adds the owner to `workspace_members`; replaces the planned manual transaction, because separate calls to the SQL plugin may use different connections); permission `sql:allow-execute`; the local profile (named "Me", created on first use); `repositories/profileRepository.ts`, `repositories/workspaceRepository.ts`, `services/profileService.ts`, `services/workspaceService.ts`; `useWorkspaces` now reads the database; new base components `TextField` and `ConfirmDialog`, and a `danger` button; Settings has a "Workspaces" section (create, rename, delete); the sidebar lists the real workspaces.
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run tauri dev
+```
+
+1. Settings, Database line: expect `schema version 2 · 5 tables · foreign keys on`.
+2. Settings, Workspaces: "No workspaces yet." Create one named `Test A`: it appears in the list with "1 member" (this proves the trigger) and in the sidebar.
+3. Invalid input: Create with an empty name, and with only spaces: a red message appears and nothing is saved. The field stops at 60 characters.
+4. Rename `Test A` to `Test B`: the list and the sidebar change.
+5. Close the app completely and start it again: `Test B` is still there (data persists).
+6. Delete `Test B`: a confirmation window appears. Cancel keeps it; Escape closes the window; Delete removes it from the list and the sidebar.
+7. Expected, not a bug: clicking a real workspace in the sidebar shows "This workspace does not exist", and the top bar says "Page not found", because those pages still use mock data until the next step.
+8. `npm run build` passes. Report any problem with the full text.
+
+Known risks to report if seen: (a) migration 2 fails to apply (trigger syntax inside the plugin); (b) `crypto.randomUUID` is unavailable in the window; (c) the first start after the update takes longer.
+
+Then step 2c: projects and tasks in the database (repositories, services, hooks), and connect the Workspace and Project pages and the Dashboard to real data, removing the mock data they used.

@@ -1,6 +1,7 @@
 import { Card } from "../components/ui/Card";
 import { ListRow } from "../components/ui/ListRow";
 import { SectionHeading } from "../components/ui/SectionHeading";
+import { WorkspaceManager } from "../features/workspaces/WorkspaceManager";
 import { useDatabaseStatus, type DatabaseStatusState } from "../hooks/useDatabaseStatus";
 import { useLocalProfile } from "../hooks/useLocalProfile";
 import { pluralize } from "../lib/text";
@@ -26,6 +27,11 @@ export function SettingsPage() {
             <ListRow title="Display name" subtitle="Editing the profile arrives in Phase 2." trailing={<span className="text-body font-semibold">{profile.displayName}</span>} />
           </div>
         </Card>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <SectionHeading>Workspaces</SectionHeading>
+        <WorkspaceManager />
       </section>
 
       <section className="flex flex-col gap-3">
