@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import { Button } from "./Button";
+import { Dialog } from "./Dialog";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -13,28 +13,10 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
-// A confirmation window for actions that cannot be undone. It uses the browser's built-in <dialog>,
-// which traps keyboard focus and closes with the Escape key.
+// A confirmation window for actions that cannot be undone.
 export function ConfirmDialog({ open, title, message, confirmLabel, error, busy, onConfirm, onCancel }: ConfirmDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
-
   return (
-    <dialog
-      ref={dialogRef}
-      onCancel={(event) => {
-        event.preventDefault();
-        if (!busy) onCancel();
-      }}
-      className="m-auto w-full max-w-md rounded-card border border-border bg-surface p-6 text-ink backdrop:bg-ink/40"
-    >
-      <h2 className="text-heading font-bold">{title}</h2>
+    <Dialog open={open} title={title} onClose={onCancel} busy={busy}>
       <p className="mt-2 text-body text-ink-muted">{message}</p>
       {error && <p className="mt-3 text-caption text-danger">{error}</p>}
       <div className="mt-6 flex justify-end gap-2">
@@ -45,6 +27,6 @@ export function ConfirmDialog({ open, title, message, confirmLabel, error, busy,
           {confirmLabel}
         </Button>
       </div>
-    </dialog>
+    </Dialog>
   );
 }

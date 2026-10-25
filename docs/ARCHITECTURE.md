@@ -153,10 +153,10 @@ src/
   components/
     layout/        AppShell.tsx, Sidebar.tsx, TopBar.tsx
     icons/         Icon.tsx
-    ui/            Avatar, Badge, Button, Card, ConfirmDialog, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, Stat, StatusBadge, TextField, PlaceholderNotice (temporary)
+    ui/            Avatar, Badge, Button, Card, ConfirmDialog, Dialog, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, Stat, StatusBadge, TextArea, TextField, PlaceholderNotice (temporary)
   features/        activity/, dashboard/, projects/, workspaces/ (sections and cards that screens compose)
-  repositories/    databaseStatusRepository, profileRepository, workspaceRepository (the only code that writes SQL)
-  services/        profileService, workspaceService (validation and business rules)
+  repositories/    databaseStatusRepository, profileRepository, workspaceRepository, projectRepository (the only code that writes SQL)
+  services/        profileService, workspaceService, projectService (validation and business rules)
   hooks/           useWorkspaces (reads the database), useDatabaseStatus, useWorkspaceDetail, useProjectDetail, useDashboardData, useLocalProfile, useSidebarCollapsed
   lib/             appInfo, classNames, database (the only code that opens the database), errors, dueDate, greeting, layout, progress, relativeTime, text
   mocks/           workspaces, projects, dashboard, helpers, localProfile (TEMPORARY mock data)
@@ -212,7 +212,7 @@ Verified: in `npm run tauri dev` the components render, hover and keyboard focus
 
 Flow for creating a workspace: the Settings form (`features/workspaces/WorkspaceManager`) calls the hook `useWorkspaces`, which calls `services/workspaceService` (checks the name, creates a UUID, gets the local profile), which calls `repositories/workspaceRepository` (parameterized SQL through `lib/database`). The hook keeps one shared list outside any screen and reloads it from the database after every change, so the sidebar and Settings stay in step. Only files in `src/repositories/` import `lib/database`. Errors that the user can fix are `ValidationError`s (`lib/errors.ts`) and are shown as written; other errors show a general sentence with the technical detail.
 
-Temporary state: the sidebar and Settings read real workspaces, while the Dashboard, workspace page, and project page still show mock data, so a real workspace opens "This workspace does not exist" until the next step connects the pages.
+Step 2c-1 (written 2026-10-25, awaiting verification): the workspace page reads the database through `useWorkspaceDetail` (workspace, its projects with task counts, deadline counts) and creates projects through `NewProjectDialog` and `projectService`. Progress is calculated from task counts in the service. Activity is an empty list until Phase 3 (no invented entries next to real data). Temporary state: the Dashboard and the project page still show mock data, so Dashboard cards open "This workspace does not exist", and a real project opens "This project does not exist", until step 2c-2.
 
 ### Security state
 

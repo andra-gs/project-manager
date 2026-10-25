@@ -175,4 +175,24 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2c (Proposed, waiting for approval): projects and tasks in the database, and real data on the Workspace and Project pages.** Step 2b is verified, except that the Escape key on the delete confirmation and the "delete cascades to projects and tasks" behavior were not tested (no projects exist yet; to be tested in 2c).
+**Phase 2, step 2c-1: verify projects saved in the database (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified. Approved by the developer: "New Project" button on the workspace page first (the Dashboard button follows in 2c-2), project archive and delete, and a task form with title, priority, and deadline.
+
+What changed: the workspace page (`src/pages/WorkspacePage.tsx`) now reads real data (`useWorkspaceDetail`, `workspaceService.getWorkspaceDetail`, `workspaceRepository.getWorkspaceDetail`) and has a working "New Project" button (`NewProjectDialog`, `projectService`, `projectRepository`). New base components `Dialog` and `TextArea`; `ConfirmDialog` now uses `Dialog` (please re-test its Escape key). Project archive and delete are not in this step: their buttons belong on the project page ("Project Settings"), which is rebuilt in 2c-2. Activity is empty ("No activity yet.") instead of mock names, because fake people next to real data would mislead.
+
+```powershell
+cd D:\project-manager
+git pull origin phase-1-ui
+npm run tauri dev
+```
+
+1. In Settings create a workspace `Test A`. Click it in the sidebar: the page shows 0 projects, 0 tasks, 1 member, 0 deadlines, "No projects in this workspace yet.", and "No activity yet.". The top bar title is `Test A`.
+2. Click "New Project": a window opens. Create with an empty name: red message, nothing saved. Create `Project 1` with a description: it appears as a card with 0% complete; the top bar subtitle says "1 project".
+3. Create a second project with a name of 60 characters and a description of 300 characters: both fit and the cards do not break the layout.
+4. Close the app completely and start it again: the projects are still there.
+5. Press Escape inside the New Project window: it closes. Open the delete confirmation in Settings (a workspace's Delete button): Cancel and Escape close it without deleting.
+6. Delete `Test A` in Settings: the confirmation says its projects and tasks are deleted too. After deleting, open Settings and check the sidebar: the workspace is gone. To prove the cascade, run in PowerShell (read-only check, needs no extra tools if `sqlite3` is installed; if not, skip this item and say so): `sqlite3 "$env:APPDATA\io.github.andra-gs.avenqor\avenqor.db" "SELECT COUNT(*) FROM projects;"` and expect 0.
+7. `npm run build` passes. Report any problem with the full text.
+
+Expected, not a bug: Dashboard workspace cards open "This workspace does not exist" and a project card opens "This project does not exist" (mock data until 2c-2).
+
+Then step 2c-2: tasks (repository, service, task form with title, priority, deadline), project page on real data with archive and delete, Dashboard on real data, and removal of the unused mock data.

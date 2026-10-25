@@ -1,31 +1,62 @@
-import { useMemo } from "react";
-import { countDeadlines } from "../lib/dueDate";
-import { createMockProjects, toProjectSummary } from "../mocks/projects";
-import { MOCK_WORKSPACES } from "../mocks/workspaces";
+import { useEffect, useSyncExternalStore } from "react";
+import { describeError } from "../lib/errors";
+import * as projectService from "../services/projectService";
+import * as workspaceService from "../services/workspaceService";
 import type { WorkspaceDetail } from "../types/workspace";
 
-// Returns undefined when the workspace does not exist. In Phase 2 the body is replaced by database
-// calls, and no screen needs to change.
-export function useWorkspaceDetail(workspaceId: string | undefined): WorkspaceDetail | undefined {
-  return useMemo(() => {
-    const workspace = MOCK_WORKSPACES.find((candidate) => candidate.id === workspaceId);
-    if (!workspace) return undefined;
+export type WorkspaceDetailState =
+  | { kind: "loading" }
+  | { kind: "notFound" }
+  | { kind: "ready"; workspace: WorkspaceDetail }
+  | { kind: "error"; message: string };
 
-    const projects = createMockProjects().filter((project) => project.workspaceId === workspace.id);
-    const deadlines = countDeadlines(projects.flatMap((project) => project.openTaskDueDates));
-    const activity = projects
-      .flatMap((project) => project.activity.map((entry) => ({ ...entry, projectName: project.name })))
-      .sort((first, second) => second.occurredAt.localeCompare(first.occurredAt))
-      .slice(0, 5);
+// The last loaded detail of each workspace lives here, outside any one screen, so the page and the
+// top bar show the same data. The detail is read again every time a page asks for it.
+let details: Record<string, WorkspaceDetailState> = {};
+const loading = new Set<string>();
+const listeners = new Set<() => void>();
+const LOADING: WorkspaceDetailState = { kind: "loading" };
 
-    return {
-      ...workspace,
-      projects: projects.map(toProjectSummary),
-      taskCount: projects.reduce((sum, project) => sum + project.taskCount, 0),
-      completedTaskCount: projects.reduce((sum, project) => sum + project.completedTaskCount, 0),
-      upcomingDeadlineCount: deadlines.upcoming,
-      overdueTaskCount: deadlines.overdue,
-      activity,
-    };
+function setDetail(id: string, state: WorkspaceDetailState) {
+  details = { ...details, [id]: state };
+  listeners.forEach((listener) => listener());
+}
+
+async function load(id: string) {
+  if (loading.has(id)) return;
+  loading.add(id);
+  try {
+    const workspace = await workspaceService.getWorkspaceDetail(id);
+    setDetail(id, workspace ? { kind: "ready", workspace } : { kind: "notFound" });
+  } catch (error) {
+    setDetail(id, { kind: "error", message: describeError(error) });
+  } finally {
+    loading.delete(id);
+  }
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+// Returns undefined as the state when there is no workspace id in the address.
+export function useWorkspaceDetail(workspaceId: string | undefined) {
+  const all = useSyncExternalStore(subscribe, () => details);
+
+  useEffect(() => {
+    if (workspaceId) void load(workspaceId);
   }, [workspaceId]);
+
+  // Throws when it fails, so the dialog can show the message.
+  async function createProject(name: string, description: string) {
+    if (!workspaceId) return;
+    await projectService.createProject(workspaceId, name, description);
+    await load(workspaceId);
+  }
+
+  const state = workspaceId ? (all[workspaceId] ?? LOADING) : undefined;
+  return { state, createProject };
 }

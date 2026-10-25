@@ -1,6 +1,8 @@
+import { todayDateText } from "../lib/dueDate";
 import { ValidationError } from "../lib/errors";
+import { calculateProgress } from "../lib/progress";
 import * as repository from "../repositories/workspaceRepository";
-import type { WorkspaceSummary } from "../types/workspace";
+import type { WorkspaceDetail, WorkspaceSummary } from "../types/workspace";
 import { getLocalProfileId } from "./profileService";
 
 export const WORKSPACE_NAME_MAX_LENGTH = 60;
@@ -17,6 +19,32 @@ function validateName(input: string): string {
 
 export function listWorkspaces(): Promise<WorkspaceSummary[]> {
   return repository.listWorkspaces();
+}
+
+// Everything the workspace page shows. Progress is calculated from the task counts, never stored.
+// Activity history arrives in Phase 3, so the list is empty until then.
+export async function getWorkspaceDetail(id: string): Promise<WorkspaceDetail | undefined> {
+  const data = await repository.getWorkspaceDetail(id, todayDateText());
+  if (!data) return undefined;
+
+  const activeProjects = data.projects.filter((project) => project.status === "active");
+  return {
+    id: data.id,
+    name: data.name,
+    memberCount: data.memberCount,
+    projects: activeProjects.map((project) => ({
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      status: project.status,
+      progressPercent: calculateProgress(project.completedTaskCount, project.taskCount),
+    })),
+    taskCount: activeProjects.reduce((sum, project) => sum + project.taskCount, 0),
+    completedTaskCount: activeProjects.reduce((sum, project) => sum + project.completedTaskCount, 0),
+    upcomingDeadlineCount: data.upcomingDeadlineCount,
+    overdueTaskCount: data.overdueTaskCount,
+    activity: [],
+  };
 }
 
 export async function createWorkspace(nameInput: string): Promise<void> {

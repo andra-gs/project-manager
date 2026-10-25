@@ -39,3 +39,10 @@ export function getDueInfo(dueDate: string, now: Date = new Date()): DueInfo {
   if (days === 1) return { label: "Tomorrow", tone: "success" };
   return { label: formatShortDate(due), tone: "neutral" };
 }
+
+// Today's date as "YYYY-MM-DD" in the user's own time zone, the same format as a stored deadline.
+export function todayDateText(now: Date = new Date()): string {
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}

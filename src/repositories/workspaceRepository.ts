@@ -45,3 +45,79 @@ export async function deleteWorkspace(id: string): Promise<boolean> {
   const result = await database.execute("DELETE FROM workspaces WHERE id = $1", [id]);
   return result.rowsAffected > 0;
 }
+
+export interface WorkspaceDetailData {
+  id: string;
+  name: string;
+  memberCount: number;
+  projects: {
+    id: string;
+    name: string;
+    description: string;
+    status: "active" | "archived";
+    taskCount: number;
+    completedTaskCount: number;
+  }[];
+  // Open (not done) tasks of active projects that have a deadline, split by `today`.
+  upcomingDeadlineCount: number;
+  overdueTaskCount: number;
+}
+
+// `today` is a date text "YYYY-MM-DD". Returns undefined when the workspace does not exist.
+export async function getWorkspaceDetail(id: string, today: string): Promise<WorkspaceDetailData | undefined> {
+  const database = await getDatabase();
+
+  const workspaces = await database.select<WorkspaceRow[]>(
+    `SELECT w.id, w.name,
+            (SELECT COUNT(*) FROM workspace_members m WHERE m.workspace_id = w.id) AS member_count
+       FROM workspaces w
+      WHERE w.id = $1`,
+    [id],
+  );
+  const workspace = workspaces[0];
+  if (!workspace) return undefined;
+
+  const projects = await database.select<
+    {
+      id: string;
+      name: string;
+      description: string;
+      status: "active" | "archived";
+      task_count: number;
+      completed_count: number;
+    }[]
+  >(
+    `SELECT p.id, p.name, p.description, p.status,
+            (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id) AS task_count,
+            (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id AND t.status = 'done') AS completed_count
+       FROM projects p
+      WHERE p.workspace_id = $1
+      ORDER BY p.created_at, p.id`,
+    [id],
+  );
+
+  const deadlines = await database.select<{ upcoming: number; overdue: number }[]>(
+    `SELECT COALESCE(SUM(CASE WHEN t.due_date >= $2 THEN 1 ELSE 0 END), 0) AS upcoming,
+            COALESCE(SUM(CASE WHEN t.due_date < $2 THEN 1 ELSE 0 END), 0) AS overdue
+       FROM tasks t
+       JOIN projects p ON p.id = t.project_id
+      WHERE p.workspace_id = $1 AND p.status = 'active' AND t.status <> 'done' AND t.due_date IS NOT NULL`,
+    [id, today],
+  );
+
+  return {
+    id: workspace.id,
+    name: workspace.name,
+    memberCount: workspace.member_count,
+    projects: projects.map((row) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      status: row.status,
+      taskCount: row.task_count,
+      completedTaskCount: row.completed_count,
+    })),
+    upcomingDeadlineCount: deadlines[0]?.upcoming ?? 0,
+    overdueTaskCount: deadlines[0]?.overdue ?? 0,
+  };
+}

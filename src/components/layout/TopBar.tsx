@@ -7,7 +7,8 @@ import { Avatar } from "../ui/Avatar";
 
 export function TopBar() {
   const { pathname } = useLocation();
-  const workspace = useWorkspaceDetail(getWorkspaceIdFromPath(pathname));
+  const { state: workspaceState } = useWorkspaceDetail(getWorkspaceIdFromPath(pathname));
+  const workspace = workspaceState?.kind === "ready" ? workspaceState.workspace : undefined;
   const project = useProjectDetail(getProjectIdFromPath(pathname));
   const profile = useLocalProfile();
   const heading = getPageHeading(pathname, { workspace, project });

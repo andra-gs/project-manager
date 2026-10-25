@@ -56,14 +56,16 @@ export function getPageHeading(pathname: string, context: HeadingContext): { tit
     return { title: item.label, subtitle: item.subtitle };
   }
   const { workspace, project } = context;
-  if (workspace && getWorkspaceIdFromPath(pathname)) {
+  if (getWorkspaceIdFromPath(pathname)) {
+    // Until the workspace is loaded (or if it does not exist) only a general title is shown.
+    if (!workspace) return { title: "Workspace", subtitle: "" };
     return {
       title: workspace.name,
       subtitle: `Workspace · ${pluralize(workspace.memberCount, "member")} · ${pluralize(workspace.projects.length, "project")}`,
     };
   }
-  if (project && getProjectIdFromPath(pathname)) {
-    return { title: "Project Overview", subtitle: `${project.name} · ${project.status}` };
+  if (getProjectIdFromPath(pathname)) {
+    return { title: "Project Overview", subtitle: project ? `${project.name} · ${project.status}` : "" };
   }
   return { title: "Page not found", subtitle: "" };
 }

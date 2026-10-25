@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
@@ -6,6 +7,7 @@ import { EmptyMessage } from "../components/ui/EmptyMessage";
 import { PlaceholderNotice } from "../components/ui/PlaceholderNotice";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { Stat } from "../components/ui/Stat";
+import { NewProjectDialog } from "../features/projects/NewProjectDialog";
 import { ProjectCard } from "../features/projects/ProjectCard";
 import { WorkspaceActivitySection } from "../features/workspaces/WorkspaceActivitySection";
 import { useWorkspaceDetail } from "../hooks/useWorkspaceDetail";
@@ -16,12 +18,14 @@ const BAR_TONES: ProgressTone[] = ["accent", "info", "success"];
 
 export function WorkspacePage() {
   const { workspaceId } = useParams();
-  const workspace = useWorkspaceDetail(workspaceId);
+  const { state, createProject } = useWorkspaceDetail(workspaceId);
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
 
-  if (!workspace) {
-    return <PlaceholderNotice message="This workspace does not exist." />;
-  }
+  if (!state || state.kind === "loading") return <EmptyMessage>Loading workspace…</EmptyMessage>;
+  if (state.kind === "notFound") return <PlaceholderNotice message="This workspace does not exist." />;
+  if (state.kind === "error") return <PlaceholderNotice message={state.message} />;
 
+  const workspace = state.workspace;
   const activeProjects = workspace.projects.filter((project) => project.status === "active").length;
   const deadlineNote = workspace.overdueTaskCount > 0 ? `upcoming · ${workspace.overdueTaskCount} overdue` : "upcoming";
 
@@ -29,8 +33,8 @@ export function WorkspacePage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-title font-bold">Workspace Overview</h2>
-        {/* Editing arrives in Phase 2, so the button is shown but disabled. */}
-        <Button variant="secondary" disabled title="Editing workspaces is not available yet">
+        {/* Renaming is in Settings for now, so this button stays disabled. */}
+        <Button variant="secondary" disabled title="Rename workspaces in Settings">
           Edit Workspace
         </Button>
       </div>
@@ -56,8 +60,13 @@ export function WorkspacePage() {
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
-          <SectionHeading>Projects</SectionHeading>
-          <Badge tone="accent">{pluralize(workspace.projects.length, "project")}</Badge>
+          <div className="flex items-center gap-3">
+            <SectionHeading>Projects</SectionHeading>
+            <Badge tone="accent">{pluralize(workspace.projects.length, "project")}</Badge>
+          </div>
+          <Button icon="plus" onClick={() => setNewProjectOpen(true)}>
+            New Project
+          </Button>
         </div>
         {workspace.projects.length === 0 ? (
           <EmptyMessage>No projects in this workspace yet.</EmptyMessage>
@@ -71,6 +80,8 @@ export function WorkspacePage() {
       </section>
 
       <WorkspaceActivitySection entries={workspace.activity} />
+
+      <NewProjectDialog open={newProjectOpen} onClose={() => setNewProjectOpen(false)} onCreate={createProject} />
     </div>
   );
 }
