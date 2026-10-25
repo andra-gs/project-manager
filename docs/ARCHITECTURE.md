@@ -172,7 +172,7 @@ src-tauri/
 docs/              the documentation files
 ```
 
-Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/`. The folders `services/` and `repositories/` from the suggested layout do not exist yet; they are created in Phase 2 when real data access is added.
+Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/`. The folders `services/` and `repositories/` were created in Phase 2 (2026-10-25) when real data access was added.
 
 ### Interface structure (Implemented, verified by the developer on 2026-10-23)
 
