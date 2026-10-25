@@ -9,8 +9,9 @@ import { pluralize } from "../lib/text";
 function describeDatabase(state: DatabaseStatusState): string {
   if (state.kind === "loading") return "Checking the database…";
   if (state.kind === "error") return `Not available: ${state.message}`;
-  const { schemaVersion, tableCount, foreignKeysEnabled } = state.status;
-  return `Connected · schema version ${schemaVersion ?? "none"} · ${pluralize(tableCount, "table")} · foreign keys ${foreignKeysEnabled ? "on" : "off"}`;
+  const { schemaVersion, tableCount, foreignKeysEnabled, rowCounts } = state.status;
+  const rows = `${pluralize(rowCounts.workspaces, "workspace")}, ${pluralize(rowCounts.projects, "project")}, ${pluralize(rowCounts.tasks, "task")}`;
+  return `Connected · schema version ${schemaVersion ?? "none"} · ${pluralize(tableCount, "table")} · foreign keys ${foreignKeysEnabled ? "on" : "off"} · stored: ${rows}`;
 }
 
 // Read-only for now: nothing here can be changed until the database exists (Phase 2).

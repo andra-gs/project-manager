@@ -135,6 +135,9 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-25 | `npm run build` (Phase 2 step 2a) | Passed: `tsc` and Vite build (80 modules) without errors |
 | reported 2026-10-25 | `npm run tauri dev` (Phase 2 step 2b), Settings | Passed: Database line `Connected · schema version 2 · 5 tables · foreign keys on`; created workspace "Test A" (1 member, shown in the sidebar); empty and spaces-only names rejected with a red message and not saved; field stops at 60 characters; rename updated list and sidebar; the workspace was still there after restarting the app; delete showed a confirmation, Cancel kept it, Delete removed it from the list and the sidebar |
 | reported 2026-10-25 | `npm run build` (Phase 2 step 2b) | Passed: `tsc` and Vite build (88 modules) without errors |
+| reported 2026-10-25 | `npm run tauri dev` (Phase 2 step 2c-1) | Passed: empty workspace page (0 projects, tasks, deadlines, 1 member); New Project with an empty name rejected; projects saved, shown as cards, and still there after restarting; Escape closes the New Project window and the delete confirmation. Finding: names and descriptions were cut to one line on the cards (fixed, see below) |
+| reported 2026-10-25 | `sqlite3 "$env:APPDATA\io.github.andra-gs.avenqor\avenqor.db" "SELECT COUNT(*) FROM projects;"` | Not run: `sqlite3` is not installed on the development computer. The cascade delete (workspace to projects) is therefore not yet verified |
+| reported 2026-10-25 | `npm run build` (Phase 2 step 2c-1) | Passed: `tsc` and Vite build (93 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -175,9 +178,10 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2c-1: verify projects saved in the database (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified. Approved by the developer: "New Project" button on the workspace page first (the Dashboard button follows in 2c-2), project archive and delete, and a task form with title, priority, and deadline.
+**Phase 2, step 2c-1b: verify two small changes (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; unverified.
 
-What changed: the workspace page (`src/pages/WorkspacePage.tsx`) now reads real data (`useWorkspaceDetail`, `workspaceService.getWorkspaceDetail`, `workspaceRepository.getWorkspaceDetail`) and has a working "New Project" button (`NewProjectDialog`, `projectService`, `projectRepository`). New base components `Dialog` and `TextArea`; `ConfirmDialog` now uses `Dialog` (please re-test its Escape key). Project archive and delete are not in this step: their buttons belong on the project page ("Project Settings"), which is rebuilt in 2c-2. Activity is empty ("No activity yet.") instead of mock names, because fake people next to real data would mislead.
+1. Project cards (`src/features/projects/ProjectCard.tsx`) now show the whole name and description: long text wraps onto more lines, and line breaks typed in the description are kept. Previously both were cut to one line.
+2. The Database line in Settings now also shows how many rows are stored (`stored: N workspaces, N projects, N tasks`), so the cascade delete can be checked without `sqlite3`.
 
 ```powershell
 cd D:\project-manager
@@ -185,14 +189,9 @@ git pull origin phase-1-ui
 npm run tauri dev
 ```
 
-1. In Settings create a workspace `Test A`. Click it in the sidebar: the page shows 0 projects, 0 tasks, 1 member, 0 deadlines, "No projects in this workspace yet.", and "No activity yet.". The top bar title is `Test A`.
-2. Click "New Project": a window opens. Create with an empty name: red message, nothing saved. Create `Project 1` with a description: it appears as a card with 0% complete; the top bar subtitle says "1 project".
-3. Create a second project with a name of 60 characters and a description of 300 characters: both fit and the cards do not break the layout.
-4. Close the app completely and start it again: the projects are still there.
-5. Press Escape inside the New Project window: it closes. Open the delete confirmation in Settings (a workspace's Delete button): Cancel and Escape close it without deleting.
-6. Delete `Test A` in Settings: the confirmation says its projects and tasks are deleted too. After deleting, open Settings and check the sidebar: the workspace is gone. To prove the cascade, run in PowerShell (read-only check, needs no extra tools if `sqlite3` is installed; if not, skip this item and say so): `sqlite3 "$env:APPDATA\io.github.andra-gs.avenqor\avenqor.db" "SELECT COUNT(*) FROM projects;"` and expect 0.
-7. `npm run build` passes. Report any problem with the full text.
+1. Create a workspace `Test A` and two projects, one with a 300-character description that has a line break in it. The cards show everything and the layout holds (also at 960x600 and with the sidebar collapsed).
+2. Settings, Database line: it must say `1 workspace, 2 projects, 0 tasks` (plus any other workspaces you still have).
+3. Delete `Test A` in Settings. The Database line must now say `0 projects`: this proves the cascade from workspace to projects.
+4. `npm run build` passes.
 
-Expected, not a bug: Dashboard workspace cards open "This workspace does not exist" and a project card opens "This project does not exist" (mock data until 2c-2).
-
-Then step 2c-2: tasks (repository, service, task form with title, priority, deadline), project page on real data with archive and delete, Dashboard on real data, and removal of the unused mock data.
+Then step 2c-2 (tasks, project page, Dashboard on real data, archive and delete of projects, removal of unused mock data).
