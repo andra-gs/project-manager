@@ -138,6 +138,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-25 | `npm run tauri dev` (Phase 2 step 2c-1) | Passed: empty workspace page (0 projects, tasks, deadlines, 1 member); New Project with an empty name rejected; projects saved, shown as cards, and still there after restarting; Escape closes the New Project window and the delete confirmation. Finding: names and descriptions were cut to one line on the cards (fixed, see below) |
 | reported 2026-10-25 | `sqlite3 "$env:APPDATA\io.github.andra-gs.avenqor\avenqor.db" "SELECT COUNT(*) FROM projects;"` | Not run: `sqlite3` is not installed on the development computer. The cascade delete (workspace to projects) is therefore not yet verified |
 | reported 2026-10-25 | `npm run build` (Phase 2 step 2c-1) | Passed: `tsc` and Vite build (93 modules) without errors |
+| reported 2026-10-25 | `npm run tauri dev` (step 2c-1b), Settings | Passed: project names and descriptions wrap onto more lines without breaking the layout. Database line with a workspace and 2 projects: `stored: 1 workspace, 2 projects, 0 tasks`; after deleting the workspace: `stored: 0 workspaces, 0 projects, 0 tasks`. This verifies that deleting a workspace deletes its projects (cascade) |
+| reported 2026-10-25 | `npm run build` (step 2c-1b) | Passed: `tsc` and Vite build (93 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
