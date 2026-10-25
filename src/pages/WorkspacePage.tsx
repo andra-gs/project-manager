@@ -25,7 +25,7 @@ export function WorkspacePage() {
   if (state.kind === "notFound") return <PlaceholderNotice message="This workspace does not exist." />;
   if (state.kind === "error") return <PlaceholderNotice message={state.message} />;
 
-  const workspace = state.workspace;
+  const workspace = state.data;
   const activeProjects = workspace.projects.filter((project) => project.status === "active").length;
   const deadlineNote = workspace.overdueTaskCount > 0 ? `upcoming · ${workspace.overdueTaskCount} overdue` : "upcoming";
 
@@ -78,6 +78,17 @@ export function WorkspacePage() {
           </div>
         )}
       </section>
+
+      {workspace.archivedProjects.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <SectionHeading>Archived</SectionHeading>
+          <div className="grid grid-cols-2 gap-4">
+            {workspace.archivedProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} tone="info" />
+            ))}
+          </div>
+        </section>
+      )}
 
       <WorkspaceActivitySection entries={workspace.activity} />
 

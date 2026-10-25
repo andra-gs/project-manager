@@ -1,5 +1,7 @@
 import { ValidationError } from "../lib/errors";
+import { calculateProgress } from "../lib/progress";
 import * as repository from "../repositories/projectRepository";
+import type { ProjectDetail, ProjectStatus } from "../types/project";
 
 export const PROJECT_NAME_MAX_LENGTH = 60;
 export const PROJECT_DESCRIPTION_MAX_LENGTH = 300;
@@ -21,4 +23,36 @@ export async function createProject(workspaceId: string, nameInput: string, desc
     description,
     now: new Date().toISOString(),
   });
+}
+
+// Everything the project page shows. Progress is calculated from the tasks, never stored.
+// Activity history arrives in Phase 3, so the list is empty until then.
+export async function getProjectDetail(id: string): Promise<ProjectDetail | undefined> {
+  const data = await repository.getProjectDetail(id);
+  if (!data) return undefined;
+
+  const completedTaskCount = data.tasks.filter((task) => task.status === "done").length;
+  return {
+    id: data.id,
+    name: data.name,
+    description: data.description,
+    status: data.status,
+    progressPercent: calculateProgress(completedTaskCount, data.tasks.length),
+    workspaceId: data.workspaceId,
+    workspaceName: data.workspaceName,
+    taskCount: data.tasks.length,
+    completedTaskCount,
+    tasks: data.tasks,
+    activity: [],
+  };
+}
+
+export async function setProjectStatus(id: string, status: ProjectStatus): Promise<void> {
+  const changed = await repository.updateProjectStatus(id, status, new Date().toISOString());
+  if (!changed) throw new ValidationError("This project no longer exists.");
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  const deleted = await repository.deleteProject(id);
+  if (!deleted) throw new ValidationError("This project no longer exists.");
 }

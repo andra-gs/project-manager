@@ -28,17 +28,20 @@ export async function getWorkspaceDetail(id: string): Promise<WorkspaceDetail | 
   if (!data) return undefined;
 
   const activeProjects = data.projects.filter((project) => project.status === "active");
+  const archivedProjects = data.projects.filter((project) => project.status === "archived");
+  const toSummary = (project: (typeof data.projects)[number]) => ({
+    id: project.id,
+    name: project.name,
+    description: project.description,
+    status: project.status,
+    progressPercent: calculateProgress(project.completedTaskCount, project.taskCount),
+  });
   return {
     id: data.id,
     name: data.name,
     memberCount: data.memberCount,
-    projects: activeProjects.map((project) => ({
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      status: project.status,
-      progressPercent: calculateProgress(project.completedTaskCount, project.taskCount),
-    })),
+    projects: activeProjects.map(toSummary),
+    archivedProjects: archivedProjects.map(toSummary),
     taskCount: activeProjects.reduce((sum, project) => sum + project.taskCount, 0),
     completedTaskCount: activeProjects.reduce((sum, project) => sum + project.completedTaskCount, 0),
     upcomingDeadlineCount: data.upcomingDeadlineCount,

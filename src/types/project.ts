@@ -1,4 +1,5 @@
 import type { ActivityEntry } from "./activity";
+import type { TaskItem } from "./task";
 
 export type ProjectStatus = "active" | "archived";
 
@@ -16,5 +17,6 @@ export interface ProjectDetail extends ProjectSummary {
   workspaceName: string;
   taskCount: number;
   completedTaskCount: number;
+  tasks: TaskItem[];
   activity: ActivityEntry[];
 }

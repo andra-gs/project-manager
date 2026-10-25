@@ -1,21 +1,49 @@
-import { useMemo } from "react";
-import { createMockProjects, toProjectSummary } from "../mocks/projects";
-import { MOCK_WORKSPACES } from "../mocks/workspaces";
-import type { ProjectDetail } from "../types/project";
+import { useEffect, useSyncExternalStore } from "react";
+import * as projectService from "../services/projectService";
+import * as taskService from "../services/taskService";
+import type { ProjectStatus } from "../types/project";
+import type { TaskPriority } from "../types/task";
+import { createKeyedLoader } from "./createKeyedLoader";
 
-// Returns undefined when the project does not exist. In Phase 2 the body is replaced by database calls.
-export function useProjectDetail(projectId: string | undefined): ProjectDetail | undefined {
-  return useMemo(() => {
-    const project = createMockProjects().find((candidate) => candidate.id === projectId);
-    if (!project) return undefined;
-    const workspace = MOCK_WORKSPACES.find((candidate) => candidate.id === project.workspaceId);
-    return {
-      ...toProjectSummary(project),
-      workspaceId: project.workspaceId,
-      workspaceName: workspace?.name ?? "",
-      taskCount: project.taskCount,
-      completedTaskCount: project.completedTaskCount,
-      activity: project.activity,
-    };
+const loader = createKeyedLoader(projectService.getProjectDetail);
+
+// The state is undefined when there is no project id in the address. Every action throws when it
+// fails, so the screen that asked can show the message.
+export function useProjectDetail(projectId: string | undefined) {
+  const snapshot = useSyncExternalStore(loader.subscribe, loader.getSnapshot);
+
+  useEffect(() => {
+    if (projectId) void loader.load(projectId);
   }, [projectId]);
+
+  async function refresh() {
+    if (projectId) await loader.load(projectId);
+  }
+
+  return {
+    state: loader.stateFor(snapshot, projectId),
+    async createTask(title: string, priority: TaskPriority, dueDate: string) {
+      if (!projectId) return;
+      await taskService.createTask(projectId, title, priority, dueDate);
+      await refresh();
+    },
+    async setTaskDone(taskId: string, done: boolean) {
+      await taskService.setTaskDone(taskId, done);
+      await refresh();
+    },
+    async deleteTask(taskId: string) {
+      await taskService.deleteTask(taskId);
+      await refresh();
+    },
+    async setProjectStatus(status: ProjectStatus) {
+      if (!projectId) return;
+      await projectService.setProjectStatus(projectId, status);
+      await refresh();
+    },
+    // After this the project no longer exists, so the screen must leave its page.
+    async deleteProject() {
+      if (!projectId) return;
+      await projectService.deleteProject(projectId);
+    },
+  };
 }

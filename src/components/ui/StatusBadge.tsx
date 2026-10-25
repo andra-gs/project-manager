@@ -3,7 +3,7 @@ import { Badge, type BadgeTone } from "./Badge";
 
 const STATUSES: Record<TaskStatus, { label: string; tone: BadgeTone }> = {
   todo: { label: "To Do", tone: "neutral" },
-  "in-progress": { label: "In Progress", tone: "info" },
+  in_progress: { label: "In Progress", tone: "info" },
   review: { label: "Review", tone: "warning" },
   done: { label: "Done", tone: "success" },
 };

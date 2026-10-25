@@ -3,10 +3,12 @@ import { useId, type InputHTMLAttributes } from "react";
 // className is not accepted on purpose: the look lives here and in the tokens.
 interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "id" | "type"> {
   label: string;
+  // "date" shows a date picker; its value is written "YYYY-MM-DD".
+  type?: "text" | "date";
   error?: string;
 }
 
-export function TextField({ label, error, ...rest }: TextFieldProps) {
+export function TextField({ label, error, type = "text", ...rest }: TextFieldProps) {
   const id = useId();
   const errorId = `${id}-error`;
   return (
@@ -16,7 +18,7 @@ export function TextField({ label, error, ...rest }: TextFieldProps) {
       </label>
       <input
         id={id}
-        type="text"
+        type={type}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className="h-9 rounded-control border border-border bg-surface px-3 text-body outline-offset-2 placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-accent aria-invalid:border-danger"

@@ -9,7 +9,9 @@ export interface WorkspaceSummary {
 }
 
 export interface WorkspaceDetail extends WorkspaceSummary {
+  // Active projects. Archived ones are listed separately.
   projects: ProjectSummary[];
+  archivedProjects: ProjectSummary[];
   taskCount: number;
   completedTaskCount: number;
   upcomingDeadlineCount: number;
