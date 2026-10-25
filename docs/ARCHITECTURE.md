@@ -153,11 +153,11 @@ src/
   components/
     layout/        AppShell.tsx, Sidebar.tsx, TopBar.tsx
     icons/         Icon.tsx
-    ui/            Avatar, Badge, Button, Card, ConfirmDialog, Dialog, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, Stat, StatusBadge, TextArea, TextField, PlaceholderNotice (temporary)
+    ui/            Avatar, Badge, Button, Card, ConfirmDialog, Dialog, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, SelectField, Stat, StatusBadge, TextArea, TextField, PlaceholderNotice (temporary)
   features/        activity/, dashboard/, projects/, workspaces/ (sections and cards that screens compose)
-  repositories/    databaseStatusRepository, profileRepository, workspaceRepository, projectRepository (the only code that writes SQL)
-  services/        profileService, workspaceService, projectService (validation and business rules)
-  hooks/           useWorkspaces (reads the database), useDatabaseStatus, useWorkspaceDetail, useProjectDetail, useDashboardData, useLocalProfile, useSidebarCollapsed
+  repositories/    databaseStatusRepository, profileRepository, workspaceRepository, projectRepository, taskRepository (the only code that writes SQL)
+  services/        profileService, workspaceService, projectService, taskService (validation and business rules)
+  hooks/           useWorkspaces, useWorkspaceDetail, useProjectDetail (read the database), createKeyedLoader (shared loading helper), useDatabaseStatus, useDashboardData (still mock), useLocalProfile, useSidebarCollapsed
   lib/             appInfo, classNames, database (the only code that opens the database), errors, dueDate, greeting, layout, progress, relativeTime, text
   mocks/           workspaces, projects, dashboard, helpers, localProfile (TEMPORARY mock data)
   pages/           Dashboard, Workspace, Project, MyTasks, Calendar, Documents, Settings, Help, NotFound
@@ -212,7 +212,7 @@ Verified: in `npm run tauri dev` the components render, hover and keyboard focus
 
 Flow for creating a workspace: the Settings form (`features/workspaces/WorkspaceManager`) calls the hook `useWorkspaces`, which calls `services/workspaceService` (checks the name, creates a UUID, gets the local profile), which calls `repositories/workspaceRepository` (parameterized SQL through `lib/database`). The hook keeps one shared list outside any screen and reloads it from the database after every change, so the sidebar and Settings stay in step. Only files in `src/repositories/` import `lib/database`. Errors that the user can fix are `ValidationError`s (`lib/errors.ts`) and are shown as written; other errors show a general sentence with the technical detail.
 
-Step 2c-1 (written 2026-10-25, awaiting verification): the workspace page reads the database through `useWorkspaceDetail` (workspace, its projects with task counts, deadline counts) and creates projects through `NewProjectDialog` and `projectService`. Progress is calculated from task counts in the service. Activity is an empty list until Phase 3 (no invented entries next to real data). Temporary state: the Dashboard and the project page still show mock data, so Dashboard cards open "This workspace does not exist", and a real project opens "This project does not exist", until step 2c-2.
+Step 2c-1 (written 2026-10-25, awaiting verification): the workspace page reads the database through `useWorkspaceDetail` (workspace, its projects with task counts, deadline counts) and creates projects through `NewProjectDialog` and `projectService`. Progress is calculated from task counts in the service. Activity is an empty list until Phase 3 (no invented entries next to real data). Step 2c-2a (written 2026-10-26, awaiting verification): the project page reads the database through `useProjectDetail` and offers new tasks (`NewTaskDialog`, `taskService`), marking tasks done or reopening them, deleting tasks, archiving or restoring the project, and deleting the project. Archived projects appear in an "Archived" section on the workspace page. Both detail hooks use `createKeyedLoader`. Temporary state: the Dashboard still shows mock data (its workspace cards open "This workspace does not exist") until step 2c-2b.
 
 ### Security state
 

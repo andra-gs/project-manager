@@ -180,10 +180,9 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2c-1b: verify two small changes (developer, on Windows).** Written 2026-10-25 on branch `phase-1-ui`; unverified.
+**Phase 2, step 2c-2a: verify tasks and the project page on real data (developer, on Windows).** Written 2026-10-26 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified.
 
-1. Project cards (`src/features/projects/ProjectCard.tsx`) now show the whole name and description: long text wraps onto more lines, and line breaks typed in the description are kept. Previously both were cut to one line.
-2. The Database line in Settings now also shows how many rows are stored (`stored: N workspaces, N projects, N tasks`), so the cascade delete can be checked without `sqlite3`.
+What changed: the project page (`src/pages/ProjectPage.tsx`) reads the database. New: task list with "Mark done" or "Reopen" and "Delete" per task, a "New Task" window (title, priority, optional deadline), "Archive project" or "Restore project", and "Delete project" with confirmation. The workspace page lists archived projects in an "Archived" section. New files: `taskRepository`, `taskService`, `useProjectDetail` (rewritten), `createKeyedLoader`, `NewTaskDialog`, `TaskList`, `SelectField`; `TextField` accepts `type="date"`. The task status value in the code is now `in_progress` (with an underscore), matching the database. Deviation from Figma: "Project Settings" is replaced by the Archive and Delete buttons; the task list is a simple list, and the Kanban board comes in Phase 3. Marking a task done sets its status to `done`; reopening sets it back to `todo`.
 
 ```powershell
 cd D:\project-manager
@@ -191,9 +190,16 @@ git pull origin phase-1-ui
 npm run tauri dev
 ```
 
-1. Create a workspace `Test A` and two projects, one with a 300-character description that has a line break in it. The cards show everything and the layout holds (also at 960x600 and with the sidebar collapsed).
-2. Settings, Database line: it must say `1 workspace, 2 projects, 0 tasks` (plus any other workspaces you still have).
-3. Delete `Test A` in Settings. The Database line must now say `0 projects`: this proves the cascade from workspace to projects.
-4. `npm run build` passes.
+1. Create workspace `Test A` and project `Project 1`. Open it: 0%, "0 of 0 tasks completed", "No tasks yet.", an empty Activity section.
+2. New Task with an empty title: red message, nothing saved. Create `Task 1` (High, a deadline in the past), `Task 2` (Medium, tomorrow), `Task 3` (Low, no deadline): rows show priority, status, and the deadline badge ("Overdue · date", "Tomorrow", none).
+3. Mark `Task 1` done: status Done, its deadline badge disappears, progress 33% and "1 of 3 tasks completed". Mark `Task 2` done: 67%. Reopen `Task 2`: 33%.
+4. Close the app completely and start it again: tasks, statuses, and progress are still there.
+5. Delete `Task 3`: Cancel and Escape keep it; Delete removes it; progress is 50%.
+6. Workspace page: the project card shows 50%; stats show 2 tasks, 1 completed. A task with a past deadline that is still open makes "Deadlines" show `overdue`; marking it done removes that.
+7. Archive the project: badge Archived; on the workspace page it moves to "Archived" and the stats show 0 projects. Open it and Restore project: it returns.
+8. Settings, Database line shows real counts (for example `1 workspace, 1 project, 2 tasks`). Delete the project from its page: you return to the workspace page and the line says `0 projects, 0 tasks` (verifies the cascade project to tasks). Create a project with a task again and delete the workspace: counts go to 0.
+9. `npm run build` passes. Report any problem with the full text.
 
-Then step 2c-2 (tasks, project page, Dashboard on real data, archive and delete of projects, removal of unused mock data).
+Expected, not a bug: the Dashboard still shows mock data, and its workspace cards open "This workspace does not exist".
+
+Then step 2c-2b: the Dashboard on real data (workspaces, recent projects, my tasks, deadlines, enabling "New Project" there), removing the unused mock data, and cleaning up documentation.
