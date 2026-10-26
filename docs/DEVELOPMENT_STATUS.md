@@ -144,6 +144,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-26 | `npm run build` (Phase 2 step 2c-2a) | Passed: `tsc` and Vite build (101 modules) without errors |
 | reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2c-2b) | Passed, all items as expected: renaming the local profile (shown in the top bar and greeting, validation, kept after restart); empty Dashboard with "New Project" disabled; two workspaces with a project each created from the Dashboard; real cards and links; "My Tasks" order and badges, done tasks leave the list; archive and restore of a project on the Dashboard; Archive and Delete buttons at the bottom left of the project page; Help page text |
 | reported 2026-10-26 | `npm run build` (Phase 2 step 2c-2b) | Passed: `tsc` and Vite build (99 modules) without errors |
+| reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2d) | Passed: edit project (name, description, validation, Cancel and Escape), edit task (title, priority, deadline, clearing and past deadlines, validation), a done task stays done, creating projects and tasks still works, edits kept after restarting |
+| reported 2026-10-26 | `npm run build` (Phase 2 step 2d) | Passed: `tsc` and Vite build (99 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -177,28 +179,26 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Step 6: Workspace and project overview screens with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [x] Step 7: Settings and Help screens (verified by the developer 2026-10-24 in development mode, with `npm run build`, and in a rebuilt release program)
   - [x] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
-- [ ] Phase 2: SQLite, schema and migrations, workspace, project, and task CRUD
+- [ ] **Phase 2:** SQLite, schema and migrations, workspace, project, and task CRUD (in progress)
+  - [x] SQL plugin installed, database file created (verified 2026-10-25)
+  - [x] Migrations 1 and 2, five tables, owner trigger (verified 2026-10-25)
+  - [x] Workspaces: create, rename, delete (verified 2026-10-25)
+  - [x] Projects: create, edit, archive, restore, delete (verified 2026-10-25 and 2026-10-26)
+  - [x] Tasks: create, edit, mark done, reopen, delete (verified 2026-10-26)
+  - [x] Dashboard, local profile, and progress on real data; mock data removed (verified 2026-10-26)
+  - [ ] Closing check: release build with the existing and with a fresh database file, database location decision, documentation review
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**Phase 2, step 2d: verify editing projects and tasks (developer, on Windows).** Written 2026-10-26 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified. Step 2c-2b is verified.
+**Phase 2, closing check (developer, on Windows), after one decision.**
 
-What changed: the project page has an "Edit project" button (name and description), and each task row has an "Edit" button (title, priority, deadline). The two "New ..." windows were generalized into `ProjectFormDialog` and `TaskFormDialog`, which serve both creating and editing; creating a project or task should still work as before. Validation rules are shared between creating and editing in the services.
+Decision (Proposed by Claude): keep the database in the app config folder (`%APPDATA%\io.github.andra-gs.avenqor`, Roaming), which is the plugin default. Moving it to the Local folder would need an absolute path and a change not yet verified with the plugin, and would leave existing data behind. Revisit before a public release. Not decided until the developer approves.
 
-```powershell
-cd D:\project-manager
-git pull origin phase-1-ui
-npm run tauri dev
-```
-
-1. Project page, "Edit project": the window opens with the current name and description. Change both and Save: the page, the top bar subtitle, and the workspace page card show the new text. An empty name is rejected with a red message and nothing changes; Cancel and Escape change nothing.
-2. Task "Edit": the window opens with the current title, priority, and deadline. Change all three: the row updates. Clear the deadline: the deadline badge disappears. Set it to yesterday: "Overdue" appears. An empty title is rejected.
-3. Editing a task that is done keeps it done (progress does not change).
-4. Create a new project (workspace page and Dashboard) and a new task: still works, and the windows open empty.
-5. Restart the app: all edits are still there.
-6. `npm run build` passes. Report any problem with the full text.
-
-After this: the Phase 2 closing check (a release build with a fresh database file and with the existing one, restart, and a decision about moving the database from the Roaming folder), then the Phase 2 documentation review and a decision on merging `phase-1-ui` into `main`.
+Closing check:
+1. Existing database: `npm run tauri build`, start `src-tauri\target\release\project-manager.exe`. The data made in development mode must appear (Dashboard, Settings Database line with schema version 2) and all pages must work in the release program.
+2. Fresh database: close the app, rename `avenqor.db` (`Rename-Item "$env:APPDATA\io.github.andra-gs.avenqor\avenqor.db" avenqor.db.backup`), start the release program: the app starts with empty data and the Database line says schema version 2, 5 tables. Create a workspace, project, and task, close the app, delete the new `avenqor.db`, and rename `avenqor.db.backup` back to `avenqor.db`. Do not delete the backup before the restore.
+3. Optionally install the NSIS installer (`src-tauri\target\release\bundle\nsis`) and start the installed app; it uses the same data folder.
+4. Claude reviews all documentation for accuracy, then proposes merging `phase-1-ui` into `main` (the developer merges).
