@@ -24,12 +24,6 @@ export function getDaysUntil(dueDate: string, now: Date = new Date()): number {
   return Math.round((parseLocalDate(dueDate).getTime() - today.getTime()) / MS_PER_DAY);
 }
 
-// Counts deadlines that are today or later ("upcoming") and those already past ("overdue").
-export function countDeadlines(dueDates: string[], now: Date = new Date()): { upcoming: number; overdue: number } {
-  const overdue = dueDates.filter((dueDate) => getDaysUntil(dueDate, now) < 0).length;
-  return { upcoming: dueDates.length - overdue, overdue };
-}
-
 export function getDueInfo(dueDate: string, now: Date = new Date()): DueInfo {
   const due = parseLocalDate(dueDate);
   const days = getDaysUntil(dueDate, now);

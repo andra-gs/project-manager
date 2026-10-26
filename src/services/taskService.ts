@@ -1,6 +1,7 @@
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/taskRepository";
 import type { TaskPriority } from "../types/task";
+import { getLocalProfileId } from "./profileService";
 
 export const TASK_TITLE_MAX_LENGTH = 120;
 const PRIORITIES: TaskPriority[] = ["low", "medium", "high"];
@@ -31,7 +32,17 @@ export async function createTask(
   if (!PRIORITIES.includes(priority)) throw new ValidationError("Choose a priority.");
   const dueDate = parseDueDate(dueDateInput);
 
-  await repository.insertTask({ id: crypto.randomUUID(), projectId, title, priority, dueDate, now: new Date().toISOString() });
+  // In the offline app every task is the local user's own, so it is assigned to the local profile.
+  const assigneeProfileId = await getLocalProfileId();
+  await repository.insertTask({
+    id: crypto.randomUUID(),
+    projectId,
+    title,
+    priority,
+    dueDate,
+    assigneeProfileId,
+    now: new Date().toISOString(),
+  });
 }
 
 export async function setTaskDone(id: string, done: boolean): Promise<void> {

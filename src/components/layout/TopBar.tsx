@@ -11,7 +11,7 @@ export function TopBar() {
   const workspace = workspaceState?.kind === "ready" ? workspaceState.data : undefined;
   const { state: projectState } = useProjectDetail(getProjectIdFromPath(pathname));
   const project = projectState?.kind === "ready" ? projectState.data : undefined;
-  const profile = useLocalProfile();
+  const { profile } = useLocalProfile();
   const heading = getPageHeading(pathname, { workspace, project });
 
   return (

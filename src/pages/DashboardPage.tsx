@@ -1,28 +1,43 @@
+import { useState } from "react";
 import { Button } from "../components/ui/Button";
+import { EmptyMessage } from "../components/ui/EmptyMessage";
+import { PlaceholderNotice } from "../components/ui/PlaceholderNotice";
 import { ActivitySection } from "../features/activity/ActivitySection";
 import { MyTasksSection } from "../features/dashboard/MyTasksSection";
 import { RecentProjectsSection } from "../features/dashboard/RecentProjectsSection";
 import { WorkspacesSection } from "../features/dashboard/WorkspacesSection";
+import { NewProjectDialog } from "../features/projects/NewProjectDialog";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { useLocalProfile } from "../hooks/useLocalProfile";
 import { getGreeting } from "../lib/greeting";
 
 // The page only arranges sections. Data comes from a hook; the look comes from shared components.
 export function DashboardPage() {
-  const data = useDashboardData();
-  const profile = useLocalProfile();
+  const { state, createProject } = useDashboardData();
+  const { profile } = useLocalProfile();
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
+
+  if (!state || state.kind === "loading") return <EmptyMessage>Loading dashboard…</EmptyMessage>;
+  if (state.kind !== "ready") {
+    return <PlaceholderNotice message={state.kind === "error" ? state.message : "The dashboard is not available."} />;
+  }
+
+  const data = state.data;
+  const greeting = getGreeting(new Date().getHours());
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-display font-bold">
-            {getGreeting(new Date().getHours())}, {profile.displayName}
-          </h2>
+          <h2 className="text-display font-bold">{profile.displayName ? `${greeting}, ${profile.displayName}` : greeting}</h2>
           <p className="text-body text-ink-muted">Here’s what needs your attention today.</p>
         </div>
-        {/* Creating projects arrives in Phase 2, so the button is shown but disabled. */}
-        <Button icon="plus" disabled title="Creating projects is not available yet">
+        <Button
+          icon="plus"
+          disabled={data.workspaces.length === 0}
+          title={data.workspaces.length === 0 ? "Create a workspace in Settings first" : undefined}
+          onClick={() => setNewProjectOpen(true)}
+        >
           New Project
         </Button>
       </div>
@@ -36,6 +51,13 @@ export function DashboardPage() {
         </div>
         <ActivitySection entries={data.activity} />
       </div>
+
+      <NewProjectDialog
+        open={newProjectOpen}
+        onClose={() => setNewProjectOpen(false)}
+        workspaces={data.workspaces}
+        onCreate={(name, description, workspaceId) => createProject(workspaceId ?? "", name, description)}
+      />
     </div>
   );
 }

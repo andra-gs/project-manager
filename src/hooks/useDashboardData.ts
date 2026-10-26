@@ -1,9 +1,23 @@
-import { useMemo } from "react";
-import { createMockDashboardData } from "../mocks/dashboard";
-import type { DashboardData } from "../types/dashboard";
+import { useEffect, useSyncExternalStore } from "react";
+import * as dashboardService from "../services/dashboardService";
+import * as projectService from "../services/projectService";
+import { createKeyedLoader } from "./createKeyedLoader";
 
-// The dashboard gets its data only through this hook. In Phase 2 the body is replaced by database
-// calls, and no screen needs to change.
-export function useDashboardData(): DashboardData {
-  return useMemo(() => createMockDashboardData(), []);
+const KEY = "dashboard";
+const loader = createKeyedLoader(() => dashboardService.getDashboardData());
+
+export function useDashboardData() {
+  const snapshot = useSyncExternalStore(loader.subscribe, loader.getSnapshot);
+
+  useEffect(() => {
+    void loader.load(KEY);
+  }, []);
+
+  // Throws when it fails, so the dialog can show the message.
+  async function createProject(workspaceId: string, name: string, description: string) {
+    await projectService.createProject(workspaceId, name, description);
+    await loader.load(KEY);
+  }
+
+  return { state: loader.stateFor(snapshot, KEY), createProject };
 }

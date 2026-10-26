@@ -1,5 +1,4 @@
 import { workspacePath } from "../../app/navigation";
-import { Badge } from "../../components/ui/Badge";
 import { EmptyMessage } from "../../components/ui/EmptyMessage";
 import { LinkCard } from "../../components/ui/LinkCard";
 import { SectionHeading } from "../../components/ui/SectionHeading";
@@ -23,9 +22,6 @@ export function WorkspacesSection({ workspaces }: { workspaces: WorkspaceOvervie
                     {pluralize(workspace.memberCount, "member")} · {pluralize(workspace.activeProjectCount, "active project")}
                   </p>
                 </div>
-                <Badge tone={workspace.status === "active" ? "success" : "neutral"} uppercase>
-                  {workspace.status}
-                </Badge>
               </div>
             </LinkCard>
           ))}

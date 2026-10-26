@@ -6,12 +6,13 @@ export async function insertTask(task: {
   title: string;
   priority: "low" | "medium" | "high";
   dueDate: string | null;
+  assigneeProfileId: string;
   now: string;
 }): Promise<void> {
   const database = await getDatabase();
   await database.execute(
-    "INSERT INTO tasks (id, project_id, title, priority, due_date, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $6)",
-    [task.id, task.projectId, task.title, task.priority, task.dueDate, task.now],
+    "INSERT INTO tasks (id, project_id, title, priority, due_date, assignee_profile_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $7)",
+    [task.id, task.projectId, task.title, task.priority, task.dueDate, task.assigneeProfileId, task.now],
   );
 }
 

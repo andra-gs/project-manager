@@ -59,34 +59,14 @@ export function ProjectPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <Card>
-            <h2 className="text-title font-bold break-words">{project.name}</h2>
-            <p className="mt-1 text-caption whitespace-pre-line text-ink-muted break-words">{project.description}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <Badge tone="accent">{project.progressPercent}% complete</Badge>
-              <Badge tone={archived ? "neutral" : "success"}>{archived ? "Archived" : "Active"}</Badge>
-            </div>
-          </Card>
+      <Card>
+        <h2 className="text-title font-bold break-words">{project.name}</h2>
+        <p className="mt-1 text-caption whitespace-pre-line text-ink-muted break-words">{project.description}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <Badge tone="accent">{project.progressPercent}% complete</Badge>
+          <Badge tone={archived ? "neutral" : "success"}>{archived ? "Archived" : "Active"}</Badge>
         </div>
-        <div className="flex shrink-0 gap-2">
-          <Button variant="secondary" disabled={busy} onClick={() => void toggleArchive()}>
-            {archived ? "Restore project" : "Archive project"}
-          </Button>
-          <Button
-            variant="danger"
-            disabled={busy}
-            onClick={() => {
-              setConfirmDeleteOpen(true);
-              setActionError(undefined);
-            }}
-          >
-            Delete project
-          </Button>
-        </div>
-      </div>
-      {actionError && !confirmDeleteOpen && <p className="text-caption text-danger">{actionError}</p>}
+      </Card>
 
       <section className="flex flex-col gap-3">
         <SectionHeading>Progress</SectionHeading>
@@ -113,6 +93,25 @@ export function ProjectPage() {
       </section>
 
       <ActivitySection entries={project.activity} />
+
+      <div className="flex flex-col gap-2 border-t border-border pt-6">
+        <div className="flex gap-2">
+          <Button variant="secondary" disabled={busy} onClick={() => void toggleArchive()}>
+            {archived ? "Restore project" : "Archive project"}
+          </Button>
+          <Button
+            variant="danger"
+            disabled={busy}
+            onClick={() => {
+              setConfirmDeleteOpen(true);
+              setActionError(undefined);
+            }}
+          >
+            Delete project
+          </Button>
+        </div>
+        {actionError && !confirmDeleteOpen && <p className="text-caption text-danger">{actionError}</p>}
+      </div>
 
       <NewTaskDialog open={newTaskOpen} onClose={() => setNewTaskOpen(false)} onCreate={createTask} />
       <ConfirmDialog

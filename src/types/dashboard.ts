@@ -1,4 +1,4 @@
-// What the dashboard needs. The database model is designed in Phase 2 and may refine these shapes.
+// What the dashboard needs. It is built from the database by dashboardService.
 import type { ActivityEntry } from "./activity";
 import type { ProjectSummary } from "./project";
 
@@ -7,15 +7,14 @@ export interface WorkspaceOverview {
   name: string;
   memberCount: number;
   activeProjectCount: number;
-  status: "active" | "archived";
 }
 
 export interface DashboardTask {
   id: string;
   title: string;
   projectName: string;
-  // Calendar date "YYYY-MM-DD".
-  dueDate: string;
+  // Calendar date "YYYY-MM-DD", or undefined when the task has no deadline.
+  dueDate: string | undefined;
 }
 
 export interface DashboardData {

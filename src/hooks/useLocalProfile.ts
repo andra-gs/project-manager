@@ -1,14 +1,31 @@
-import { MOCK_LOCAL_PROFILE_NAME } from "../mocks/localProfile";
+import { useEffect, useSyncExternalStore } from "react";
+import * as profileService from "../services/profileService";
+import type { LocalProfile } from "../types/profile";
+import { createKeyedLoader } from "./createKeyedLoader";
 
-export interface LocalProfile {
-  displayName: string;
-  initials: string;
-}
+const KEY = "local";
+const loader = createKeyedLoader(() => profileService.getLocalProfile());
+const NOT_LOADED: LocalProfile = { displayName: "", initials: "" };
 
-// Temporary: returns mock data until the local profile is stored in the database (Phase 2).
-export function useLocalProfile(): LocalProfile {
+export function useLocalProfile() {
+  const snapshot = useSyncExternalStore(loader.subscribe, loader.getSnapshot);
+
+  useEffect(() => {
+    void loader.load(KEY);
+  }, []);
+
+  const state = loader.stateFor(snapshot, KEY);
+
+  // Throws when it fails, so the form can show the message.
+  async function renameProfile(name: string) {
+    await profileService.renameLocalProfile(name);
+    await loader.load(KEY);
+  }
+
   return {
-    displayName: MOCK_LOCAL_PROFILE_NAME,
-    initials: MOCK_LOCAL_PROFILE_NAME.slice(0, 2).toUpperCase(),
+    // Empty strings until the profile is read from the database.
+    profile: state?.kind === "ready" ? state.data : NOT_LOADED,
+    loaded: state?.kind === "ready",
+    renameProfile,
   };
 }

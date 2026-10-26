@@ -140,6 +140,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-25 | `npm run build` (Phase 2 step 2c-1) | Passed: `tsc` and Vite build (93 modules) without errors |
 | reported 2026-10-25 | `npm run tauri dev` (step 2c-1b), Settings | Passed: project names and descriptions wrap onto more lines without breaking the layout. Database line with a workspace and 2 projects: `stored: 1 workspace, 2 projects, 0 tasks`; after deleting the workspace: `stored: 0 workspaces, 0 projects, 0 tasks`. This verifies that deleting a workspace deletes its projects (cascade) |
 | reported 2026-10-25 | `npm run build` (step 2c-1b) | Passed: `tsc` and Vite build (93 modules) without errors |
+| reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2c-2a) | Passed: the project page with no tasks (0%); empty-title task rejected; `Task 1` showed "Overdue · Oct 25", `Task 2` "Tomorrow", `Task 3` no badge; mark done, reopen, progress 33% and 67%; data still there after restarting; task delete with confirmation; workspace page card and stats; archive and restore; the Database line counts, the cascade project to tasks, and workspace deletion all as expected |
+| reported 2026-10-26 | `npm run build` (Phase 2 step 2c-2a) | Passed: `tsc` and Vite build (101 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -180,9 +182,14 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2c-2a: verify tasks and the project page on real data (developer, on Windows).** Written 2026-10-26 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified.
+**Phase 2, step 2c-2b: verify the Dashboard on real data and the cleanup (developer, on Windows).** Written 2026-10-26 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified.
 
-What changed: the project page (`src/pages/ProjectPage.tsx`) reads the database. New: task list with "Mark done" or "Reopen" and "Delete" per task, a "New Task" window (title, priority, optional deadline), "Archive project" or "Restore project", and "Delete project" with confirmation. The workspace page lists archived projects in an "Archived" section. New files: `taskRepository`, `taskService`, `useProjectDetail` (rewritten), `createKeyedLoader`, `NewTaskDialog`, `TaskList`, `SelectField`; `TextField` accepts `type="date"`. The task status value in the code is now `in_progress` (with an underscore), matching the database. Deviation from Figma: "Project Settings" is replaced by the Archive and Delete buttons; the task list is a simple list, and the Kanban board comes in Phase 3. Marking a task done sets its status to `done`; reopening sets it back to `todo`.
+What changed:
+- The Dashboard reads the database (`useDashboardData`, `dashboardService`, `dashboardRepository`): workspaces with member and active project counts, the 3 most recently created or changed active projects, and "My Tasks" (open tasks assigned to you, soonest deadline first, at most 5). "New Project" now works there and asks for the workspace.
+- New tasks are assigned to the local profile automatically, because the offline app has one user. Tasks created earlier have no assignee, so they do not appear in "My Tasks".
+- The temporary mock data (`src/mocks/`) is removed. The top bar and greeting now use the real local profile, which starts as "Me". Settings has a form to change the display name (up to 40 characters).
+- On the project page the Archive and Delete buttons moved to the bottom left (your request), below Activity.
+- Deviations from Figma: the "ACTIVE" badge on workspace cards is removed (workspaces have no status); Activity is empty everywhere until Phase 3.
 
 ```powershell
 cd D:\project-manager
@@ -190,16 +197,13 @@ git pull origin phase-1-ui
 npm run tauri dev
 ```
 
-1. Create workspace `Test A` and project `Project 1`. Open it: 0%, "0 of 0 tasks completed", "No tasks yet.", an empty Activity section.
-2. New Task with an empty title: red message, nothing saved. Create `Task 1` (High, a deadline in the past), `Task 2` (Medium, tomorrow), `Task 3` (Low, no deadline): rows show priority, status, and the deadline badge ("Overdue · date", "Tomorrow", none).
-3. Mark `Task 1` done: status Done, its deadline badge disappears, progress 33% and "1 of 3 tasks completed". Mark `Task 2` done: 67%. Reopen `Task 2`: 33%.
-4. Close the app completely and start it again: tasks, statuses, and progress are still there.
-5. Delete `Task 3`: Cancel and Escape keep it; Delete removes it; progress is 50%.
-6. Workspace page: the project card shows 50%; stats show 2 tasks, 1 completed. A task with a past deadline that is still open makes "Deadlines" show `overdue`; marking it done removes that.
-7. Archive the project: badge Archived; on the workspace page it moves to "Archived" and the stats show 0 projects. Open it and Restore project: it returns.
-8. Settings, Database line shows real counts (for example `1 workspace, 1 project, 2 tasks`). Delete the project from its page: you return to the workspace page and the line says `0 projects, 0 tasks` (verifies the cascade project to tasks). Create a project with a task again and delete the workspace: counts go to 0.
-9. `npm run build` passes. Report any problem with the full text.
+1. Settings, Local profile: change the name `Me` to `Andra` and Save: "Saved." appears. The top bar and the Dashboard greeting show `Andra`. An empty name and a name longer than 40 characters are rejected with a red message. Restart the app: the name is still `Andra`.
+2. With no workspaces: the Dashboard shows empty messages and "New Project" is disabled.
+3. Create two workspaces and, through the Dashboard "New Project", a project in each (choose the workspace in the window). The cards show the right counts, and clicking a workspace card or a project card opens its real page (no "does not exist").
+4. Add tasks: one with a deadline in the past, one tomorrow, one without a deadline. "My Tasks" lists them, soonest deadline first, with the badges "Overdue · date", "Tomorrow", and none. Mark one done: it leaves "My Tasks" after you return to the Dashboard.
+5. Archive a project: it disappears from Recent Projects. Restore it: it returns.
+6. The project page: the Archive and Delete buttons are at the bottom left, below Activity, and look right.
+7. Help page: no longer says the data is sample data.
+8. `npm run build` passes. Report any problem with the full text.
 
-Expected, not a bug: the Dashboard still shows mock data, and its workspace cards open "This workspace does not exist".
-
-Then step 2c-2b: the Dashboard on real data (workspaces, recent projects, my tasks, deadlines, enabling "New Project" there), removing the unused mock data, and cleaning up documentation.
+After this step Phase 2's core CRUD is done: remaining Phase 2 items are only editing a project's name and description and editing a task (title, priority, deadline), which are small and can be added next, then the Phase 2 closing check (restart, release build, upgrade of an existing database file).

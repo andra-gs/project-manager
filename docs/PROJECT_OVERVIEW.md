@@ -58,7 +58,7 @@ The roadmap in `CLAUDE.md` places the MVP features in these phases.
 
 | ID | Feature | Planned phase | Status |
 |---|---|---|---|
-| A | **Dashboard**: workspace summary, recent projects, my tasks, upcoming deadlines, project progress, recent activity | Phase 1 (interface, mock data), Phase 2 (real data) | Agreed, not started |
+| A | **Dashboard**: workspace summary, recent projects, my tasks, upcoming deadlines, project progress, recent activity | Phase 1 (interface), Phase 2 (real data) | Agreed; interface Implemented, real data written 2026-10-26 and awaiting verification |
 | B | **Workspace management**: create, view, edit, delete; list projects in a workspace | Phase 2 | Agreed, not started |
 | C | **Project management**: create, view, edit, archive or delete; description, status, progress; members as a data model only | Phase 2 | Agreed, not started |
 | D | **Task management**: title, description, status, priority, deadline, labels, assignee or local responsibility field, subtasks, checklists, notes | Phase 2 (create and edit), Phase 3 (details, checklists) | Agreed, not started |

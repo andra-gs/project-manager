@@ -12,7 +12,7 @@ export function RecentProjectsSection({ projects }: { projects: ProjectSummary[]
     <section className="flex flex-col gap-3">
       <SectionHeading>Recent Projects</SectionHeading>
       {projects.length === 0 ? (
-        <EmptyMessage>No projects yet.</EmptyMessage>
+        <EmptyMessage>No projects yet. Create a workspace in Settings, then add a project.</EmptyMessage>
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {projects.map((project, index) => (

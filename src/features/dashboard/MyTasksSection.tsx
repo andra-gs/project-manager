@@ -16,13 +16,13 @@ export function MyTasksSection({ tasks }: { tasks: DashboardTask[] }) {
         ) : (
           <div className="flex flex-col gap-2">
             {tasks.map((task) => {
-              const due = getDueInfo(task.dueDate);
+              const due = task.dueDate ? getDueInfo(task.dueDate) : undefined;
               return (
                 <ListRow
                   key={task.id}
                   title={task.title}
                   subtitle={task.projectName}
-                  trailing={<Badge tone={due.tone}>{due.label}</Badge>}
+                  trailing={due ? <Badge tone={due.tone}>{due.label}</Badge> : undefined}
                 />
               );
             })}

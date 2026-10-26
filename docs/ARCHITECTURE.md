@@ -157,9 +157,9 @@ src/
   features/        activity/, dashboard/, projects/, workspaces/ (sections and cards that screens compose)
   repositories/    databaseStatusRepository, profileRepository, workspaceRepository, projectRepository, taskRepository (the only code that writes SQL)
   services/        profileService, workspaceService, projectService, taskService (validation and business rules)
-  hooks/           useWorkspaces, useWorkspaceDetail, useProjectDetail (read the database), createKeyedLoader (shared loading helper), useDatabaseStatus, useDashboardData (still mock), useLocalProfile, useSidebarCollapsed
+  hooks/           useWorkspaces, useWorkspaceDetail, useProjectDetail (read the database), createKeyedLoader (shared loading helper), useDatabaseStatus, useDashboardData, useLocalProfile (all read the database), useSidebarCollapsed
   lib/             appInfo, classNames, database (the only code that opens the database), errors, dueDate, greeting, layout, progress, relativeTime, text
-  mocks/           workspaces, projects, dashboard, helpers, localProfile (TEMPORARY mock data)
+  (the temporary mock-data folder `src/mocks/` was removed on 2026-10-26, step 2c-2b)
   pages/           Dashboard, Workspace, Project, MyTasks, Calendar, Documents, Settings, Help, NotFound
   styles/          tokens.css
   types/           activity, dashboard, project, task, workspace
@@ -178,7 +178,7 @@ Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/targe
 
 - **Routing:** React Router 7 (`react-router`, `^7.18.4` in `package.json`) in `HashRouter` mode. The current page is kept after `#` in the address, because a packaged desktop app has no web server to answer other addresses. Routes: `/`, `/my-tasks`, `/calendar`, `/documents`, `/workspaces/:workspaceId`, `/projects/:projectId`, `/settings`, `/help`, and a "not found" fallback. Verified in the release build: all menu items open their pages.
 - **Frame:** `AppShell` places `Sidebar` on the left and `TopBar` plus the page content on the right. The page title in the top bar comes from `src/app/navigation.ts`.
-- **Data rule in practice:** screens read workspaces and the local profile only through the hooks in `src/hooks/`. The hooks currently return mock data from `src/mocks/`. In Phase 2 only the hooks change.
+- **Data rule in practice:** screens read workspaces and the local profile only through the hooks in `src/hooks/`. Since Phase 2 the hooks read the database through services and repositories; the mock data was removed.
 - **Screens (Phase 1):** Dashboard (verified by the developer 2026-10-24). Workspace and Project overview are verified by the developer (2026-10-24, development mode and `npm run build`). Settings and Help are written as read-only screens (awaiting verification). My Tasks, Calendar, and Documents are still placeholders (`PlaceholderNotice`, temporary) until Phase 3.
 - **Screens compose, hooks fetch:** pages arrange sections from `src/features/`; the sections and cards use the shared components. Progress percentages and deadline counts are calculated from task counts and dates (`src/lib/progress.ts`, `src/lib/dueDate.ts`), never typed in.
 - **Collapsible sidebar:** it collapses to icons below a window width of 1100px, by the toggle button, or by dragging its edge (two states only, no stored choice).
