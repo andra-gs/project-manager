@@ -6,7 +6,8 @@ import type { ProjectDetail, ProjectStatus } from "../types/project";
 export const PROJECT_NAME_MAX_LENGTH = 60;
 export const PROJECT_DESCRIPTION_MAX_LENGTH = 300;
 
-export async function createProject(workspaceId: string, nameInput: string, descriptionInput: string): Promise<void> {
+// Business rules for the fields of a project. Returns the cleaned values or throws a ValidationError.
+function validateProjectFields(nameInput: string, descriptionInput: string): { name: string; description: string } {
   const name = nameInput.trim();
   const description = descriptionInput.trim();
   if (name.length === 0) throw new ValidationError("Enter a project name.");
@@ -16,6 +17,11 @@ export async function createProject(workspaceId: string, nameInput: string, desc
   if (description.length > PROJECT_DESCRIPTION_MAX_LENGTH) {
     throw new ValidationError(`The description can have at most ${PROJECT_DESCRIPTION_MAX_LENGTH} characters.`);
   }
+  return { name, description };
+}
+
+export async function createProject(workspaceId: string, nameInput: string, descriptionInput: string): Promise<void> {
+  const { name, description } = validateProjectFields(nameInput, descriptionInput);
   await repository.insertProject({
     id: crypto.randomUUID(),
     workspaceId,
@@ -23,6 +29,12 @@ export async function createProject(workspaceId: string, nameInput: string, desc
     description,
     now: new Date().toISOString(),
   });
+}
+
+export async function updateProject(id: string, nameInput: string, descriptionInput: string): Promise<void> {
+  const { name, description } = validateProjectFields(nameInput, descriptionInput);
+  const changed = await repository.updateProjectDetails(id, name, description, new Date().toISOString());
+  if (!changed) throw new ValidationError("This project no longer exists.");
 }
 
 // Everything the project page shows. Progress is calculated from the tasks, never stored.

@@ -142,6 +142,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-25 | `npm run build` (step 2c-1b) | Passed: `tsc` and Vite build (93 modules) without errors |
 | reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2c-2a) | Passed: the project page with no tasks (0%); empty-title task rejected; `Task 1` showed "Overdue · Oct 25", `Task 2` "Tomorrow", `Task 3` no badge; mark done, reopen, progress 33% and 67%; data still there after restarting; task delete with confirmation; workspace page card and stats; archive and restore; the Database line counts, the cascade project to tasks, and workspace deletion all as expected |
 | reported 2026-10-26 | `npm run build` (Phase 2 step 2c-2a) | Passed: `tsc` and Vite build (101 modules) without errors |
+| reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2c-2b) | Passed, all items as expected: renaming the local profile (shown in the top bar and greeting, validation, kept after restart); empty Dashboard with "New Project" disabled; two workspaces with a project each created from the Dashboard; real cards and links; "My Tasks" order and badges, done tasks leave the list; archive and restore of a project on the Dashboard; Archive and Delete buttons at the bottom left of the project page; Help page text |
+| reported 2026-10-26 | `npm run build` (Phase 2 step 2c-2b) | Passed: `tsc` and Vite build (99 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -182,14 +184,9 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 2, step 2c-2b: verify the Dashboard on real data and the cleanup (developer, on Windows).** Written 2026-10-26 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified.
+**Phase 2, step 2d: verify editing projects and tasks (developer, on Windows).** Written 2026-10-26 on branch `phase-1-ui`; Claude could not compile or run it, so nothing is verified. Step 2c-2b is verified.
 
-What changed:
-- The Dashboard reads the database (`useDashboardData`, `dashboardService`, `dashboardRepository`): workspaces with member and active project counts, the 3 most recently created or changed active projects, and "My Tasks" (open tasks assigned to you, soonest deadline first, at most 5). "New Project" now works there and asks for the workspace.
-- New tasks are assigned to the local profile automatically, because the offline app has one user. Tasks created earlier have no assignee, so they do not appear in "My Tasks".
-- The temporary mock data (`src/mocks/`) is removed. The top bar and greeting now use the real local profile, which starts as "Me". Settings has a form to change the display name (up to 40 characters).
-- On the project page the Archive and Delete buttons moved to the bottom left (your request), below Activity.
-- Deviations from Figma: the "ACTIVE" badge on workspace cards is removed (workspaces have no status); Activity is empty everywhere until Phase 3.
+What changed: the project page has an "Edit project" button (name and description), and each task row has an "Edit" button (title, priority, deadline). The two "New ..." windows were generalized into `ProjectFormDialog` and `TaskFormDialog`, which serve both creating and editing; creating a project or task should still work as before. Validation rules are shared between creating and editing in the services.
 
 ```powershell
 cd D:\project-manager
@@ -197,13 +194,11 @@ git pull origin phase-1-ui
 npm run tauri dev
 ```
 
-1. Settings, Local profile: change the name `Me` to `Andra` and Save: "Saved." appears. The top bar and the Dashboard greeting show `Andra`. An empty name and a name longer than 40 characters are rejected with a red message. Restart the app: the name is still `Andra`.
-2. With no workspaces: the Dashboard shows empty messages and "New Project" is disabled.
-3. Create two workspaces and, through the Dashboard "New Project", a project in each (choose the workspace in the window). The cards show the right counts, and clicking a workspace card or a project card opens its real page (no "does not exist").
-4. Add tasks: one with a deadline in the past, one tomorrow, one without a deadline. "My Tasks" lists them, soonest deadline first, with the badges "Overdue · date", "Tomorrow", and none. Mark one done: it leaves "My Tasks" after you return to the Dashboard.
-5. Archive a project: it disappears from Recent Projects. Restore it: it returns.
-6. The project page: the Archive and Delete buttons are at the bottom left, below Activity, and look right.
-7. Help page: no longer says the data is sample data.
-8. `npm run build` passes. Report any problem with the full text.
+1. Project page, "Edit project": the window opens with the current name and description. Change both and Save: the page, the top bar subtitle, and the workspace page card show the new text. An empty name is rejected with a red message and nothing changes; Cancel and Escape change nothing.
+2. Task "Edit": the window opens with the current title, priority, and deadline. Change all three: the row updates. Clear the deadline: the deadline badge disappears. Set it to yesterday: "Overdue" appears. An empty title is rejected.
+3. Editing a task that is done keeps it done (progress does not change).
+4. Create a new project (workspace page and Dashboard) and a new task: still works, and the windows open empty.
+5. Restart the app: all edits are still there.
+6. `npm run build` passes. Report any problem with the full text.
 
-After this step Phase 2's core CRUD is done: remaining Phase 2 items are only editing a project's name and description and editing a task (title, priority, deadline), which are small and can be added next, then the Phase 2 closing check (restart, release build, upgrade of an existing database file).
+After this: the Phase 2 closing check (a release build with a fresh database file and with the existing one, restart, and a decision about moving the database from the Roaming folder), then the Phase 2 documentation review and a decision on merging `phase-1-ui` into `main`.

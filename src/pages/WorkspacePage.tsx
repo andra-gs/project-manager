@@ -7,7 +7,7 @@ import { EmptyMessage } from "../components/ui/EmptyMessage";
 import { PlaceholderNotice } from "../components/ui/PlaceholderNotice";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { Stat } from "../components/ui/Stat";
-import { NewProjectDialog } from "../features/projects/NewProjectDialog";
+import { ProjectFormDialog } from "../features/projects/ProjectFormDialog";
 import { ProjectCard } from "../features/projects/ProjectCard";
 import { WorkspaceActivitySection } from "../features/workspaces/WorkspaceActivitySection";
 import { useWorkspaceDetail } from "../hooks/useWorkspaceDetail";
@@ -92,7 +92,13 @@ export function WorkspacePage() {
 
       <WorkspaceActivitySection entries={workspace.activity} />
 
-      <NewProjectDialog open={newProjectOpen} onClose={() => setNewProjectOpen(false)} onCreate={createProject} />
+      <ProjectFormDialog
+        open={newProjectOpen}
+        title="New project"
+        submitLabel="Create project"
+        onClose={() => setNewProjectOpen(false)}
+        onSubmit={createProject}
+      />
     </div>
   );
 }

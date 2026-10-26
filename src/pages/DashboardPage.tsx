@@ -6,7 +6,7 @@ import { ActivitySection } from "../features/activity/ActivitySection";
 import { MyTasksSection } from "../features/dashboard/MyTasksSection";
 import { RecentProjectsSection } from "../features/dashboard/RecentProjectsSection";
 import { WorkspacesSection } from "../features/dashboard/WorkspacesSection";
-import { NewProjectDialog } from "../features/projects/NewProjectDialog";
+import { ProjectFormDialog } from "../features/projects/ProjectFormDialog";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { useLocalProfile } from "../hooks/useLocalProfile";
 import { getGreeting } from "../lib/greeting";
@@ -52,11 +52,13 @@ export function DashboardPage() {
         <ActivitySection entries={data.activity} />
       </div>
 
-      <NewProjectDialog
+      <ProjectFormDialog
         open={newProjectOpen}
+        title="New project"
+        submitLabel="Create project"
         onClose={() => setNewProjectOpen(false)}
         workspaces={data.workspaces}
-        onCreate={(name, description, workspaceId) => createProject(workspaceId ?? "", name, description)}
+        onSubmit={(name, description, workspaceId) => createProject(workspaceId ?? "", name, description)}
       />
     </div>
   );

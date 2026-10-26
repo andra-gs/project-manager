@@ -27,6 +27,15 @@ export function useProjectDetail(projectId: string | undefined) {
       await taskService.createTask(projectId, title, priority, dueDate);
       await refresh();
     },
+    async updateTask(taskId: string, title: string, priority: TaskPriority, dueDate: string) {
+      await taskService.updateTask(taskId, title, priority, dueDate);
+      await refresh();
+    },
+    async updateProject(name: string, description: string) {
+      if (!projectId) return;
+      await projectService.updateProject(projectId, name, description);
+      await refresh();
+    },
     async setTaskDone(taskId: string, done: boolean) {
       await taskService.setTaskDone(taskId, done);
       await refresh();

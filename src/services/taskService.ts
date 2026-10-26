@@ -18,20 +18,28 @@ function parseDueDate(input: string): string | null {
   return value;
 }
 
-export async function createTask(
-  projectId: string,
+// Business rules for the fields of a task. Returns the cleaned values or throws a ValidationError.
+function validateTaskFields(
   titleInput: string,
   priority: TaskPriority,
   dueDateInput: string,
-): Promise<void> {
+): { title: string; dueDate: string | null } {
   const title = titleInput.trim();
   if (title.length === 0) throw new ValidationError("Enter a task title.");
   if (title.length > TASK_TITLE_MAX_LENGTH) {
     throw new ValidationError(`The title can have at most ${TASK_TITLE_MAX_LENGTH} characters.`);
   }
   if (!PRIORITIES.includes(priority)) throw new ValidationError("Choose a priority.");
-  const dueDate = parseDueDate(dueDateInput);
+  return { title, dueDate: parseDueDate(dueDateInput) };
+}
 
+export async function createTask(
+  projectId: string,
+  titleInput: string,
+  priority: TaskPriority,
+  dueDateInput: string,
+): Promise<void> {
+  const { title, dueDate } = validateTaskFields(titleInput, priority, dueDateInput);
   // In the offline app every task is the local user's own, so it is assigned to the local profile.
   const assigneeProfileId = await getLocalProfileId();
   await repository.insertTask({
@@ -43,6 +51,17 @@ export async function createTask(
     assigneeProfileId,
     now: new Date().toISOString(),
   });
+}
+
+export async function updateTask(
+  id: string,
+  titleInput: string,
+  priority: TaskPriority,
+  dueDateInput: string,
+): Promise<void> {
+  const { title, dueDate } = validateTaskFields(titleInput, priority, dueDateInput);
+  const changed = await repository.updateTaskDetails(id, { title, priority, dueDate }, new Date().toISOString());
+  if (!changed) throw new ValidationError("This task no longer exists.");
 }
 
 export async function setTaskDone(id: string, done: boolean): Promise<void> {

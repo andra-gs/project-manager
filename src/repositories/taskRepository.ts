@@ -31,3 +31,17 @@ export async function deleteTask(id: string): Promise<boolean> {
   const result = await database.execute("DELETE FROM tasks WHERE id = $1", [id]);
   return result.rowsAffected > 0;
 }
+
+// Returns true when the task existed and was changed.
+export async function updateTaskDetails(
+  id: string,
+  details: { title: string; priority: "low" | "medium" | "high"; dueDate: string | null },
+  now: string,
+): Promise<boolean> {
+  const database = await getDatabase();
+  const result = await database.execute(
+    "UPDATE tasks SET title = $1, priority = $2, due_date = $3, updated_at = $4 WHERE id = $5",
+    [details.title, details.priority, details.dueDate, now, id],
+  );
+  return result.rowsAffected > 0;
+}

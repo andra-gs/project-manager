@@ -7,18 +7,24 @@ import { TextField } from "../../components/ui/TextField";
 import { describeError } from "../../lib/errors";
 import { PROJECT_DESCRIPTION_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH } from "../../services/projectService";
 
-interface NewProjectDialogProps {
+interface ProjectFormDialogProps {
   open: boolean;
+  title: string;
+  submitLabel: string;
   onClose: () => void;
+  // Values to start with (when editing). Leave out for an empty form.
+  initial?: { name: string; description: string };
   // Pass the list when the user must choose the workspace (for example on the Dashboard).
-  // Leave it out when the workspace is already known (the workspace page).
+  // Leave it out when the workspace is already known.
   workspaces?: { id: string; name: string }[];
-  onCreate: (name: string, description: string, workspaceId?: string) => Promise<void>;
+  onSubmit: (name: string, description: string, workspaceId?: string) => Promise<void>;
 }
 
-function NewProjectForm({ onClose, workspaces, onCreate }: Omit<NewProjectDialogProps, "open">) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+type FormProps = Omit<ProjectFormDialogProps, "open" | "title">;
+
+function ProjectForm({ submitLabel, onClose, initial, workspaces, onSubmit }: FormProps) {
+  const [name, setName] = useState(initial?.name ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
   const [workspaceId, setWorkspaceId] = useState(workspaces?.[0]?.id);
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -28,7 +34,7 @@ function NewProjectForm({ onClose, workspaces, onCreate }: Omit<NewProjectDialog
     setBusy(true);
     setError(undefined);
     try {
-      await onCreate(name, description, workspaceId);
+      await onSubmit(name, description, workspaceId);
       onClose();
     } catch (failure) {
       setError(describeError(failure));
@@ -66,17 +72,18 @@ function NewProjectForm({ onClose, workspaces, onCreate }: Omit<NewProjectDialog
           Cancel
         </Button>
         <Button type="submit" disabled={busy}>
-          Create project
+          {submitLabel}
         </Button>
       </div>
     </form>
   );
 }
 
-export function NewProjectDialog({ open, onClose, workspaces, onCreate }: NewProjectDialogProps) {
+// Used to create a project and to edit one. The form is rebuilt each time the window opens.
+export function ProjectFormDialog({ open, title, ...formProps }: ProjectFormDialogProps) {
   return (
-    <Dialog open={open} title="New project" onClose={onClose}>
-      {open && <NewProjectForm onClose={onClose} workspaces={workspaces} onCreate={onCreate} />}
+    <Dialog open={open} title={title} onClose={formProps.onClose}>
+      {open && <ProjectForm {...formProps} />}
     </Dialog>
   );
 }

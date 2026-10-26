@@ -9,15 +9,18 @@ import { PriorityBadge } from "../../components/ui/PriorityBadge";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { getDueInfo } from "../../lib/dueDate";
 import { describeError } from "../../lib/errors";
-import type { TaskItem } from "../../types/task";
+import type { TaskItem, TaskPriority } from "../../types/task";
+import { TaskFormDialog } from "./TaskFormDialog";
 
 interface TaskListProps {
   tasks: TaskItem[];
   onSetDone: (taskId: string, done: boolean) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
+  onUpdate: (taskId: string, title: string, priority: TaskPriority, dueDate: string) => Promise<void>;
 }
 
-export function TaskList({ tasks, onSetDone, onDelete }: TaskListProps) {
+export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps) {
+  const [editing, setEditing] = useState<TaskItem>();
   const [deleting, setDeleting] = useState<TaskItem>();
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -53,6 +56,9 @@ export function TaskList({ tasks, onSetDone, onDelete }: TaskListProps) {
                   <div className="flex items-center gap-2">
                     <PriorityBadge priority={task.priority} />
                     <StatusBadge status={task.status} />
+                    <Button variant="secondary" disabled={busy} onClick={() => setEditing(task)}>
+                      Edit
+                    </Button>
                     <Button variant="secondary" disabled={busy} onClick={() => void run(() => onSetDone(task.id, !done))}>
                       {done ? "Reopen" : "Mark done"}
                     </Button>
@@ -75,6 +81,14 @@ export function TaskList({ tasks, onSetDone, onDelete }: TaskListProps) {
       )}
       {error && !deleting && <p className="mt-3 text-caption text-danger">{error}</p>}
 
+      <TaskFormDialog
+        open={editing !== undefined}
+        title="Edit task"
+        submitLabel="Save"
+        initial={editing ? { title: editing.title, priority: editing.priority, dueDate: editing.dueDate } : undefined}
+        onClose={() => setEditing(undefined)}
+        onSubmit={(title, priority, dueDate) => (editing ? onUpdate(editing.id, title, priority, dueDate) : Promise.resolve())}
+      />
       <ConfirmDialog
         open={deleting !== undefined}
         title="Delete this task?"

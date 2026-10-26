@@ -86,3 +86,13 @@ export async function deleteProject(id: string): Promise<boolean> {
   const result = await database.execute("DELETE FROM projects WHERE id = $1", [id]);
   return result.rowsAffected > 0;
 }
+
+// Returns true when the project existed and was changed.
+export async function updateProjectDetails(id: string, name: string, description: string, now: string): Promise<boolean> {
+  const database = await getDatabase();
+  const result = await database.execute(
+    "UPDATE projects SET name = $1, description = $2, updated_at = $3 WHERE id = $4",
+    [name, description, now, id],
+  );
+  return result.rowsAffected > 0;
+}

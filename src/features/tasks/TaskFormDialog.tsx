@@ -7,11 +7,17 @@ import { describeError } from "../../lib/errors";
 import { TASK_TITLE_MAX_LENGTH } from "../../services/taskService";
 import type { TaskPriority } from "../../types/task";
 
-interface NewTaskDialogProps {
+interface TaskFormDialogProps {
   open: boolean;
+  title: string;
+  submitLabel: string;
   onClose: () => void;
-  onCreate: (title: string, priority: TaskPriority, dueDate: string) => Promise<void>;
+  // Values to start with (when editing). Leave out for an empty form with medium priority.
+  initial?: { title: string; priority: TaskPriority; dueDate: string | undefined };
+  onSubmit: (title: string, priority: TaskPriority, dueDate: string) => Promise<void>;
 }
+
+type FormProps = Omit<TaskFormDialogProps, "open" | "title">;
 
 const PRIORITY_OPTIONS = [
   { value: "low", label: "Low" },
@@ -19,10 +25,10 @@ const PRIORITY_OPTIONS = [
   { value: "high", label: "High" },
 ];
 
-function NewTaskForm({ onClose, onCreate }: Omit<NewTaskDialogProps, "open">) {
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("medium");
-  const [dueDate, setDueDate] = useState("");
+function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [priority, setPriority] = useState<TaskPriority>(initial?.priority ?? "medium");
+  const [dueDate, setDueDate] = useState(initial?.dueDate ?? "");
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
 
@@ -31,7 +37,7 @@ function NewTaskForm({ onClose, onCreate }: Omit<NewTaskDialogProps, "open">) {
     setBusy(true);
     setError(undefined);
     try {
-      await onCreate(title, priority, dueDate);
+      await onSubmit(title, priority, dueDate);
       onClose();
     } catch (failure) {
       setError(describeError(failure));
@@ -62,17 +68,18 @@ function NewTaskForm({ onClose, onCreate }: Omit<NewTaskDialogProps, "open">) {
           Cancel
         </Button>
         <Button type="submit" disabled={busy}>
-          Create task
+          {submitLabel}
         </Button>
       </div>
     </form>
   );
 }
 
-export function NewTaskDialog({ open, onClose, onCreate }: NewTaskDialogProps) {
+// Used to create a task and to edit one. The form is rebuilt each time the window opens.
+export function TaskFormDialog({ open, title, ...formProps }: TaskFormDialogProps) {
   return (
-    <Dialog open={open} title="New task" onClose={onClose}>
-      {open && <NewTaskForm onClose={onClose} onCreate={onCreate} />}
+    <Dialog open={open} title={title} onClose={formProps.onClose}>
+      {open && <TaskForm {...formProps} />}
     </Dialog>
   );
 }
