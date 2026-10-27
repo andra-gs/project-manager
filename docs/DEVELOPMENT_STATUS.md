@@ -159,7 +159,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
 5. **Focus outline cut off in the sidebar (found 2026-10-23, fix verified by the developer on 2026-10-23).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
 6. **Branch not merged.** All Phase 1 work is on `phase-1-ui`. `main` changes only when the developer merges.
-7. **Database folder is Roaming (found 2026-10-25).** The plugin puts `avenqor.db` in `%APPDATA%` (Roaming), the app config folder. On a company or school computer with roaming profiles, Windows may copy that folder to a server at logon. For a personal computer this is harmless. Moving it to the Local folder would need a Rust-side path setting; decide before release.
+7. **Database folder is Roaming (found 2026-10-25; keeping it for now was Agreed 2026-10-27, revisit before a public release).** The plugin puts `avenqor.db` in `%APPDATA%` (Roaming), the app config folder. On a company or school computer with roaming profiles, Windows may copy that folder to a server at logon. For a personal computer this is harmless. Moving it to the Local folder would need a Rust-side path setting; decide before release.
 8. **Open decisions** are listed in [ARCHITECTURE.md](ARCHITECTURE.md): database access approach (D1), styling, routing, local user or profile, and date format.
 
 ## Roadmap checklist
@@ -188,15 +188,11 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Tasks: create, edit, mark done, reopen, delete (verified 2026-10-26)
   - [x] Dashboard, local profile, and progress on real data; mock data removed (verified 2026-10-26)
   - [x] Closing check: release build with the existing and with a fresh database file (reported by the developer 2026-10-27), documentation review (2026-10-27)
-  - [ ] Database location decision: Roaming folder kept for now (Proposed, not yet explicitly approved; see Known issues 7)
+  - [x] Database location decision: Roaming folder kept for now, to be revisited before a public release (Agreed by the developer 2026-10-27; see Known issues 7)
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**1. Developer: merge `phase-1-ui` into `main`** (Claude proposes, the developer merges). On GitHub: open a pull request from `phase-1-ui` to `main`, check that it shows the expected changes, and merge it. Then in PowerShell: `git checkout main`, `git pull origin main`, `npm run build`.
-
-**2. Decision still open:** approve keeping the database in the Roaming app config folder (`%APPDATA%\io.github.andra-gs.avenqor`) for now, to be revisited before a public release.
-
-**3. Phase 3, step 1 (Claude proposes a plan first):** Kanban board for a project (columns To Do, In Progress, Review, Done; move tasks; persist status). This needs a task status change in `taskService` and `taskRepository` and a board page; no new migration is expected because `tasks.status` already exists.
+**Phase 3, step 3a: Kanban board** on branch `phase-3-kanban` (created from `phase-1-ui`). Plan sent to the developer on 2026-10-27, waiting for approval. Scope: change a task's status between To Do, In Progress, Review, and Done from a board page for one project (`#/projects/:projectId/board`), with the change saved in SQLite. Drag and drop is a separate later step (3b). Merging `phase-1-ui` into `main` is still the developer's to do, at any time.
