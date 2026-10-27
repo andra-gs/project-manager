@@ -7,7 +7,7 @@ This file is the project's memory between sessions. It must be updated before ev
 ## Current state
 
 - **Phase:** Phases 0, 1, and 2 are **complete** (verified by the developer; Phase 2 closing check reported 2026-10-27). All work is on branch `phase-1-ui`, not yet merged into `main`. `main` still holds the Phase 0 template. Next: Phase 3.
-- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, the app frame, design tokens, and working workspace, project, and task features on a local SQLite database (`avenqor.db`, schema version 2, five tables). Calendar, My Tasks, and Documents are still placeholder pages. **Git repository:** `https://github.com/andra-gs/project-manager` (public).
+- **Application code:** on `main`, the unmodified template; on `phase-3-kanban` (contains `phase-1-ui`), the app frame, design tokens, and working workspace, project, task, Kanban board, Calendar, and My Tasks features on a local SQLite database (`avenqor.db`, schema version 2, five tables). Documents is still a placeholder page. **Git repository:** `https://github.com/andra-gs/project-manager` (public).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Implemented (verified by the developer): workspaces, projects, basic tasks, Dashboard on real data, local profile. See the MVP table in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md). Status labels are explained there too.
 
@@ -151,6 +151,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-27 | `npm run build` (Phase 3 step 3a) | Passed: `tsc` and Vite build (103 modules) without errors |
 | reported 2026-10-28 | `npm run tauri dev` (Phase 3 step 3c, branch `phase-3-kanban`), Calendar checks 1 to 10 | Passed, all as expected: current month, Monday first, month arrows, Today, red/accent/grey deadline colors, "+N more", clicking a task opens its project, upcoming list contents and order, updates after changes, empty message, 960x600 layout, deadline badge on the right of the task row |
 | reported 2026-10-28 | `npm run build` (Phase 3 step 3c) | Passed: `tsc` and Vite build (109 modules) without errors |
+| reported 2026-10-28 | `npm run tauri dev` (Phase 3 step 3d, branch `phase-3-kanban`), My Tasks checks 1 to 9 | Passed, all as expected: Open filter default and order, row contents, all filter buttons, empty messages, row opens the project, archived project excluded, list updates after board changes, 960x600 layout |
+| reported 2026-10-28 | `npm run build` (Phase 3 step 3d) | Passed: `tsc` and Vite build (113 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -199,17 +201,6 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, step 3d: test the My Tasks page (developer, on Windows).** Code written 2026-10-28 on branch `phase-3-kanban`, not yet run in the app. Claude verified only the SQL ordering and filtering in an in-memory SQLite database built from the two migrations.
+**Decision needed from the developer (requested 2026-10-28): the window title bar.** He asked for (a) a title bar color that matches the app and (b) a breadcrumb path in the title bar, like the Claude app. The native Windows title bar color cannot be set freely; a custom title bar (`decorations: false`) can. Options and a recommendation were sent; nothing is decided or built yet.
 
-```powershell
-cd D:\project-manager
-git pull origin phase-3-kanban
-npm run tauri dev
-npm run build
-```
-
-Prepare: tasks in two projects with different statuses (use the board to move some to In Progress, Review, and Done); one task without deadline; one overdue task; archive one project that has a task.
-
-Check: (1) My Tasks opens with the filter "Open" selected and shows only unfinished tasks, soonest deadline first, tasks without deadline last; (2) each row shows the task title, project name, deadline badge (red when overdue), priority, and status; (3) each filter button (To Do, In Progress, Review, Done, All) shows the right tasks, and the selected button looks selected; (4) an empty filter shows its message; (5) clicking a row opens the task's project; (6) tasks of the archived project are not listed; (7) after moving a task on the board and coming back to My Tasks, the list is updated; (8) with no tasks at all, "Open" says nothing is waiting for you; (9) the page fits the 960x600 window; (10) `npm run build` passes. Report what worked and any error text.
-
-**Then step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan after step 3d is verified. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).
+**Then step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan first. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).
