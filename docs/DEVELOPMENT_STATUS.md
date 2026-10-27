@@ -199,6 +199,17 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, next step (the developer chooses; Claude proposes a plan first).** Done in Phase 3 so far, all verified by the developer: Kanban board with move buttons (3a), Calendar and deadlines (3c), deadline badge moved. Remaining Phase 3 items: task details (description, labels, checklists, notes; needs a migration), project documents, local activity history (needs a migration), drag and drop for the board (3b), "My Tasks" page (still a placeholder).
+**Phase 3, step 3d: test the My Tasks page (developer, on Windows).** Code written 2026-10-28 on branch `phase-3-kanban`, not yet run in the app. Claude verified only the SQL ordering and filtering in an in-memory SQLite database built from the two migrations.
 
-Merging `phase-1-ui` and `phase-3-kanban` into `main` is the developer's to do, at any time (the second branch contains the first).
+```powershell
+cd D:\project-manager
+git pull origin phase-3-kanban
+npm run tauri dev
+npm run build
+```
+
+Prepare: tasks in two projects with different statuses (use the board to move some to In Progress, Review, and Done); one task without deadline; one overdue task; archive one project that has a task.
+
+Check: (1) My Tasks opens with the filter "Open" selected and shows only unfinished tasks, soonest deadline first, tasks without deadline last; (2) each row shows the task title, project name, deadline badge (red when overdue), priority, and status; (3) each filter button (To Do, In Progress, Review, Done, All) shows the right tasks, and the selected button looks selected; (4) an empty filter shows its message; (5) clicking a row opens the task's project; (6) tasks of the archived project are not listed; (7) after moving a task on the board and coming back to My Tasks, the list is updated; (8) with no tasks at all, "Open" says nothing is waiting for you; (9) the page fits the 960x600 window; (10) `npm run build` passes. Report what worked and any error text.
+
+**Then step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan after step 3d is verified. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).
