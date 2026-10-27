@@ -1,4 +1,5 @@
 import { getDatabase } from "../lib/database";
+import type { TaskStatus } from "../types/task";
 
 export async function insertTask(task: {
   id: string;
@@ -16,12 +17,13 @@ export async function insertTask(task: {
   );
 }
 
-// Marks a task done (with the time it was finished) or back to "todo". Returns true when it existed.
-export async function updateTaskDone(id: string, done: boolean, now: string): Promise<boolean> {
+// Moves a task to a status. "completed_at" is set when it enters "done" and cleared when it leaves.
+// Returns true when the task existed.
+export async function updateTaskStatus(id: string, status: TaskStatus, now: string): Promise<boolean> {
   const database = await getDatabase();
   const result = await database.execute(
     "UPDATE tasks SET status = $1, completed_at = $2, updated_at = $3 WHERE id = $4",
-    [done ? "done" : "todo", done ? now : null, now, id],
+    [status, status === "done" ? now : null, now, id],
   );
   return result.rowsAffected > 0;
 }

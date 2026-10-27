@@ -2,7 +2,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import * as projectService from "../services/projectService";
 import * as taskService from "../services/taskService";
 import type { ProjectStatus } from "../types/project";
-import type { TaskPriority } from "../types/task";
+import type { TaskPriority, TaskStatus } from "../types/task";
 import { createKeyedLoader } from "./createKeyedLoader";
 
 const loader = createKeyedLoader(projectService.getProjectDetail);
@@ -38,6 +38,10 @@ export function useProjectDetail(projectId: string | undefined) {
     },
     async setTaskDone(taskId: string, done: boolean) {
       await taskService.setTaskDone(taskId, done);
+      await refresh();
+    },
+    async setTaskStatus(taskId: string, status: TaskStatus) {
+      await taskService.setTaskStatus(taskId, status);
       await refresh();
     },
     async deleteTask(taskId: string) {

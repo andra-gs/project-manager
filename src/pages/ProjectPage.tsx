@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { workspacePath } from "../app/navigation";
+import { boardPath, workspacePath } from "../app/navigation";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -68,9 +68,14 @@ export function ProjectPage() {
             <h2 className="text-title font-bold break-words">{project.name}</h2>
             <p className="mt-1 text-caption whitespace-pre-line text-ink-muted break-words">{project.description}</p>
           </div>
-          <Button variant="secondary" onClick={() => setEditProjectOpen(true)}>
-            Edit project
-          </Button>
+          <div className="flex shrink-0 gap-2">
+            <Button variant="secondary" onClick={() => navigate(boardPath(project.id))}>
+              Open board
+            </Button>
+            <Button variant="secondary" onClick={() => setEditProjectOpen(true)}>
+              Edit project
+            </Button>
+          </div>
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Badge tone="accent">{project.progressPercent}% complete</Badge>

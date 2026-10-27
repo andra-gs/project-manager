@@ -1,5 +1,6 @@
 import { HashRouter, Route, Routes } from "react-router";
 import { AppShell } from "./components/layout/AppShell";
+import { BoardPage } from "./pages/BoardPage";
 import { CalendarPage } from "./pages/CalendarPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DocumentsPage } from "./pages/DocumentsPage";
@@ -23,6 +24,7 @@ function App() {
           <Route path="documents" element={<DocumentsPage />} />
           <Route path="workspaces/:workspaceId" element={<WorkspacePage />} />
           <Route path="projects/:projectId" element={<ProjectPage />} />
+          <Route path="projects/:projectId/board" element={<BoardPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="help" element={<HelpPage />} />
           <Route path="*" element={<NotFoundPage />} />

@@ -195,4 +195,17 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, step 3a: Kanban board** on branch `phase-3-kanban` (created from `phase-1-ui`). Plan sent to the developer on 2026-10-27, waiting for approval. Scope: change a task's status between To Do, In Progress, Review, and Done from a board page for one project (`#/projects/:projectId/board`), with the change saved in SQLite. Drag and drop is a separate later step (3b). Merging `phase-1-ui` into `main` is still the developer's to do, at any time.
+**Phase 3, step 3a: test the Kanban board (developer, on Windows).** Code written 2026-10-27 on branch `phase-3-kanban`, not yet run by anyone (Claude cannot build or run the app).
+
+```powershell
+cd D:\project-manager
+git fetch origin
+git checkout phase-3-kanban
+git pull origin phase-3-kanban
+npm run tauri dev
+npm run build
+```
+
+Check: (1) a project page has an "Open board" button; (2) the board shows four columns with counts, and "No tasks" in empty ones; (3) the arrow buttons move a task one column left or right, the first column has no left arrow and the last has no right arrow; (4) after closing and reopening the app the tasks are still in their columns; (5) moving to Done raises the project's progress, moving out of Done lowers it; "Mark done" and "Reopen" on the project page still work; (6) "New Task" on the board adds a task to To Do; (7) the top bar says "Board" with the project name; (8) overdue tasks show a red deadline badge, done tasks show none; (9) `npm run build` passes. Report what worked and any error text.
+
+Merging `phase-1-ui` into `main` is still the developer's to do, at any time.

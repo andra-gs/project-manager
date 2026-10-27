@@ -26,6 +26,7 @@ export const FOOTER_NAV: NavItem[] = [
 
 const WORKSPACE_PATH_PATTERN = "/workspaces/:workspaceId";
 const PROJECT_PATH_PATTERN = "/projects/:projectId";
+const BOARD_PATH_PATTERN = "/projects/:projectId/board";
 
 export function workspacePath(workspaceId: string): string {
   return `/workspaces/${workspaceId}`;
@@ -40,8 +41,16 @@ export function getWorkspaceIdFromPath(pathname: string): string | undefined {
   return matchPath(WORKSPACE_PATH_PATTERN, pathname)?.params.workspaceId;
 }
 
+export function boardPath(projectId: string): string {
+  return `/projects/${projectId}/board`;
+}
+
+// Both the project page and its board belong to one project, so both give its id.
 export function getProjectIdFromPath(pathname: string): string | undefined {
-  return matchPath(PROJECT_PATH_PATTERN, pathname)?.params.projectId;
+  return (
+    matchPath(PROJECT_PATH_PATTERN, pathname)?.params.projectId ??
+    matchPath(BOARD_PATH_PATTERN, pathname)?.params.projectId
+  );
 }
 
 interface HeadingContext {
@@ -63,6 +72,9 @@ export function getPageHeading(pathname: string, context: HeadingContext): { tit
       title: workspace.name,
       subtitle: `Workspace · ${pluralize(workspace.memberCount, "member")} · ${pluralize(workspace.projects.length, "project")}`,
     };
+  }
+  if (matchPath(BOARD_PATH_PATTERN, pathname)) {
+    return { title: "Board", subtitle: project ? `${project.name} · ${project.status}` : "" };
   }
   if (getProjectIdFromPath(pathname)) {
     return { title: "Project Overview", subtitle: project ? `${project.name} · ${project.status}` : "" };

@@ -1,6 +1,6 @@
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/taskRepository";
-import type { TaskPriority } from "../types/task";
+import { TASK_STATUSES, type TaskPriority, type TaskStatus } from "../types/task";
 import { getLocalProfileId } from "./profileService";
 
 export const TASK_TITLE_MAX_LENGTH = 120;
@@ -64,9 +64,15 @@ export async function updateTask(
   if (!changed) throw new ValidationError("This task no longer exists.");
 }
 
-export async function setTaskDone(id: string, done: boolean): Promise<void> {
-  const changed = await repository.updateTaskDone(id, done, new Date().toISOString());
+export async function setTaskStatus(id: string, status: TaskStatus): Promise<void> {
+  if (!TASK_STATUSES.includes(status)) throw new ValidationError("Choose a valid status.");
+  const changed = await repository.updateTaskStatus(id, status, new Date().toISOString());
   if (!changed) throw new ValidationError("This task no longer exists.");
+}
+
+// "Mark done" and "Reopen" on the task list are the same change as moving a task on the board.
+export async function setTaskDone(id: string, done: boolean): Promise<void> {
+  await setTaskStatus(id, done ? "done" : "todo");
 }
 
 export async function deleteTask(id: string): Promise<void> {
