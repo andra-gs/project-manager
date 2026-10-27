@@ -149,6 +149,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-27 | Phase 2 closing check: `npm run tauri build`, release `project-manager.exe` with the existing database and with a renamed (fresh) `avenqor.db`, then restore of the backup | Reported by the developer as "all fine" (no details of individual items were given; the optional installer test was not confirmed separately) |
 | reported 2026-10-27 | `npm run tauri dev` (Phase 3 step 3a, branch `phase-3-kanban`), board checks 1 to 8 | Passed, all as expected: Open board button, four columns with counts and empty messages, arrow buttons (disabled at the ends), positions kept after restart, progress follows Done, New Task adds to To Do, top bar title, deadline badges |
 | reported 2026-10-27 | `npm run build` (Phase 3 step 3a) | Passed: `tsc` and Vite build (103 modules) without errors |
+| reported 2026-10-28 | `npm run tauri dev` (Phase 3 step 3c, branch `phase-3-kanban`), Calendar checks 1 to 10 | Passed, all as expected: current month, Monday first, month arrows, Today, red/accent/grey deadline colors, "+N more", clicking a task opens its project, upcoming list contents and order, updates after changes, empty message, 960x600 layout, deadline badge on the right of the task row |
+| reported 2026-10-28 | `npm run build` (Phase 3 step 3c) | Passed: `tsc` and Vite build (109 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -197,17 +199,6 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, step 3c: test the Calendar and the moved deadline badge (developer, on Windows).** Code written 2026-10-27 on branch `phase-3-kanban`, not yet run by anyone. Claude verified only the date helpers in `src/lib/calendar.ts` with a Node script (October 2026, February of a leap year and of a common year, a six-week month, year ends; time zones Asia/Jakarta, America/Los_Angeles, Pacific/Auckland).
+**Phase 3, next step (the developer chooses; Claude proposes a plan first).** Done in Phase 3 so far, all verified by the developer: Kanban board with move buttons (3a), Calendar and deadlines (3c), deadline badge moved. Remaining Phase 3 items: task details (description, labels, checklists, notes; needs a migration), project documents, local activity history (needs a migration), drag and drop for the board (3b), "My Tasks" page (still a placeholder).
 
-```powershell
-cd D:\project-manager
-git pull origin phase-3-kanban
-npm run tauri dev
-npm run build
-```
-
-Prepare: in one or two projects create tasks with deadlines in the past, today, tomorrow, later this month, and next month; put 3 tasks on the same day; mark one task done; give one task no deadline; archive one project that has a deadline task.
-
-Check: (1) Calendar opens on the current month, Monday first, today's cell has an accent border; (2) previous and next month arrows work, also across December and January, and Today returns to this month; (3) overdue deadlines are red, upcoming ones accent colored, the done task is grey and struck through; (4) the day with 3 tasks shows 2 and "+1 more"; (5) clicking a task opens its project; (6) the list on the right shows only unfinished tasks, soonest first (overdue at the top), with the project name; the task with no deadline and the task of the archived project are not shown; (7) a new task with a deadline appears after returning to Calendar, and a task marked done leaves the list; (8) with no deadlines the list says "No open tasks with a deadline."; (9) at the minimum window size (960x600) the list moves below the grid and nothing overlaps; (10) the deadline badge sits at the right of the task row on the project page; (11) `npm run build` passes. Report what worked and any error text.
-
-Merging `phase-1-ui` and `phase-3-kanban` into `main` is the developer's to do, at any time. Drag and drop for the board (step 3b) and the other Phase 3 items (task details, documents, activity) come after.
+Merging `phase-1-ui` and `phase-3-kanban` into `main` is the developer's to do, at any time (the second branch contains the first).
