@@ -1,0 +1,12 @@
+/* DM Sans is bundled with the app (package @fontsource-variable/dm-sans), so it works offline. */
+@import "@fontsource-variable/dm-sans";
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+/* Global defaults. They only reference tokens. */
+body {
+  background-color: var(--color-app-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+}

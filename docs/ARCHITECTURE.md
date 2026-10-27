@@ -1,8 +1,8 @@
 # Architecture
 
-Last updated: 2026-10-22
+Last updated: 2026-10-27
 
-> **Status: only the Tauri project template exists.** This document describes the **Agreed** architecture principles and the **Proposed** structure from `CLAUDE.md`. The "Actual implementation" section records only what has been verified; none of the layers below (services, repositories, database) is built yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
+> **Status (2026-10-27): the layers below (UI, hooks, services, repositories, database) exist and were verified by the developer through Phase 2.** This document describes the **Agreed** architecture principles and the structure from `CLAUDE.md`. The "Actual implementation" section records what has been verified. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
 ## Technology (Agreed)
 
@@ -96,12 +96,12 @@ src-tauri/
 
 Nothing below is decided. `CLAUDE.md` rule 16 requires options and approval for decisions with long-term consequences.
 
-### D1. How the application accesses SQLite (decide at the start of Phase 2)
+### D1. How the application accesses SQLite (decided 2026-10-25: Option A)
 
 `CLAUDE.md` says to use "a Tauri 2-compatible SQLite plugin or another well-maintained compatible solution" and to verify compatibility first. Two options exist.
 
 **Option A: the official Tauri SQL plugin, called from TypeScript.**
-Facts from the official plugin documentation (read on 2026-10-20, not yet tried in this project):
+Facts from the official plugin documentation (read on 2026-10-20; tried and verified in this project since 2026-10-25, version 2.6.0):
 - It is added with `npm run tauri add sql`, or manually with `cargo add tauri-plugin-sql --features sqlite`, registration in the Rust builder, and `npm install @tauri-apps/plugin-sql`.
 - Migrations are defined in Rust and run in a transaction.
 - The default permission (`sql:default`) allows loading, selecting, and closing. Writing needs an extra permission such as `sql:allow-execute`.
@@ -118,10 +118,11 @@ No Phase 0 or Phase 1 work depends on this choice.
 
 | Item | When to decide |
 |---|---|
-| Tailwind CSS or another styling approach | Start of Phase 1 |
-| Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Start of Phase 1 |
-| How the "current local user or profile" is represented | Before the first migration (Phase 2) |
-| Date and time storage format ("consistent date handling" is required) | Before the first migration (Phase 2) |
+| Tailwind CSS or another styling approach | Decided: Tailwind CSS 4 (approved 2026-10-22) |
+| Routing library (none is named in `CLAUDE.md`; avoid unnecessary libraries) | Decided: React Router 7, `HashRouter` (approved as part of the Phase 1 plan, 2026-10-22; installed and verified in step 3) |
+| How the "current local user or profile" is represented | Decided 2026-10-25: one profile row in the database; tasks refer to it by ID |
+| Date and time storage format | Decided 2026-10-25: deadlines `YYYY-MM-DD` text; event times UTC ISO 8601 text |
+| ID format | Decided 2026-10-25: UUID text created in the app |
 
 ## Future online integration strategy
 
@@ -132,44 +133,92 @@ Online features are **Future** (Phase 6). Nothing here is built, and `CLAUDE.md`
 - Design the data model so the roles Owner, Admin, Member, and Guest can be added later, without building a fake permission system now.
 - Phase 6 will define authentication, a backend API, a cloud database, synchronization, conflict handling, and offline-to-online data migration.
 
-**Proposed design considerations (not approved):** to be reviewed when the schema is designed in Phase 2.
+**Design considerations (adopted in the Phase 2 schema, 2026-10-25):**
 - Give records globally unique IDs (instead of simple counting numbers), so data created on separate computers can later be combined without ID clashes.
 - Record created and updated timestamps on records, which synchronization would need.
 - Keep data access behind the repository layer, so replacing local SQLite with a remote source does not require changing screens.
 
 ## Actual implementation
 
-Verified from the developer's command output (2026-10-21 and 2026-10-22) and from the tracked files of commit `e523852`. The project is the unmodified `create-tauri-app` template (`react-ts`), renamed from `tauri-temp` to `project-manager`. No services, repositories, database, or SQL plugin exist yet.
+Branch `phase-1-ui`, after Phase 1 steps 1 to 5 (step 6 verified). Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far has an app frame, a Dashboard, and two overview screens on mock data. (Written at Phase 1; since Phase 2 the services, repositories, database, and SQL plugin exist, see the notes below.)
 
 ### Folder layout (tracked files)
 
 ```
-index.html, package.json, package-lock.json (not yet committed)
+index.html, package.json, package-lock.json
 tsconfig.json, tsconfig.node.json, vite.config.ts
-public/            tauri.svg, vite.svg
-src/               main.tsx, App.tsx, App.css, vite-env.d.ts, assets/react.svg
+src/
+  main.tsx, App.tsx, index.css, vite-env.d.ts
+  app/             navigation.ts (sidebar destinations and page headings)
+  components/
+    layout/        AppShell.tsx, Sidebar.tsx, TopBar.tsx
+    icons/         Icon.tsx
+    ui/            Avatar, Badge, Button, Card, ConfirmDialog, Dialog, EmptyMessage, IconButton, LinkCard, ListRow, PriorityBadge, ProgressBar, SectionHeading, SelectField, Stat, StatusBadge, TextArea, TextField, PlaceholderNotice (temporary)
+  features/        activity/, dashboard/, projects/, workspaces/ (sections and cards that screens compose)
+  repositories/    databaseStatusRepository, profileRepository, workspaceRepository, projectRepository, taskRepository (the only code that writes SQL)
+  services/        profileService, workspaceService, projectService, taskService (validation and business rules)
+  hooks/           useWorkspaces, useWorkspaceDetail, useProjectDetail (read the database), createKeyedLoader (shared loading helper), useDatabaseStatus, useDashboardData, useLocalProfile (all read the database), useSidebarCollapsed
+  lib/             appInfo, classNames, database (the only code that opens the database), errors, dueDate, greeting, layout, progress, relativeTime, text
+  (the temporary mock-data folder `src/mocks/` was removed on 2026-10-26, step 2c-2b)
+  pages/           Dashboard, Workspace, Project, MyTasks, Calendar, Documents, Settings, Help, NotFound
+  styles/          tokens.css
+  types/           activity, dashboard, project, task, workspace
 src-tauri/
   Cargo.toml, Cargo.lock, build.rs, tauri.conf.json
   capabilities/    default.json
   icons/           application icons
   src/             main.rs, lib.rs
 .vscode/           extensions.json
+docs/              the documentation files
 ```
 
-Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/` (none appeared in `git status`). The contents of `src/*.tsx`, `src/App.css`, `vite.config.ts`, and `tsconfig*.json` have not been read by Claude.
+Generated and not tracked by Git: `node_modules/`, `dist/`, and `src-tauri/target/`. The folders `services/` and `repositories/` were created in Phase 2 (2026-10-25) when real data access was added.
+
+### Interface structure (Implemented, verified by the developer on 2026-10-23)
+
+- **Routing:** React Router 7 (`react-router`, `^7.18.4` in `package.json`) in `HashRouter` mode. The current page is kept after `#` in the address, because a packaged desktop app has no web server to answer other addresses. Routes: `/`, `/my-tasks`, `/calendar`, `/documents`, `/workspaces/:workspaceId`, `/projects/:projectId`, `/settings`, `/help`, and a "not found" fallback. Verified in the release build: all menu items open their pages.
+- **Frame:** `AppShell` places `Sidebar` on the left and `TopBar` plus the page content on the right. The page title in the top bar comes from `src/app/navigation.ts`.
+- **Data rule in practice:** screens read workspaces and the local profile only through the hooks in `src/hooks/`. Since Phase 2 the hooks read the database through services and repositories; the mock data was removed.
+- **Screens (Phase 1):** Dashboard (verified by the developer 2026-10-24). Workspace and Project overview are verified by the developer (2026-10-24, development mode and `npm run build`). Settings and Help are written as read-only screens (awaiting verification). My Tasks, Calendar, and Documents are still placeholders (`PlaceholderNotice`, temporary) until Phase 3.
+- **Screens compose, hooks fetch:** pages arrange sections from `src/features/`; the sections and cards use the shared components. Progress percentages and deadline counts are calculated from task counts and dates (`src/lib/progress.ts`, `src/lib/dueDate.ts`), never typed in.
+- **Collapsible sidebar:** it collapses to icons below a window width of 1100px, by the toggle button, or by dragging its edge (two states only, no stored choice).
+- **Not verified yet:** the layout on 1366x768 and 1920x1080 screens. Scrolling was verified on the Dashboard.
+
+### Shared base components (Implemented in development mode, verified by the developer on 2026-10-23)
+
+Located in `src/components/ui/`: `Button`, `IconButton`, `Card`, `Badge`, `PriorityBadge`, `StatusBadge`, `ProgressBar`, `Avatar`, and the temporary `PlaceholderNotice`. They take no `className`, so their look can only change inside the component or in `src/styles/tokens.css` (`CLAUDE.md` section 19). `PriorityBadge` and `StatusBadge` own the mapping from a task value to a color and a label. `src/lib/classNames.ts` provides `cx`, which joins class names.
+
+Verified: in `npm run tauri dev` the components render, hover and keyboard focus work, and changing `--color-accent` changes the primary button, the "Today" badge, the first progress bar, and the sidebar highlight together. `npm run build` (TypeScript check and Vite build) passed. Not verified: the components in a release build.
+
+### Styling and design tokens (Implemented, Agreed in `CLAUDE.md` section 19)
+
+- Tailwind CSS 4 is used through its Vite plugin (`@tailwindcss/vite`, enabled in `vite.config.ts`). The DM Sans font comes from the package `@fontsource-variable/dm-sans` and is bundled with the app, so it works offline.
+- `src/styles/tokens.css` is the single place for colors, text sizes, and corner radius. It switches off Tailwind's built-in palette, text sizes, and radius, so screens can only use token names such as `text-accent`. Values come from the Figma frame "01 Dashboard". Figma is a reference, not a binding specification.
+- `src/index.css` loads the font, Tailwind, and the tokens, and sets the page defaults from tokens.
+- Verified by the developer on 2026-10-23: changing `--color-accent` in `tokens.css` changed the colored line on the page without editing another file. This is the proof criterion of section 19, tested only on the placeholder page. It must be repeated once real screens exist.
+- Layout sizes (sidebar width 224px, top bar height 72px) are plain CSS variables at the end of `tokens.css`. General spacing uses Tailwind's default scale.
 
 ### How the pieces are wired (from the configuration files)
 
-- `src-tauri/tauri.conf.json`: product name `Project Manager Desktop`, version `0.1.0`, identifier `io.github.andra-gs.project-manager`. In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 800x600. `bundle.targets` is `all`.
-- `src-tauri/capabilities/default.json`: for the `main` window, the permissions `core:default` and `opener:default`.
-- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` registers the `opener` plugin and one demo command, `greet`. The template's sample page presumably calls it, but `App.tsx` has not been read.
-- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `tauri-plugin-opener` 2, `serde`, `serde_json`.
-- `package.json`: `react` and `react-dom` ^19.1.0, `@tauri-apps/api` ^2, `@tauri-apps/plugin-opener` ^2. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
-- Versions that were actually built (from the logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-plugin-opener` 2.7.2, `tauri-build` 2.7.3.
+- `src-tauri/tauri.conf.json`: product name `Avenqor`, version `0.1.0`, identifier `io.github.andra-gs.avenqor` (both changed 2026-10-25, before any data is stored; awaiting verification). In development it runs `npm run dev` and loads `http://localhost:1420`. For a release it runs `npm run build` (`tsc && vite build`) and packages the files from `dist`. One window of 1200x680 (minimum 960x600, centered). `bundle.targets` is `all`.
+- `tauri.conf.json` `plugins.sql.preload` opens `sqlite:avenqor.db` at startup (verified by the developer 2026-10-25: the file `avenqor.db` is created in `%APPDATA%\io.github.andra-gs.avenqor`).
+- `src-tauri/capabilities/default.json`: for the `main` window, only the permission `core:default`.
+- `src-tauri/src/main.rs` calls `project_manager_lib::run()`. `src-tauri/src/lib.rs` starts a bare Tauri app with no plugins and no commands.
+- `src-tauri/Cargo.toml`: package `project-manager`, library `project_manager_lib`, Rust edition 2024. Dependencies: `tauri` 2, `serde`, `serde_json`, `tauri-plugin-sql` 2 (feature `sqlite`).
+- `package.json`: dependencies `react` and `react-dom` ^19.1.0, `react-router` ^7.18.4, `@tauri-apps/api` ^2, `tailwindcss` and `@tailwindcss/vite` ^4.3.3, `@fontsource-variable/dm-sans` ^5.3.0. Dev dependencies: `vite` ^8.0.16, `@vitejs/plugin-react` ^6.0.2, `typescript` ~6.0.3, `@tauri-apps/cli` ^2, and React type packages.
+- Versions that were actually built (from the Phase 0 logs): Vite 8.3.4, `tauri` 2.12.4, `wry` 0.57.0, `tauri-build` 2.7.3.
+
+### Data access in practice (workspaces verified by the developer 2026-10-25)
+
+Flow for creating a workspace: the Settings form (`features/workspaces/WorkspaceManager`) calls the hook `useWorkspaces`, which calls `services/workspaceService` (checks the name, creates a UUID, gets the local profile), which calls `repositories/workspaceRepository` (parameterized SQL through `lib/database`). The hook keeps one shared list outside any screen and reloads it from the database after every change, so the sidebar and Settings stay in step. Only files in `src/repositories/` import `lib/database`. Errors that the user can fix are `ValidationError`s (`lib/errors.ts`) and are shown as written; other errors show a general sentence with the technical detail.
+
+Step 2c-1 (verified by the developer 2026-10-25): the workspace page reads the database through `useWorkspaceDetail` (workspace, its projects with task counts, deadline counts) and creates projects through `ProjectFormDialog` and `projectService`. Progress is calculated from task counts in the service. Activity is an empty list until Phase 3 (no invented entries next to real data). Step 2c-2a (verified 2026-10-26): the project page reads the database through `useProjectDetail` and offers new tasks (`TaskFormDialog`, `taskService`), marking tasks done or reopening them, deleting tasks, archiving or restoring the project, and deleting the project. Archived projects appear in an "Archived" section on the workspace page. Both detail hooks use `createKeyedLoader`. Step 2c-2b (verified by the developer 2026-10-26): the Dashboard and the local profile read the database too, and the mock data was removed. Step 2d (verified 2026-10-26): `ProjectFormDialog` and `TaskFormDialog` serve both creating and editing, so projects (name, description) and tasks (title, priority, deadline) can be edited.
 
 ### Security state
 
-The template defaults are unchanged: no content security policy (`csp` is `null`), and the `core:default` and `opener:default` permissions. Whether to tighten them is **Proposed** for the start of Phase 1 and needs your approval. See known issue 4 in [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md).
+- A Content Security Policy (CSP, rules that limit what the page may load) is set: `csp` for release builds and `devCsp` for development. Both only allow the app's own files, the Tauri connection, and (in development) the Vite dev server. The page loaded without CSP errors in the dev Console and in the release build (reported by the developer, 2026-10-22).
+- `style-src` allows inline styles (`'unsafe-inline'`), which weakens the policy slightly. It is kept so dynamic styles such as progress-bar widths work. To be reviewed when the design needs it.
+- The `opener` plugin and its permission were removed. Only `core:default` remains.
 
 ## Glossary
 

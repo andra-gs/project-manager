@@ -19,7 +19,7 @@ Today, every feature below is **Agreed** or **Future**. Nothing is **Implemented
 
 - Project name: **Project Manager Desktop**
 - Repository and folder name: `project-manager-desktop`
-- Working product name: **Project Collaboration App**. The final public name is **not decided**, so the working name must not be treated as branding.
+- Product name: **Avenqor** (**Agreed** by the developer on 2026-10-25; earlier name: Project Collaboration App). Whether trademark checks were done is not recorded.
 
 ## Product goals (Agreed)
 
@@ -52,16 +52,16 @@ Example: the workspace "Informatics Group" could contain the projects "Final Sem
 
 **Roles.** The eventual role model is Owner, Admin, Member, and Guest. The data model should be designed so these roles can be added when multi-user collaboration arrives. The offline MVP does **not** include a permission system, and must not pretend to have one.
 
-## MVP scope (Agreed, none implemented)
+## MVP scope (Agreed; status per row)
 
 The roadmap in `CLAUDE.md` places the MVP features in these phases.
 
 | ID | Feature | Planned phase | Status |
 |---|---|---|---|
-| A | **Dashboard**: workspace summary, recent projects, my tasks, upcoming deadlines, project progress, recent activity | Phase 1 (interface, mock data), Phase 2 (real data) | Agreed, not started |
-| B | **Workspace management**: create, view, edit, delete; list projects in a workspace | Phase 2 | Agreed, not started |
-| C | **Project management**: create, view, edit, archive or delete; description, status, progress; members as a data model only | Phase 2 | Agreed, not started |
-| D | **Task management**: title, description, status, priority, deadline, labels, assignee or local responsibility field, subtasks, checklists, notes | Phase 2 (create and edit), Phase 3 (details, checklists) | Agreed, not started |
+| A | **Dashboard**: workspace summary, recent projects, my tasks, upcoming deadlines, project progress, recent activity | Phase 1 (interface), Phase 2 (real data) | Agreed; interface and real data verified by the developer 2026-10-26 (activity history and upcoming-deadline list arrive in Phase 3) |
+| B | **Workspace management**: create, view, edit, delete; list projects in a workspace | Phase 2 | Implemented (create, rename, delete, project list; verified by the developer 2026-10-25 and 2026-10-27) |
+| C | **Project management**: create, view, edit, archive or delete; description, status, progress; members as a data model only | Phase 2 | Implemented (create, edit, archive, restore, delete, calculated progress; verified 2026-10-26; members exist only as data) |
+| D | **Task management**: title, description, status, priority, deadline, labels, assignee or local responsibility field, subtasks, checklists, notes | Phase 2 (create and edit), Phase 3 (details, checklists) | Partly Implemented (create, edit title, priority, and deadline, mark done, reopen, delete; verified 2026-10-26). Status beyond done/not done, labels, subtasks, checklists, and notes are Future (Phase 3) |
 | E | **Kanban board**: columns To Do, In Progress, Review, Done; move tasks; changes saved to SQLite | Phase 3 | Agreed, not started |
 | F | **Calendar and deadlines**: calendar view, upcoming list, overdue versus upcoming | Phase 3 | Agreed, not started |
 | G | **Project documents**: notes, requirements, meeting notes, API references, UI/UX decisions | Phase 3 | Agreed, not started |

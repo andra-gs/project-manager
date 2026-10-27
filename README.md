@@ -2,9 +2,9 @@
 
 A local-first desktop application for organizing workspaces, projects, tasks, deadlines, documents, and progress in one place.
 
-> **Status: Phase 0 complete. The project is still the unmodified Tauri template.** The desktop app starts in development mode and builds a Windows release on the developer's computer (verified 2026-10-21 and 2026-10-22). No project features exist yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
+> **Status: Phases 0 to 2 complete (branch `phase-1-ui`, not yet merged into `main`).** Workspaces, projects, and basic tasks work on a local SQLite database, verified by the developer on Windows (2026-10-27). Calendar, My Tasks, Documents, Kanban, and backup are not built yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
 
-The working product name is **Project Collaboration App**. The final public name has not been decided.
+The product name is **Avenqor** (Agreed by the developer on 2026-10-25; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App.
 
 ## What this project is
 
@@ -30,7 +30,7 @@ Later phases may add GitHub integration, online collaboration, and more platform
 | Frontend | React, TypeScript, Vite |
 | Native backend | Rust (Tauri commands) |
 | Database | SQLite (local file) |
-| Styling | Tailwind CSS is the preferred option if it fits the design |
+| Styling | Tailwind CSS 4, with design tokens in `src/styles/tokens.css` and the DM Sans font bundled locally |
 | Version control | Git |
 | First release target | Windows |
 
@@ -49,7 +49,7 @@ Two problems came up on that computer, and may affect you too:
 4. **Node.js** (the LTS version). It runs the frontend tooling and provides `npm`. Verified with Node.js v24.22.0 and npm 11.19.1.
 5. *Only if building MSI installers:* the Windows optional feature **VBSCRIPT** must be enabled.
 
-Later, from Phase 2, the official Tauri SQL plugin documentation lists Rust 1.90 or newer as a requirement. This is not yet confirmed for this project because the database approach is still open (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
+From Phase 2 the app uses the official Tauri SQL plugin (`tauri-plugin-sql` 2.x, SQLite). Its documentation asks for Rust 1.90 or newer; the development computer has 1.99.1.
 
 ### Check what is installed
 
@@ -88,7 +88,7 @@ npm run tauri dev
 ```
 
 - The first run compiles all Rust dependencies and took about 18 minutes on the developer's computer. Later runs are expected to be faster because compiled dependencies are cached, but this has not been timed.
-- A window titled "Project Manager Desktop" opens. It currently shows the template's sample page.
+- A window titled "Avenqor" opens (1200x680, centered). It shows the application frame (sidebar, top bar), the Dashboard, workspaces, projects, and tasks. Calendar, My Tasks, and Documents are still placeholder pages.
 - To stop: close the window, then press `Ctrl+C` in the terminal.
 
 ## Build
@@ -101,13 +101,16 @@ npm run tauri build
 
 - The first build took about 34 minutes on the developer's computer and downloaded the WiX and NSIS packaging tools from GitHub, so it needs internet access the first time.
 - Output goes to `src-tauri\target\release\`: the program `project-manager.exe`, an MSI installer in `bundle\msi\`, and an NSIS installer in `bundle\nsis\`. These files are not committed to Git.
-- The installers were built but have not yet been installed or run.
+- The installers were built but have not yet been installed or run. The release program `project-manager.exe` was started and showed the same page as development (reported by the developer, 2026-10-22).
 
 ## Where data will be stored
 
-The application will keep structured data (workspaces, projects, tasks, and so on) in a local SQLite database inside the application's data directory, not in its installation folder. Data on one computer is not shared with other computers. Backup and restore (JSON export and import) is planned for Phase 4.
+The application keeps structured data (workspaces, projects, tasks, and the local profile) in a local SQLite database file `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor` (the app config folder, not the installation folder). Backup this file yourself until the JSON backup exists. Data on one computer is not shared with other computers. Backup and restore (JSON export and import) is planned for Phase 4.
 
 ## Known limitations
 
-- The application is still the unmodified Tauri template. No project, task, or database features exist yet.
+- No Kanban board, calendar, documents, activity history, labels, subtasks, or checklists yet (Phase 3).
+- No backup and restore yet (Phase 4). Data stays on this computer and is not synchronized.
+- The database folder is Roaming (see `docs/DEVELOPMENT_STATUS.md`, Known issues 7).
+- Changing the look: edit the values in `src/styles/tokens.css`.
 - Online features (accounts, sync, shared workspaces, real-time editing) are not part of the first release.

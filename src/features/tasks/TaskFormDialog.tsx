@@ -1,0 +1,85 @@
+import { useState, type FormEvent } from "react";
+import { Button } from "../../components/ui/Button";
+import { Dialog } from "../../components/ui/Dialog";
+import { SelectField } from "../../components/ui/SelectField";
+import { TextField } from "../../components/ui/TextField";
+import { describeError } from "../../lib/errors";
+import { TASK_TITLE_MAX_LENGTH } from "../../services/taskService";
+import type { TaskPriority } from "../../types/task";
+
+interface TaskFormDialogProps {
+  open: boolean;
+  title: string;
+  submitLabel: string;
+  onClose: () => void;
+  // Values to start with (when editing). Leave out for an empty form with medium priority.
+  initial?: { title: string; priority: TaskPriority; dueDate: string | undefined };
+  onSubmit: (title: string, priority: TaskPriority, dueDate: string) => Promise<void>;
+}
+
+type FormProps = Omit<TaskFormDialogProps, "open" | "title">;
+
+const PRIORITY_OPTIONS = [
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+];
+
+function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [priority, setPriority] = useState<TaskPriority>(initial?.priority ?? "medium");
+  const [dueDate, setDueDate] = useState(initial?.dueDate ?? "");
+  const [error, setError] = useState<string>();
+  const [busy, setBusy] = useState(false);
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(undefined);
+    try {
+      await onSubmit(title, priority, dueDate);
+      onClose();
+    } catch (failure) {
+      setError(describeError(failure));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
+      <TextField
+        label="Task title"
+        value={title}
+        maxLength={TASK_TITLE_MAX_LENGTH}
+        autoFocus
+        onChange={(event) => setTitle(event.target.value)}
+      />
+      <SelectField
+        label="Priority"
+        value={priority}
+        options={PRIORITY_OPTIONS}
+        onChange={(event) => setPriority(event.target.value as TaskPriority)}
+      />
+      <TextField label="Deadline (optional)" type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} />
+      {error && <p className="text-caption text-danger">{error}</p>}
+      <div className="flex justify-end gap-2">
+        <Button variant="secondary" onClick={onClose} disabled={busy}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={busy}>
+          {submitLabel}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// Used to create a task and to edit one. The form is rebuilt each time the window opens.
+export function TaskFormDialog({ open, title, ...formProps }: TaskFormDialogProps) {
+  return (
+    <Dialog open={open} title={title} onClose={formProps.onClose}>
+      {open && <TaskForm {...formProps} />}
+    </Dialog>
+  );
+}

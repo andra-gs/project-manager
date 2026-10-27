@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Project Manager Desktop",
+  "productName": "Avenqor",
   "version": "0.1.0",
-  "identifier": "io.github.andra-gs.project-manager",
+  "identifier": "io.github.andra-gs.avenqor",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,13 +12,36 @@
   "app": {
     "windows": [
       {
-        "title": "Project Manager Desktop",
-        "width": 800,
-        "height": 600
+        "title": "Avenqor",
+        "width": 1200,
+        "height": 680,
+        "minWidth": 960,
+        "minHeight": 600,
+        "center": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data:",
+        "font-src": "'self'",
+        "connect-src": "ipc: http://ipc.localhost"
+      },
+      "devCsp": {
+        "default-src": "'self' http://localhost:1420",
+        "script-src": "'self' 'unsafe-inline' http://localhost:1420",
+        "style-src": "'self' 'unsafe-inline' http://localhost:1420",
+        "img-src": "'self' data: http://localhost:1420",
+        "font-src": "'self' http://localhost:1420",
+        "connect-src": "ipc: http://ipc.localhost http://localhost:1420 ws://localhost:1420"
+      }
+    }
+  },
+  "plugins": {
+    "sql": {
+      "preload": ["sqlite:avenqor.db"]
     }
   },
   "bundle": {

@@ -16,9 +16,7 @@ Project name: Project Manager Desktop
 
 Repository and folder name: project-manager-desktop
 
-Working product name: Project Collaboration App
-
-The final public product name has not been decided yet. Do not treat the working name as permanent branding.
+Product name: Avenqor (Agreed by the developer on 2026-10-25; previously "Project Collaboration App". Whether trademark checks were done is not recorded). Brand notes: docs/BRAND.md.
 
 ## 3. PRODUCT VISION
 
@@ -355,6 +353,8 @@ Before implementing a screen, inspect the relevant Figma design if access is ava
 
 Keep the interface consistent with the existing design. Do not redesign everything without a clear reason.
 
+Clarification (2026-10-22): for now the Figma design is a reference, not a binding specification. Deviations are allowed when there is a reason (for example screen-size compatibility). Mention each deviation briefly when it happens.
+
 ## 13. DEVELOPMENT ROADMAP
 
 Phase 0: Environment and project setup
@@ -491,7 +491,7 @@ Build a useful local-first project management application first. Keep the archit
 
 ## 18. DOCUMENTATION SYSTEM
 
-The project keeps six documentation files. They are part of the codebase and must stay accurate.
+The project keeps seven documentation files. They are part of the codebase and must stay accurate.
 
 | File | Purpose |
 |---|---|
@@ -501,6 +501,7 @@ The project keeps six documentation files. They are part of the codebase and mus
 | `docs/ARCHITECTURE.md` | Actual application architecture, module responsibilities, data flow, and future online integration strategy. |
 | `docs/DATABASE_SCHEMA.md` | SQLite tables, columns, relationships, constraints, and migrations. |
 | `docs/DEVELOPMENT_STATUS.md` | Completed work, current state, known issues, test results, and next steps. |
+| `docs/BRAND.md` | Brand identity notes (name, meaning, personality, colors, logo direction). Reference only; not an implementation record. |
 
 Rules:
 
@@ -521,3 +522,16 @@ Rules:
 6. Before ending a coding session, update `docs/DEVELOPMENT_STATUS.md` with verified progress, tests performed, known problems, and the exact next task. Record only tests that were actually run, with the date and the command used.
 7. Keep documentation concise, consistent, and beginner-friendly. Explain technical terms the first time they appear.
 8. Never overwrite existing documentation without inspecting it and preserving the relevant information. Prefer targeted edits over rewriting whole files.
+
+## 19. DESIGN MAINTAINABILITY
+
+The interface must be easy to redesign later without changing how the application behaves. These rules were approved on 2026-10-22.
+
+1. **Design tokens in one place.** Colors (including the indigo accent), fonts, font sizes, spacing, and corner radius are defined once as tokens. Components and screens must not contain raw color or size values.
+2. **Shared base components.** Basic elements (button, card, status and priority badge, progress bar, and others needed by more than one screen) are built once and used everywhere. Do not hand-style a one-off copy on a screen.
+3. **Screens compose, hooks fetch.** Pages assemble components and get their data through hooks or features. Pages and components never access the database or the filesystem directly (see section 7).
+4. **Controlled utility classes.** If Tailwind CSS is used, utility classes inside screens are for layout only. The look of an element lives in its base component or in a token.
+
+Proof criterion: changing the accent color in the single token file must change it on every screen without editing any screen file. Phase 1 is not complete until this has been tested.
+
+A dark theme is not an agreed requirement. Tokens only keep the option open.
