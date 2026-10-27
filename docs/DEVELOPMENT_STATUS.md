@@ -201,6 +201,15 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Decision needed from the developer (requested 2026-10-28): the window title bar.** He asked for (a) a title bar color that matches the app and (b) a breadcrumb path in the title bar, like the Claude app. The native Windows title bar color cannot be set freely; a custom title bar (`decorations: false`) can. Options and a recommendation were sent; nothing is decided or built yet.
+**Custom title bar: test it (developer, on Windows).** Agreed 2026-10-28 (option "custom title bar"). Code written the same day on branch `phase-3-kanban`, not yet run by anyone. Claude could only check that the two JSON files parse; the rest depends on Windows behavior that has not been tried.
+
+```powershell
+cd D:\project-manager
+git pull origin phase-3-kanban
+npm run tauri dev
+npm run build
+```
+
+Check: (1) the native Windows title bar is gone and a strip with the app color is at the top; (2) it shows `Avenqor / <page>`; on a workspace page `Avenqor / <workspace>`; on a project page `Avenqor / <workspace> / <project>`; on its board `Avenqor / <workspace> / <project> / Board`; the earlier parts are links and the last one is not; (3) minimize, maximize and restore (the icon changes), and close work; (4) dragging an empty part of the strip moves the window, also when starting on the text; (5) double-clicking an empty part maximizes and restores; (6) the window can still be resized from its edges and corners, and the minimum size 960x600 still holds; (7) with Windows 11, hovering the maximize button: note whether the snap layout popup appears (expected: it does not); (8) while a dialog is open (for example New Task) note whether the strip still responds (expected: it does not, because dialogs block the page); (9) the layout under the strip is unchanged (sidebar, top bar, scrolling); (10) `npm run build` passes, then also `npm run tauri build` and start the release `project-manager.exe` to check (1) to (6) there. To change the strip color edit `--color-titlebar` and `--color-titlebar-hover` in `src/styles/tokens.css`. Report what worked and any error text.
 
 **Then step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan first. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).

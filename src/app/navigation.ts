@@ -53,6 +53,39 @@ export function getProjectIdFromPath(pathname: string): string | undefined {
   );
 }
 
+// One step of the path shown in the title bar. The last step has no link because it is the current page.
+export interface Breadcrumb {
+  label: string;
+  to?: string;
+}
+
+interface BreadcrumbContext {
+  workspaceName?: string;
+  project?: ProjectDetail;
+}
+
+// The path to the current page, for example Workspace > Project > Board.
+export function getBreadcrumbs(pathname: string, context: BreadcrumbContext): Breadcrumb[] {
+  const item = [...MAIN_NAV, ...FOOTER_NAV].find((navItem) => navItem.path === pathname);
+  if (item) return [{ label: item.label }];
+
+  const workspaceId = getWorkspaceIdFromPath(pathname);
+  if (workspaceId) return [{ label: context.workspaceName ?? "Workspace" }];
+
+  const projectId = getProjectIdFromPath(pathname);
+  if (projectId) {
+    const { project } = context;
+    const trail: Breadcrumb[] = [];
+    if (project) trail.push({ label: context.workspaceName ?? "Workspace", to: workspacePath(project.workspaceId) });
+    const onBoard = matchPath(BOARD_PATH_PATTERN, pathname) !== null;
+    const projectLabel = project?.name ?? "Project";
+    trail.push(onBoard ? { label: projectLabel, to: projectPath(projectId) } : { label: projectLabel });
+    if (onBoard) trail.push({ label: "Board" });
+    return trail;
+  }
+  return [{ label: "Page not found" }];
+}
+
 interface HeadingContext {
   workspace?: WorkspaceDetail;
   project?: ProjectDetail;

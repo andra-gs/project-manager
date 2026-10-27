@@ -12,7 +12,11 @@ export type IconName =
   | "chevronsLeft"
   | "chevronsRight"
   | "arrowLeft"
-  | "arrowRight";
+  | "arrowRight"
+  | "windowMinimize"
+  | "windowMaximize"
+  | "windowRestore"
+  | "windowClose";
 
 // Simple outline icons drawn for this app. They use the current text color, so they follow tokens.
 const PATHS: Record<IconName, ReactNode> = {
@@ -60,6 +64,10 @@ const PATHS: Record<IconName, ReactNode> = {
   chevronsRight: <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />,
   arrowLeft: <path d="M19 12H5M11 18l-6-6 6-6" />,
   arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,
+  windowMinimize: <path d="M5 12h14" />,
+  windowMaximize: <rect x="5" y="5" width="14" height="14" rx="1" />,
+  windowRestore: <path d="M9 9V5h10v10h-4M5 9h10v10H5z" />,
+  windowClose: <path d="M6 6l12 12M18 6L6 18" />,
   help: (
     <>
       <circle cx="12" cy="12" r="9" />
