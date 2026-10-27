@@ -197,6 +197,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, step 3b (Claude proposes a plan first): drag and drop on the board**, or another Phase 3 item. The developer chooses the order of the remaining Phase 3 items: drag and drop for the board, Calendar and deadlines, task details (description, labels, checklists, notes), project documents, activity history. Branch `phase-3-kanban` holds step 3a (verified); merging it and `phase-1-ui` into `main` is the developer's to do, at any time.
+**1. Developer: test the small change on branch `phase-3-kanban`** (deadline badge moved from under the task title to the right side of the task row, next to the priority badge): `git pull origin phase-3-kanban`, `npm run tauri dev`, open a project with tasks that have deadlines, check the badge position and that long titles still wrap and nothing overlaps; `npm run build`.
 
-Open question from the developer (2026-10-27): the deadline badge sits under the task title in the task list (unchanged since step 2c-2a). Move it elsewhere? Not decided.
+**2. Phase 3, step 3c: Calendar and deadlines** (chosen by the developer 2026-10-27). Plan sent, waiting for approval. Figma "06 Calendar & Deadlines" read by structure only (month grid Monday to Sunday, Today button, month arrows, deadline labels inside day cells).
+
+Merging `phase-1-ui` and `phase-3-kanban` into `main` is the developer's to do, at any time. Drag and drop for the board (step 3b) is postponed.

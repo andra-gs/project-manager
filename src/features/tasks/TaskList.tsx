@@ -51,9 +51,9 @@ export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps
               <ListRow
                 key={task.id}
                 title={task.title}
-                subtitle={due ? <Badge tone={due.tone}>{due.label}</Badge> : undefined}
                 trailing={
                   <div className="flex items-center gap-2">
+                    {due && <Badge tone={due.tone}>{due.label}</Badge>}
                     <PriorityBadge priority={task.priority} />
                     <StatusBadge status={task.status} />
                     <Button variant="secondary" disabled={busy} onClick={() => setEditing(task)}>
