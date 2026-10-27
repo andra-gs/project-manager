@@ -147,6 +147,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2d) | Passed: edit project (name, description, validation, Cancel and Escape), edit task (title, priority, deadline, clearing and past deadlines, validation), a done task stays done, creating projects and tasks still works, edits kept after restarting |
 | reported 2026-10-26 | `npm run build` (Phase 2 step 2d) | Passed: `tsc` and Vite build (99 modules) without errors |
 | reported 2026-10-27 | Phase 2 closing check: `npm run tauri build`, release `project-manager.exe` with the existing database and with a renamed (fresh) `avenqor.db`, then restore of the backup | Reported by the developer as "all fine" (no details of individual items were given; the optional installer test was not confirmed separately) |
+| reported 2026-10-27 | `npm run tauri dev` (Phase 3 step 3a, branch `phase-3-kanban`), board checks 1 to 8 | Passed, all as expected: Open board button, four columns with counts and empty messages, arrow buttons (disabled at the ends), positions kept after restart, progress follows Done, New Task adds to To Do, top bar title, deadline badges |
+| reported 2026-10-27 | `npm run build` (Phase 3 step 3a) | Passed: `tsc` and Vite build (103 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -195,17 +197,6 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, step 3a: test the Kanban board (developer, on Windows).** Code written 2026-10-27 on branch `phase-3-kanban`, not yet run by anyone (Claude cannot build or run the app).
+**Phase 3, step 3b (Claude proposes a plan first): drag and drop on the board**, or another Phase 3 item. The developer chooses the order of the remaining Phase 3 items: drag and drop for the board, Calendar and deadlines, task details (description, labels, checklists, notes), project documents, activity history. Branch `phase-3-kanban` holds step 3a (verified); merging it and `phase-1-ui` into `main` is the developer's to do, at any time.
 
-```powershell
-cd D:\project-manager
-git fetch origin
-git checkout phase-3-kanban
-git pull origin phase-3-kanban
-npm run tauri dev
-npm run build
-```
-
-Check: (1) a project page has an "Open board" button; (2) the board shows four columns with counts, and "No tasks" in empty ones; (3) the arrow buttons move a task one column left or right, the first column has no left arrow and the last has no right arrow; (4) after closing and reopening the app the tasks are still in their columns; (5) moving to Done raises the project's progress, moving out of Done lowers it; "Mark done" and "Reopen" on the project page still work; (6) "New Task" on the board adds a task to To Do; (7) the top bar says "Board" with the project name; (8) overdue tasks show a red deadline badge, done tasks show none; (9) `npm run build` passes. Report what worked and any error text.
-
-Merging `phase-1-ui` into `main` is still the developer's to do, at any time.
+Open question from the developer (2026-10-27): the deadline badge sits under the task title in the task list (unchanged since step 2c-2a). Move it elsewhere? Not decided.
