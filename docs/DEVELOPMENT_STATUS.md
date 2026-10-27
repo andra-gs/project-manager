@@ -197,8 +197,17 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**1. Developer: test the small change on branch `phase-3-kanban`** (deadline badge moved from under the task title to the right side of the task row, next to the priority badge): `git pull origin phase-3-kanban`, `npm run tauri dev`, open a project with tasks that have deadlines, check the badge position and that long titles still wrap and nothing overlaps; `npm run build`.
+**Phase 3, step 3c: test the Calendar and the moved deadline badge (developer, on Windows).** Code written 2026-10-27 on branch `phase-3-kanban`, not yet run by anyone. Claude verified only the date helpers in `src/lib/calendar.ts` with a Node script (October 2026, February of a leap year and of a common year, a six-week month, year ends; time zones Asia/Jakarta, America/Los_Angeles, Pacific/Auckland).
 
-**2. Phase 3, step 3c: Calendar and deadlines** (chosen by the developer 2026-10-27). Plan sent, waiting for approval. Figma "06 Calendar & Deadlines" read by structure only (month grid Monday to Sunday, Today button, month arrows, deadline labels inside day cells).
+```powershell
+cd D:\project-manager
+git pull origin phase-3-kanban
+npm run tauri dev
+npm run build
+```
 
-Merging `phase-1-ui` and `phase-3-kanban` into `main` is the developer's to do, at any time. Drag and drop for the board (step 3b) is postponed.
+Prepare: in one or two projects create tasks with deadlines in the past, today, tomorrow, later this month, and next month; put 3 tasks on the same day; mark one task done; give one task no deadline; archive one project that has a deadline task.
+
+Check: (1) Calendar opens on the current month, Monday first, today's cell has an accent border; (2) previous and next month arrows work, also across December and January, and Today returns to this month; (3) overdue deadlines are red, upcoming ones accent colored, the done task is grey and struck through; (4) the day with 3 tasks shows 2 and "+1 more"; (5) clicking a task opens its project; (6) the list on the right shows only unfinished tasks, soonest first (overdue at the top), with the project name; the task with no deadline and the task of the archived project are not shown; (7) a new task with a deadline appears after returning to Calendar, and a task marked done leaves the list; (8) with no deadlines the list says "No open tasks with a deadline."; (9) at the minimum window size (960x600) the list moves below the grid and nothing overlaps; (10) the deadline badge sits at the right of the task row on the project page; (11) `npm run build` passes. Report what worked and any error text.
+
+Merging `phase-1-ui` and `phase-3-kanban` into `main` is the developer's to do, at any time. Drag and drop for the board (step 3b) and the other Phase 3 items (task details, documents, activity) come after.
