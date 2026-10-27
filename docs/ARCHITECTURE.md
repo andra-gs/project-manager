@@ -1,8 +1,8 @@
 # Architecture
 
-Last updated: 2026-10-22
+Last updated: 2026-10-27
 
-> **Status: only the Tauri project template exists.** This document describes the **Agreed** architecture principles and the **Proposed** structure from `CLAUDE.md`. The "Actual implementation" section records only what has been verified; none of the layers below (services, repositories, database) is built yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
+> **Status (2026-10-27): the layers below (UI, hooks, services, repositories, database) exist and were verified by the developer through Phase 2.** This document describes the **Agreed** architecture principles and the structure from `CLAUDE.md`. The "Actual implementation" section records what has been verified. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
 
 ## Technology (Agreed)
 
@@ -101,7 +101,7 @@ Nothing below is decided. `CLAUDE.md` rule 16 requires options and approval for 
 `CLAUDE.md` says to use "a Tauri 2-compatible SQLite plugin or another well-maintained compatible solution" and to verify compatibility first. Two options exist.
 
 **Option A: the official Tauri SQL plugin, called from TypeScript.**
-Facts from the official plugin documentation (read on 2026-10-20, not yet tried in this project):
+Facts from the official plugin documentation (read on 2026-10-20; tried and verified in this project since 2026-10-25, version 2.6.0):
 - It is added with `npm run tauri add sql`, or manually with `cargo add tauri-plugin-sql --features sqlite`, registration in the Rust builder, and `npm install @tauri-apps/plugin-sql`.
 - Migrations are defined in Rust and run in a transaction.
 - The default permission (`sql:default`) allows loading, selecting, and closing. Writing needs an extra permission such as `sql:allow-execute`.
@@ -133,14 +133,14 @@ Online features are **Future** (Phase 6). Nothing here is built, and `CLAUDE.md`
 - Design the data model so the roles Owner, Admin, Member, and Guest can be added later, without building a fake permission system now.
 - Phase 6 will define authentication, a backend API, a cloud database, synchronization, conflict handling, and offline-to-online data migration.
 
-**Proposed design considerations (not approved):** to be reviewed when the schema is designed in Phase 2.
+**Design considerations (adopted in the Phase 2 schema, 2026-10-25):**
 - Give records globally unique IDs (instead of simple counting numbers), so data created on separate computers can later be combined without ID clashes.
 - Record created and updated timestamps on records, which synchronization would need.
 - Keep data access behind the repository layer, so replacing local SQLite with a remote source does not require changing screens.
 
 ## Actual implementation
 
-Branch `phase-1-ui`, after Phase 1 steps 1 to 5 (step 6 verified). Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far has an app frame, a Dashboard, and two overview screens on mock data. No services, repositories, database, or SQL plugin exist yet.
+Branch `phase-1-ui`, after Phase 1 steps 1 to 5 (step 6 verified). Verified from the developer's test results (2026-10-22 and 2026-10-23) and from the tracked files (`git ls-files`). The project began as the `create-tauri-app` template (`react-ts`), renamed to `project-manager`, with the demo code removed. The interface so far has an app frame, a Dashboard, and two overview screens on mock data. (Written at Phase 1; since Phase 2 the services, repositories, database, and SQL plugin exist, see the notes below.)
 
 ### Folder layout (tracked files)
 
@@ -212,7 +212,7 @@ Verified: in `npm run tauri dev` the components render, hover and keyboard focus
 
 Flow for creating a workspace: the Settings form (`features/workspaces/WorkspaceManager`) calls the hook `useWorkspaces`, which calls `services/workspaceService` (checks the name, creates a UUID, gets the local profile), which calls `repositories/workspaceRepository` (parameterized SQL through `lib/database`). The hook keeps one shared list outside any screen and reloads it from the database after every change, so the sidebar and Settings stay in step. Only files in `src/repositories/` import `lib/database`. Errors that the user can fix are `ValidationError`s (`lib/errors.ts`) and are shown as written; other errors show a general sentence with the technical detail.
 
-Step 2c-1 (written 2026-10-25, awaiting verification): the workspace page reads the database through `useWorkspaceDetail` (workspace, its projects with task counts, deadline counts) and creates projects through `ProjectFormDialog` and `projectService`. Progress is calculated from task counts in the service. Activity is an empty list until Phase 3 (no invented entries next to real data). Step 2c-2a (written 2026-10-26, awaiting verification): the project page reads the database through `useProjectDetail` and offers new tasks (`TaskFormDialog`, `taskService`), marking tasks done or reopening them, deleting tasks, archiving or restoring the project, and deleting the project. Archived projects appear in an "Archived" section on the workspace page. Both detail hooks use `createKeyedLoader`. Step 2c-2b (verified by the developer 2026-10-26): the Dashboard and the local profile read the database too, and the mock data was removed. Step 2d (written 2026-10-26, awaiting verification): `ProjectFormDialog` and `TaskFormDialog` serve both creating and editing, so projects (name, description) and tasks (title, priority, deadline) can be edited.
+Step 2c-1 (verified by the developer 2026-10-25): the workspace page reads the database through `useWorkspaceDetail` (workspace, its projects with task counts, deadline counts) and creates projects through `ProjectFormDialog` and `projectService`. Progress is calculated from task counts in the service. Activity is an empty list until Phase 3 (no invented entries next to real data). Step 2c-2a (verified 2026-10-26): the project page reads the database through `useProjectDetail` and offers new tasks (`TaskFormDialog`, `taskService`), marking tasks done or reopening them, deleting tasks, archiving or restoring the project, and deleting the project. Archived projects appear in an "Archived" section on the workspace page. Both detail hooks use `createKeyedLoader`. Step 2c-2b (verified by the developer 2026-10-26): the Dashboard and the local profile read the database too, and the mock data was removed. Step 2d (verified 2026-10-26): `ProjectFormDialog` and `TaskFormDialog` serve both creating and editing, so projects (name, description) and tasks (title, priority, deadline) can be edited.
 
 ### Security state
 

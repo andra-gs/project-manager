@@ -1,15 +1,15 @@
 # Development Status
 
-Last updated: 2026-10-24
+Last updated: 2026-10-27
 
 This file is the project's memory between sessions. It must be updated before every coding session ends, and it records only what was actually done and checked.
 
 ## Current state
 
-- **Phase:** Phase 0 and Phase 1 are **complete** (Phase 1 on branch `phase-1-ui`, verified by the developer 2026-10-24; not yet merged into `main`). Phase 2 (local database) starts with approval of the open decisions. `main` still holds the Phase 0 template.
-- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, an app frame (sidebar, top bar, routing) with design tokens and placeholder pages. No project features exist on either. **Database:** none. **Git repository:** `https://github.com/andra-gs/project-manager` (public, branch `main`).
+- **Phase:** Phases 0, 1, and 2 are **complete** (verified by the developer; Phase 2 closing check reported 2026-10-27). All work is on branch `phase-1-ui`, not yet merged into `main`. `main` still holds the Phase 0 template. Next: Phase 3.
+- **Application code:** on `main`, the unmodified template; on `phase-1-ui`, the app frame, design tokens, and working workspace, project, and task features on a local SQLite database (`avenqor.db`, schema version 2, five tables). Calendar, My Tasks, and Documents are still placeholder pages. **Git repository:** `https://github.com/andra-gs/project-manager` (public).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
-- Nothing from the MVP feature list is Implemented yet. Status labels are explained in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
+- Implemented (verified by the developer): workspaces, projects, basic tasks, Dashboard on real data, local profile. See the MVP table in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md). Status labels are explained there too.
 
 ### Environment note
 
@@ -26,7 +26,7 @@ The documents were drafted in a Claude workspace, which cannot reach the Windows
 | Phase 0, step 2: created the project with `create-tauri-app` 4.7.5 (template `react-ts`, npm) in a temporary folder, renamed it from `tauri-temp` to `project-manager`, and copied it into the repository without overwriting existing files | 2026-10-21 |
 | Committed and pushed the scaffold (`e523852`) | 2026-10-21 |
 | Phase 0, step 3: `npm install` and `npm run tauri dev` worked | 2026-10-21 |
-| Decisions 2026-10-23: working product name **Avenqor** (Proposed, pending trademark checks); brand notes saved as `docs/BRAND.md` (identity only); color palette and logo not applied while the logo is being reconsidered; app `identifier` change postponed until before Phase 2 | 2026-10-23 |
+| Decisions 2026-10-23: working product name **Avenqor** (later Agreed, 2026-10-25; trademark checks not recorded); brand notes saved as `docs/BRAND.md` (identity only); color palette and logo not applied while the logo is being reconsidered; app `identifier` change postponed until before Phase 2 | 2026-10-23 |
 | Phase 0, step 4: `npm run tauri build` produced a Windows release build and two installers | reported 2026-10-22 |
 
 ## Verification performed
@@ -146,6 +146,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-26 | `npm run build` (Phase 2 step 2c-2b) | Passed: `tsc` and Vite build (99 modules) without errors |
 | reported 2026-10-26 | `npm run tauri dev` (Phase 2 step 2d) | Passed: edit project (name, description, validation, Cancel and Escape), edit task (title, priority, deadline, clearing and past deadlines, validation), a done task stays done, creating projects and tasks still works, edits kept after restarting |
 | reported 2026-10-26 | `npm run build` (Phase 2 step 2d) | Passed: `tsc` and Vite build (99 modules) without errors |
+| reported 2026-10-27 | Phase 2 closing check: `npm run tauri build`, release `project-manager.exe` with the existing database and with a renamed (fresh) `avenqor.db`, then restore of the backup | Reported by the developer as "all fine" (no details of individual items were given; the optional installer test was not confirmed separately) |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -153,7 +154,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 ## Known issues and limitations
 
 1. **Two copies of `CLAUDE.md`.** The Claude Project's copy does not contain section 18. The repository copy does. Decide which copy is the source of truth, and keep the other in sync.
-2. **Name mismatch.** (Also: the product working name changed to Avenqor on 2026-10-23, Proposed. The repository and folder names are separate and were not changed.) The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
+2. **Name mismatch.** (The product name Avenqor was Agreed on 2026-10-25. The repository and folder names are separate and were not changed.) The GitHub repository is named `project-manager`, but `CLAUDE.md` says the repository and folder name is `project-manager-desktop`. Decide whether to rename the repository or update `CLAUDE.md`.
 3. **Commit author email.** Commit `e523852` records the author email as `andranooryanto@gmail.con` (typo: `.con`), so GitHub does not link it to the account `andra-gs`. The developer was advised to change `user.email` for future commits and to leave the old commit unchanged, because rewriting history is not worth the risk. Whether the setting was changed is not confirmed.
 4. **Template defaults (approved 2026-10-22, changed on branch `phase-1-ui`, verified by the developer 2026-10-22).** The `opener` plugin and its permission were removed. A strict `csp` and a development-only `devCsp` were added. The window is 1200x680, minimum 960x600, centered, so that it fits 1366x768 laptop screens. The sample page, the `greet` command, and the demo assets were removed and replaced by a placeholder page. `bundle.targets` stays `all` until release. The `style-src` policy allows inline styles (`'unsafe-inline'`), following the Tauri documentation example. This weakens the policy slightly and is to be reviewed when the design needs it.
 5. **Focus outline cut off in the sidebar (found 2026-10-23, fix verified by the developer on 2026-10-23).** In icon-only mode the focus outline of the first menu item looked cut off at the top. Cause (Claude's diagnosis, not confirmed): the menu area scrolls, and a scrolling box hides anything drawn outside its edge, such as the outline. Fix: a small top padding inside that area (`pt-1.5` in `Sidebar.tsx`).
@@ -172,33 +173,30 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 - [x] **Phase 1:** UI foundation (complete 2026-10-24, on branch `phase-1-ui`, not yet merged into `main`)
   - [x] Step 1: clean the template and apply the approved defaults (verified by the developer 2026-10-22: dev and release builds load the page, minimum window size correct, no CSP error in the dev Console, `Cargo.lock` updated and pushed)
   - [x] Step 2: styling with Tailwind CSS, DM Sans font stored locally, design tokens (verified by the developer 2026-10-23: dev run without errors, accent token change took effect, packages committed)
-  - [ ] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
-  - [ ] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
+  - [x] Step 3: layout, sidebar, and routing with placeholder pages (verified by the developer 2026-10-23, except scroll behavior at small sizes and the 1366x768 and 1920x1080 screens)
+  - [x] Step 4: base components (button, card, badge, progress bar) (verified by the developer 2026-10-23 in development mode and with `npm run build`; not tested in a release build)
   - [x] Step 4b: collapsible sidebar (verified by the developer 2026-10-23 in development mode and with `npm run build`; one focus-outline problem found and fixed, see Known issues)
   - [x] Step 5: Dashboard with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [x] Step 6: Workspace and project overview screens with temporary mock data (verified by the developer 2026-10-24 in development mode and with `npm run build`)
   - [x] Step 7: Settings and Help screens (verified by the developer 2026-10-24 in development mode, with `npm run build`, and in a rebuilt release program)
   - [x] Proof: changing the accent color in the token file changes every screen (see `CLAUDE.md` section 19)
-- [ ] **Phase 2:** SQLite, schema and migrations, workspace, project, and task CRUD (in progress)
+- [x] **Phase 2:** SQLite, schema and migrations, workspace, project, and task CRUD (complete 2026-10-27, on branch `phase-1-ui`, not yet merged into `main`)
   - [x] SQL plugin installed, database file created (verified 2026-10-25)
   - [x] Migrations 1 and 2, five tables, owner trigger (verified 2026-10-25)
   - [x] Workspaces: create, rename, delete (verified 2026-10-25)
   - [x] Projects: create, edit, archive, restore, delete (verified 2026-10-25 and 2026-10-26)
   - [x] Tasks: create, edit, mark done, reopen, delete (verified 2026-10-26)
   - [x] Dashboard, local profile, and progress on real data; mock data removed (verified 2026-10-26)
-  - [ ] Closing check: release build with the existing and with a fresh database file, database location decision, documentation review
+  - [x] Closing check: release build with the existing and with a fresh database file (reported by the developer 2026-10-27), documentation review (2026-10-27)
+  - [ ] Database location decision: Roaming folder kept for now (Proposed, not yet explicitly approved; see Known issues 7)
 - [ ] Phase 3: Kanban, calendar, task details, documents, progress, activity
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**Phase 2, closing check (developer, on Windows), after one decision.**
+**1. Developer: merge `phase-1-ui` into `main`** (Claude proposes, the developer merges). On GitHub: open a pull request from `phase-1-ui` to `main`, check that it shows the expected changes, and merge it. Then in PowerShell: `git checkout main`, `git pull origin main`, `npm run build`.
 
-Decision (Proposed by Claude): keep the database in the app config folder (`%APPDATA%\io.github.andra-gs.avenqor`, Roaming), which is the plugin default. Moving it to the Local folder would need an absolute path and a change not yet verified with the plugin, and would leave existing data behind. Revisit before a public release. Not decided until the developer approves.
+**2. Decision still open:** approve keeping the database in the Roaming app config folder (`%APPDATA%\io.github.andra-gs.avenqor`) for now, to be revisited before a public release.
 
-Closing check:
-1. Existing database: `npm run tauri build`, start `src-tauri\target\release\project-manager.exe`. The data made in development mode must appear (Dashboard, Settings Database line with schema version 2) and all pages must work in the release program.
-2. Fresh database: close the app, rename `avenqor.db` (`Rename-Item "$env:APPDATA\io.github.andra-gs.avenqor\avenqor.db" avenqor.db.backup`), start the release program: the app starts with empty data and the Database line says schema version 2, 5 tables. Create a workspace, project, and task, close the app, delete the new `avenqor.db`, and rename `avenqor.db.backup` back to `avenqor.db`. Do not delete the backup before the restore.
-3. Optionally install the NSIS installer (`src-tauri\target\release\bundle\nsis`) and start the installed app; it uses the same data folder.
-4. Claude reviews all documentation for accuracy, then proposes merging `phase-1-ui` into `main` (the developer merges).
+**3. Phase 3, step 1 (Claude proposes a plan first):** Kanban board for a project (columns To Do, In Progress, Review, Done; move tasks; persist status). This needs a task status change in `taskService` and `taskRepository` and a board page; no new migration is expected because `tasks.status` already exists.

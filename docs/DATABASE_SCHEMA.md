@@ -1,8 +1,8 @@
 # Database Schema
 
-Last updated: 2026-10-25
+Last updated: 2026-10-27
 
-> **Status (2026-10-25): migration 1 is applied.** The developer reported schema version 1, 5 tables, and foreign keys on (Settings page, 2026-10-25). The tables exist and are empty; no screen reads or writes them yet, so no feature is Implemented on top of them. The constraints and delete behavior are written in the migration but not yet tested with data. Only tables from a migration in the repository are listed here.
+> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here.
 
 ## Rules for the schema (Agreed)
 
@@ -62,7 +62,7 @@ All five tables were created in migration 1.
 
 Constraints: names and titles must not be empty (checked after trimming spaces); status, priority, and role values are limited by `CHECK`; `due_date` must look like `YYYY-MM-DD`. Indexes: `projects(workspace_id)`, `tasks(project_id)`, `tasks(assignee_profile_id)`, `tasks(due_date)`, `workspace_members(profile_id)`.
 
-Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects and their tasks; deleting a project deletes its tasks; deleting a profile that owns a workspace is blocked; deleting a profile that is only an assignee clears the assignee of its tasks. The screens must ask for confirmation first. Verified 2026-10-25 for workspace to projects (the Settings page showed 2 projects, then 0 after the workspace was deleted); project to tasks verified 2026-10-26 the same way (the counts went to 0 after deleting a project). This depends on SQLite foreign keys being on for every connection, which the Settings screen reports (foreign keys reported on 2026-10-25; the delete behavior itself is untested).
+Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects and their tasks; deleting a project deletes its tasks; deleting a profile that owns a workspace is blocked; deleting a profile that is only an assignee clears the assignee of its tasks. The screens must ask for confirmation first. Verified 2026-10-25 for workspace to projects (the Settings page showed 2 projects, then 0 after the workspace was deleted); project to tasks verified 2026-10-26 the same way (the counts went to 0 after deleting a project). This depends on SQLite foreign keys being on for every connection, which the Settings screen reports (foreign keys reported on 2026-10-25; the cascade was verified with row counts on 2026-10-25 and 2026-10-26).
 
 Trigger (migration 2, verified 2026-10-25 by a new workspace showing 1 member): `trg_workspaces_add_owner_member` runs after a row is inserted into `workspaces` and adds the owner to `workspace_members` with the role `owner`. It replaces a manual transaction: the workspace and its owner membership are saved by one statement, so both rows exist or neither does.
 

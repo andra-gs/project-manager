@@ -2,7 +2,7 @@
 
 A local-first desktop application for organizing workspaces, projects, tasks, deadlines, documents, and progress in one place.
 
-> **Status: Phase 0 complete. The project is still the unmodified Tauri template.** The desktop app starts in development mode and builds a Windows release on the developer's computer (verified 2026-10-21 and 2026-10-22). No project features exist yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
+> **Status: Phases 0 to 2 complete (branch `phase-1-ui`, not yet merged into `main`).** Workspaces, projects, and basic tasks work on a local SQLite database, verified by the developer on Windows (2026-10-27). Calendar, My Tasks, Documents, Kanban, and backup are not built yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
 
 The product name is **Avenqor** (Agreed by the developer on 2026-10-25; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App.
 
@@ -88,7 +88,7 @@ npm run tauri dev
 ```
 
 - The first run compiles all Rust dependencies and took about 18 minutes on the developer's computer. Later runs are expected to be faster because compiled dependencies are cached, but this has not been timed.
-- A window titled "Avenqor" opens (1200x680, centered). It shows the application frame (sidebar, top bar) with placeholder pages while the screens are being built.
+- A window titled "Avenqor" opens (1200x680, centered). It shows the application frame (sidebar, top bar), the Dashboard, workspaces, projects, and tasks. Calendar, My Tasks, and Documents are still placeholder pages.
 - To stop: close the window, then press `Ctrl+C` in the terminal.
 
 ## Build
@@ -105,10 +105,12 @@ npm run tauri build
 
 ## Where data will be stored
 
-The application will keep structured data (workspaces, projects, tasks, and so on) in a local SQLite database inside the application's data directory, not in its installation folder. Data on one computer is not shared with other computers. Backup and restore (JSON export and import) is planned for Phase 4.
+The application keeps structured data (workspaces, projects, tasks, and the local profile) in a local SQLite database file `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor` (the app config folder, not the installation folder). Backup this file yourself until the JSON backup exists. Data on one computer is not shared with other computers. Backup and restore (JSON export and import) is planned for Phase 4.
 
 ## Known limitations
 
-- The application shows only a placeholder page (Phase 1, in progress). No project, task, or database features exist yet.
+- No Kanban board, calendar, documents, activity history, labels, subtasks, or checklists yet (Phase 3).
+- No backup and restore yet (Phase 4). Data stays on this computer and is not synchronized.
+- The database folder is Roaming (see `docs/DEVELOPMENT_STATUS.md`, Known issues 7).
 - Changing the look: edit the values in `src/styles/tokens.css`.
 - Online features (accounts, sync, shared workspaces, real-time editing) are not part of the first release.
