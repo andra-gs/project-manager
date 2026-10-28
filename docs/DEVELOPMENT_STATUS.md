@@ -157,6 +157,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-28 | `npm run build` (custom title bar) | Passed: `tsc` and Vite build (121 modules) without errors. The output pasted was from `npm run build`; the release program `project-manager.exe` check (item 10) was not reported separately |
 | reported 2026-10-28 | `npm run tauri dev` (Phase 3 step 3e-1, task page), checks 1 to 11 | Passed except: (a) a very long description without spaces stretched the page to the right at the smallest window instead of wrapping (checks 2 and 9); (b) the developer asked for form messages to appear under the input with a highlight (check 3), for all forms. Both corrected the same day, see ARCHITECTURE.md; not yet re-tested. Other checks as expected, data kept after restart |
 | reported 2026-10-28 | `npm run build` (Phase 3 step 3e-1) | Passed: `tsc` and Vite build (124 modules) without errors |
+| reported 2026-10-28 | `npm run tauri dev` (corrections to step 3e-1), checks 1 to 5 | Passed: long title and description wrap at the smallest window; the empty-title message appears under the box with a red border in the task and project forms; workspace and display-name forms unchanged; sidebar changes as wanted. Developer's change request: descriptions need no message (a character counter at the lower left and a hard limit instead) and the deadline needs no message (auto-correct instead); implemented the same day, not yet re-tested |
+| reported 2026-10-28 | `npm run build` (corrections to step 3e-1) | Passed: `tsc` and Vite build (124 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -205,7 +207,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Test the corrections (developer, on Windows)**, branch `phase-3-kanban`:
+**Test the second round of corrections (developer, on Windows)**, branch `phase-3-kanban`:
 
 ```powershell
 cd D:\project-manager
@@ -214,8 +216,6 @@ npm run tauri dev
 npm run build
 ```
 
-Check: (1) on the task page, type a very long description with no spaces and no Enter, then shrink the window to its minimum: the text must wrap to new lines and nothing may stretch to the right; do the same with a very long task title; (2) in "New task" and "Edit task", saving an empty title shows the message under the title box and the box gets a red border; a past or invalid state of the deadline and the description over 2000 characters show under their own boxes; (3) the same for "New project" and "Edit project" (empty name under the name box); (4) the workspace and display-name forms in Settings still show their message under the box; (5) in the sidebar the line "Working name · not final" is gone, the name is larger, and when the sidebar is collapsed only the expand button is shown at the top; the Help page no longer says "Working name"; (6) `npm run build` passes. Report what worked and any error text.
+Check: (1) in "New task", "Edit task", "New project", and "Edit project" the description box shows a counter at its lower left (for example `0 / 2000` for tasks and `0 / 300` for projects), the number follows typing, and typing or pasting stops at the limit with no message; (2) an empty title or name still shows its message under the box with a red border; (3) the deadline box: pick a date, clear it, type a date by hand, and try typing a year with more than 4 digits: no message appears, the value stays usable, and saving works; (4) `npm run build` passes. Report what worked and any error text.
 
 **Then step 3e-2: checklists and notes** (migration 3). Claude proposes the table design first. Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.
-
-Developer's question (answered in chat 2026-10-28): link on the title only, or the whole card clickable? Answer given: whole row when the row has no other buttons (My Tasks, Calendar list, Calendar chips already are); title link only where the row has buttons (task list on the project page, board cards).
