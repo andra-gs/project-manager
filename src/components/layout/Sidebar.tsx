@@ -29,7 +29,7 @@ function SidebarLink({ to, icon, label, collapsed }: SidebarLinkProps) {
   return (
     <NavLink
       to={to}
-      end
+      end={to === "/"}
       title={collapsed ? label : undefined}
       aria-label={collapsed ? label : undefined}
       className={({ isActive }) =>

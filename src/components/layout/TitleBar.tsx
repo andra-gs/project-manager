@@ -1,6 +1,13 @@
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router";
-import { getBreadcrumbs, getProjectIdFromPath, getTaskIdFromPath, getWorkspaceIdFromPath } from "../../app/navigation";
+import {
+  getBreadcrumbs,
+  getDocumentIdFromPath,
+  getProjectIdFromPath,
+  getTaskIdFromPath,
+  getWorkspaceIdFromPath,
+} from "../../app/navigation";
+import { useDocumentLibrary } from "../../hooks/useDocuments";
 import { useProjectDetail } from "../../hooks/useProjectDetail";
 import { useTaskDetail } from "../../hooks/useTaskDetail";
 import { useWorkspaceDetail } from "../../hooks/useWorkspaceDetail";
@@ -23,7 +30,11 @@ export function TitleBar() {
   const workspaceId = getWorkspaceIdFromPath(pathname) ?? project?.workspaceId;
   const { state: workspaceState } = useWorkspaceDetail(workspaceId);
   const workspaceName = workspaceState?.kind === "ready" ? workspaceState.data.name : undefined;
-  const crumbs = getBreadcrumbs(pathname, { workspaceName, project, task });
+  const { state: libraryState } = useDocumentLibrary();
+  const documentId = getDocumentIdFromPath(pathname);
+  const documentTitle =
+    libraryState?.kind === "ready" ? libraryState.data.documents.find((document) => document.id === documentId)?.title : undefined;
+  const crumbs = getBreadcrumbs(pathname, { workspaceName, project, task, documentTitle });
 
   return (
     <div

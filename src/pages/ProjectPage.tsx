@@ -10,6 +10,7 @@ import { PlaceholderNotice } from "../components/ui/PlaceholderNotice";
 import { ProgressBar } from "../components/ui/ProgressBar";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { ActivitySection } from "../features/activity/ActivitySection";
+import { ProjectDocumentsSection } from "../features/documents/ProjectDocumentsSection";
 import { ProjectLabelsSection } from "../features/labels/ProjectLabelsSection";
 import { ProjectFormDialog } from "../features/projects/ProjectFormDialog";
 import { TaskFormDialog } from "../features/tasks/TaskFormDialog";
@@ -107,6 +108,8 @@ export function ProjectPage() {
         </div>
         <TaskList tasks={project.tasks} onSetDone={setTaskDone} onDelete={deleteTask} onUpdate={updateTask} />
       </section>
+
+      <ProjectDocumentsSection projectId={project.id} />
 
       <ProjectLabelsSection labels={project.labels} onCreate={createLabel} onUpdate={updateLabel} onDelete={deleteLabel} />
 

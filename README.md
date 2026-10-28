@@ -109,7 +109,7 @@ The application keeps structured data (workspaces, projects, tasks, and the loca
 
 ## Known limitations
 
-- No Kanban board, calendar, documents, activity history, subtasks yet (Phase 3).
+- No activity history, drag and drop on the board, document attachments, or subtasks yet (Phase 3 and later).
 - No backup and restore yet (Phase 4). Data stays on this computer and is not synchronized.
 - The database folder is Roaming (see `docs/DEVELOPMENT_STATUS.md`, Known issues 7).
 - Changing the look: edit the values in `src/styles/tokens.css`.

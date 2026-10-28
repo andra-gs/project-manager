@@ -22,7 +22,7 @@ function App() {
           <Route index element={<DashboardPage />} />
           <Route path="my-tasks" element={<MyTasksPage />} />
           <Route path="calendar" element={<CalendarPage />} />
-          <Route path="documents" element={<DocumentsPage />} />
+          <Route path="documents/:documentId?" element={<DocumentsPage />} />
           <Route path="workspaces/:workspaceId" element={<WorkspacePage />} />
           <Route path="projects/:projectId" element={<ProjectPage />} />
           <Route path="projects/:projectId/board" element={<BoardPage />} />

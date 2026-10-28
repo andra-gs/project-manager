@@ -164,6 +164,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | run by Claude 2026-10-28 | Python `sqlite3` in memory against migrations 1 to 4 and the SQL of `labelRepository.ts`; partial `tsc --noEmit` | SQL: duplicate names (any letter case) rejected in one project, allowed across projects, bad color rejected, linking is idempotent and refuses a label of another project, deletes of label, task, and project cascade correctly. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace (no npm registry), so the label screens are untested until the developer's run |
 | reported 2026-10-29 | `npm run tauri dev` (step 3e-3 labels, migration 4), checks 1 to 10 | Passed, all as expected: Database line `Connected · schema version 4 · 9 tables`; cross button for checklist items; create, remove, and re-add labels on a task; duplicate, empty, and too-long names refused with a message; labels of other projects not offered; Labels section on the project page (counts, edit, delete with confirmation); badges on the task list and board cards; data kept after restart |
 | reported 2026-10-29 | `npm run build` (step 3e-3) | Passed: `tsc` and Vite build (143 modules) without errors |
+| run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -215,13 +216,27 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] 3e-1 Task page with description (verified 2026-10-28)
   - [x] 3e-2 Checklist and notes, migration 3 (verified 2026-10-28)
   - [x] 3e-3 Labels, migration 4 (verified 2026-10-29)
-  - [ ] Project documents
+  - [ ] 3f Project documents, migration 5 (written 2026-10-29, awaiting the developer's test)
   - [ ] Local activity history
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**Step 3f: project documents** (Phase 3). Claude proposes the design (tables, screens, limits) first and waits for the developer's approval; no code before that. Local activity history follows after documents. Drag and drop for the board (3b) is still postponed; filtering by label comes in Phase 4.
+**1. Developer: test step 3f (project documents).** `git pull origin phase-3-kanban`, then `npm run tauri dev` (migration 5 runs on start), then:
+
+1. Settings, Database line: `Connected · schema version 5 · 10 tables`. Everything from before is still there (tasks, labels, checklists, notes).
+2. Sidebar, Documents: the page shows a search box, two filters (Type, Project), an empty list ("No documents yet."), a "Select a document to read it." panel, and a "New Document" button.
+3. New Document: choose a project, type a title, choose a type, write text with several lines, and create it. The document opens on the right and also appears in the list; the line breaks are kept; the sidebar still highlights Documents; the title bar path reads `Avenqor / Documents / <title>`.
+4. Empty title: a message appears under the title box. A title over 80 characters is stopped (counter at the lower right); the text box has a counter at 20000 characters.
+5. Edit the document (new title, type, text): the right panel and the list both change, and the list moves it to the top.
+6. Create two more documents of different types in different projects. Type part of a title in the search box (any letter case): only matching documents stay; "No document matches the search." appears when nothing matches. The Type and Project filters work alone and together.
+7. Project page: a "Documents" section lists only that project's documents; "New Document" there needs no project choice and opens the new document on the Documents page; the project link in a document goes back to the project.
+8. Delete a document: the confirmation names it; after confirming you return to the empty right panel and the list loses it.
+9. A very long title and a very long word in the text do not make the page wider than the window at the smallest size.
+10. Close and reopen the app: documents are kept. Delete a project that has documents: no error, and its documents are gone from the Documents page.
+11. `npm run build` passes.
+
+**2. Next after that:** local activity history (Phase 3). Drag and drop for the board (3b) is still postponed; search inside document text and filtering by label come in Phase 4.
 
 Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.

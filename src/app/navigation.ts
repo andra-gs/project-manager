@@ -29,6 +29,7 @@ const WORKSPACE_PATH_PATTERN = "/workspaces/:workspaceId";
 const PROJECT_PATH_PATTERN = "/projects/:projectId";
 const BOARD_PATH_PATTERN = "/projects/:projectId/board";
 const TASK_PATH_PATTERN = "/tasks/:taskId";
+const DOCUMENT_PATH_PATTERN = "/documents/:documentId";
 
 export function workspacePath(workspaceId: string): string {
   return `/workspaces/${workspaceId}`;
@@ -49,6 +50,14 @@ export function taskPath(taskId: string): string {
 
 export function getTaskIdFromPath(pathname: string): string | undefined {
   return matchPath(TASK_PATH_PATTERN, pathname)?.params.taskId;
+}
+
+export function documentPath(documentId: string): string {
+  return `/documents/${documentId}`;
+}
+
+export function getDocumentIdFromPath(pathname: string): string | undefined {
+  return matchPath(DOCUMENT_PATH_PATTERN, pathname)?.params.documentId;
 }
 
 export function boardPath(projectId: string): string {
@@ -73,6 +82,8 @@ interface BreadcrumbContext {
   workspaceName?: string;
   project?: ProjectDetail;
   task?: TaskDetail;
+  // Title of the open document, once it is known.
+  documentTitle?: string;
 }
 
 // The path to the current page, for example Workspace > Project > Board.
@@ -82,6 +93,10 @@ export function getBreadcrumbs(pathname: string, context: BreadcrumbContext): Br
 
   const workspaceId = getWorkspaceIdFromPath(pathname);
   if (workspaceId) return [{ label: context.workspaceName ?? "Workspace" }];
+
+  if (getDocumentIdFromPath(pathname)) {
+    return [{ label: "Documents", to: "/documents" }, { label: context.documentTitle ?? "Document" }];
+  }
 
   if (getTaskIdFromPath(pathname)) {
     const { task } = context;
@@ -120,6 +135,7 @@ export function getPageHeading(pathname: string, context: HeadingContext): { tit
     return { title: item.label, subtitle: item.subtitle };
   }
   const { workspace, project, task } = context;
+  if (getDocumentIdFromPath(pathname)) return { title: "Documents", subtitle: "Notes and project documentation" };
   if (getTaskIdFromPath(pathname)) {
     return { title: "Task Details", subtitle: task ? `${task.projectName} · ${task.workspaceName}` : "" };
   }
