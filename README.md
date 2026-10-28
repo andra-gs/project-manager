@@ -3,7 +3,7 @@
 <div align="center">
 
 <!-- Replace this placeholder with the Avenqor logo when it is ready. -->
-<img src="assets/brand/avenqor-logo.png" alt="Avenqor logo" width="180" />
+<img src="Proyek Baru 6 [2DE6581].png" alt="Avenqor logo" width="180" />
 
 ### Bring Every Project Forward.
 
