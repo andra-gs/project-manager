@@ -1,8 +1,8 @@
 # Database Schema
 
-Last updated: 2026-10-27
+Last updated: 2026-10-28
 
-> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here.
+> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here. **Migration 3 (checklist items and notes) was written on 2026-10-28 and has not been run yet by the developer: the two tables below are NOT yet confirmed to exist in the app's database.**
 
 ## Rules for the schema (Agreed)
 
@@ -50,7 +50,7 @@ A workspace contains projects, and a project contains tasks and related resource
 
 Conventions (Agreed 2026-10-25): IDs are UUID text created by the app; deadlines are text `YYYY-MM-DD`; timestamps are UTC ISO 8601 text supplied by the app. Project progress is not stored: it is calculated from tasks.
 
-All five tables were created in migration 1.
+All five tables above were created in migration 1. Two more tables are in migration 3 (written 2026-10-28, awaiting the developer's test): `task_checklist_items` (`id`, `task_id` to `tasks` with CASCADE, `text` not empty, `is_done` 0 or 1, `created_at`, `updated_at`; index on `task_id`; listed by `created_at`, then the row's own number) and `task_notes` (`id`, `task_id` to `tasks` with CASCADE, `author_profile_id` to `profiles` with SET NULL, `body` not empty, `created_at`, `updated_at`; index on `task_id`). Claude ran migrations 1 to 3 in an in-memory SQLite database (Python, 2026-10-28): the empty-text CHECKs and the foreign key reject bad rows, deleting a task removes its items and notes, deleting a note's author profile clears `author_profile_id` and keeps the note, and notes list newest first.
 
 | Table | Purpose | Key columns |
 |---|---|---|
@@ -66,12 +66,13 @@ Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects
 
 Trigger (migration 2, verified 2026-10-25 by a new workspace showing 1 member): `trg_workspaces_add_owner_member` runs after a row is inserted into `workspaces` and adds the owner to `workspace_members` with the role `owner`. It replaces a manual transaction: the workspace and its owner membership are saved by one statement, so both rows exist or neither does.
 
-Deferred to Phase 3 (no tables yet): labels, checklists and subtasks, comments, documents, activity history, preferences.
+Deferred to Phase 3 (no tables yet): labels, documents, activity history, preferences. Checklists and notes are in migration 3 (see above). Nested subtasks are not planned for the MVP.
 
 ## Migrations
 
 | Version | Description | Applied in | Status |
 |---|---|---|---|
+| 3 | `task_checklist_and_notes` (`src-tauri/migrations/0003_task_checklist_and_notes.sql`) | on app start, after migration 2 | written 2026-10-28, not yet run by the developer |
 | 2 | `workspace_owner_member_trigger` (`src-tauri/migrations/0002_workspace_owner_member.sql`) | on app start, after migration 1 | applied (reported by the developer 2026-10-25: schema version 2, a new workspace shows 1 member) |
 | 1 | `create_initial_tables` (`src-tauri/migrations/0001_initial.sql`) | on app start, when the database is opened | applied (reported by the developer 2026-10-25) |
 

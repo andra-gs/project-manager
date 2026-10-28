@@ -209,8 +209,17 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**1. Test the counter change (developer, on Windows)**, branch `phase-3-kanban`: `git pull origin phase-3-kanban`, `npm run tauri dev`, `npm run build`. Check: (a) the counter (`used / limit`) is at the lower right of the box, not the left; (b) it is hidden when less than 10 percent of the limit is typed (for example under 6 characters for a 60-character name, under 12 for a 120-character task title, under 30 for a 300-character project description, under 200 for a 2000-character task description) and appears from that point on; (c) it exists in every box with a limit: workspace name (create and rename) and display name in Settings, project name and description (new and edit), task title and description (new and edit); (d) the deadline box has no counter; (e) an empty-title message still shows on the left under the box, with the counter on the right when both apply; (f) `npm run build` passes.
+**Step 3e-2: test checklists and notes, including migration 3 (developer, on Windows).** Code written 2026-10-28 on branch `phase-3-kanban`, not yet run in the app. This step changes the Rust side (a new migration), so the first `npm run tauri dev` compiles again and takes longer. Claude verified only the SQL (migrations 1 to 3 and every repository query in an in-memory SQLite database) and ran `tsc` without the npm packages (no errors except missing-package noise).
 
-**2. Step 3e-2: checklists and notes (migration 3).** The table design was sent to the developer on 2026-10-28 and is waiting for approval. No code is written before approval.
+First, the counter change from the previous step is still untested (see the "Counter" check below).
 
-Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.
+```powershell
+cd D:\project-manager
+git pull origin phase-3-kanban
+npm run tauri dev
+npm run build
+```
+
+Check: (1) Settings > Data, the Database line now says `schema version 3` and `7 tables`; your existing workspaces, projects, and tasks are all still there; (2) a task page has "Checklist" and "Notes" panels under the description; (3) checklist: add an item (an empty item shows its message under the box), tick it (the text turns grey and struck through, "1 of 1 done" appears), untick it, edit its text, delete it; several items keep the order you added them; the 120-character limit and the counter (from 12 characters) work; (4) notes: save a note (an empty note shows its message), the newest note is on top, each shows `Andra · date time`, edit a note (it then says "· edited"), Delete asks for confirmation and Cancel keeps it; line breaks in a note are kept and a very long word wraps at the smallest window; (5) everything is still there after closing and reopening the app; (6) delete a task that has items and notes, then use the Database line to confirm the other data is intact (the new tables have no row counts on that line yet: only check that the app shows no error); (7) marking checklist items done does not change the project's progress; (8) Counter: the counter at the lower right of every limited text box (see the previous check list); (9) `npm run build` passes. Report what worked and any error text. If the app shows a database error at start, copy the message exactly: it can only come from migration 3.
+
+**Then step 3e-3: labels** (migration 4), after Claude's table design is approved. Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.

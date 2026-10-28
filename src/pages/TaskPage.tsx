@@ -11,6 +11,8 @@ import { PriorityBadge } from "../components/ui/PriorityBadge";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { SelectField } from "../components/ui/SelectField";
 import { StatusBadge } from "../components/ui/StatusBadge";
+import { ChecklistSection } from "../features/tasks/ChecklistSection";
+import { NotesSection } from "../features/tasks/NotesSection";
 import { TaskFormDialog } from "../features/tasks/TaskFormDialog";
 import { useTaskDetail } from "../hooks/useTaskDetail";
 import { formatDateTime } from "../lib/dateFormat";
@@ -97,16 +99,20 @@ export function TaskPage() {
       </Card>
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <section className="flex flex-col gap-3">
-          <SectionHeading>Description</SectionHeading>
-          <Card>
-            {task.description ? (
-              <p className="text-body whitespace-pre-line [overflow-wrap:anywhere]">{task.description}</p>
-            ) : (
-              <EmptyMessage>No description yet. Use “Edit task” to add one.</EmptyMessage>
-            )}
-          </Card>
-        </section>
+        <div className="flex min-w-0 flex-col gap-6">
+          <section className="flex flex-col gap-3">
+            <SectionHeading>Description</SectionHeading>
+            <Card>
+              {task.description ? (
+                <p className="text-body whitespace-pre-line [overflow-wrap:anywhere]">{task.description}</p>
+              ) : (
+                <EmptyMessage>No description yet. Use “Edit task” to add one.</EmptyMessage>
+              )}
+            </Card>
+          </section>
+          <ChecklistSection taskId={task.id} />
+          <NotesSection taskId={task.id} />
+        </div>
 
         <section className="flex flex-col gap-3">
           <SectionHeading>Properties</SectionHeading>
