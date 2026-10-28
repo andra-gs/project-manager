@@ -6,6 +6,7 @@ import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { EmptyMessage } from "../../components/ui/EmptyMessage";
 import { ListRow } from "../../components/ui/ListRow";
 import { PriorityBadge } from "../../components/ui/PriorityBadge";
+import { LabelBadges } from "../labels/LabelBadges";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { taskPath } from "../../app/navigation";
 import { getDueInfo } from "../../lib/dueDate";
@@ -53,6 +54,7 @@ export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps
                 key={task.id}
                 title={task.title}
                 titleTo={taskPath(task.id)}
+                subtitle={task.labels.length > 0 ? <div className="mt-1 flex flex-wrap gap-1.5"><LabelBadges labels={task.labels} /></div> : undefined}
                 trailing={
                   <div className="flex items-center gap-2">
                     {due && <Badge tone={due.tone}>{due.label}</Badge>}

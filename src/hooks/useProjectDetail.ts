@@ -1,4 +1,5 @@
 import { useEffect, useSyncExternalStore } from "react";
+import * as labelService from "../services/labelService";
 import * as projectService from "../services/projectService";
 import * as taskService from "../services/taskService";
 import type { ProjectStatus } from "../types/project";
@@ -51,6 +52,19 @@ export function useProjectDetail(projectId: string | undefined) {
     async setProjectStatus(status: ProjectStatus) {
       if (!projectId) return;
       await projectService.setProjectStatus(projectId, status);
+      await refresh();
+    },
+    async createLabel(name: string, color: string) {
+      if (!projectId) return;
+      await labelService.createLabel(projectId, name, color);
+      await refresh();
+    },
+    async updateLabel(labelId: string, name: string, color: string) {
+      await labelService.updateLabel(labelId, name, color);
+      await refresh();
+    },
+    async deleteLabel(labelId: string) {
+      await labelService.deleteLabel(labelId);
       await refresh();
     },
     // After this the project no longer exists, so the screen must leave its page.

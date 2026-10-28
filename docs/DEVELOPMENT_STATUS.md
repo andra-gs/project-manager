@@ -163,6 +163,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-28 | `npm run build` (second round of corrections) | Passed without errors (output not pasted) |
 | reported 2026-10-28 | `npm run tauri dev` (counter change, then step 3e-2 with migration 3), checks 1 to 8 | Passed, all as expected: Database line `Connected · schema version 3 · 7 tables`; existing data intact; checklist (add, tick, edit, delete, order, limit and counter) and notes (add, newest first, edit, delete with confirmation, line breaks, long words) work; data kept after restart; deleting a task with items and notes causes no error; checklist progress does not change project progress; counters at the lower right of every limited box. Developer's change request: delete a checklist item with a small cross icon instead of a Delete button (too many Delete buttons on the page); done the same day, not yet re-tested |
 | reported 2026-10-28 | `npm run build` (step 3e-2) | Passed: `tsc` and Vite build (134 modules) without errors |
+| run by Claude 2026-10-28 | Python `sqlite3` in memory against migrations 1 to 4 and the SQL of `labelRepository.ts`; partial `tsc --noEmit` | SQL: duplicate names (any letter case) rejected in one project, allowed across projects, bad color rejected, linking is idempotent and refuses a label of another project, deletes of label, task, and project cascade correctly. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace (no npm registry), so the label screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -211,8 +212,20 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**1. Developer: test the cross button** (`git pull origin phase-3-kanban`, `npm run tauri dev`): on a task page each checklist item has a small cross instead of a "Delete" button, it removes the item at once, it has a tooltip "Delete item", and it can be reached and used with the keyboard; the Edit button and everything else in the checklist still work; `npm run build` passes.
+**1. Developer: test the cross button and step 3e-3 (labels).** `git pull origin phase-3-kanban`, then `npm run tauri dev` (migration 4 runs on start), then:
 
-**2. Step 3e-3: labels** (migration 4). Claude proposes the table design first; waiting for the developer's approval, no code before that.
+1. Settings, Database line: `Connected · schema version 4 · 9 tables`. Existing projects, tasks, checklists, and notes are still there.
+2. Task page: a checklist item has a small cross (tooltip "Delete item") that removes it at once; Edit still works.
+3. Task page, Properties card, "Labels": it says "No labels yet." Click "Create label", enter a name and pick a color, create it: the label appears as a colored badge on the task.
+4. Create a label with the same name in other letter case (for example "bug" after "Bug"): a message appears under the name box. An empty name and a name over 30 characters (counter at the lower right) are also refused.
+5. Create a second label, remove the first with its cross: it disappears from the task. "Add label" now offers it again; choose it to put it back.
+6. Open another task of the same project: the "Add label" list offers the project's labels. Open a task of another project: it does not offer them.
+7. Project page: a "Labels" section lists the labels with the number of tasks that use each. Edit a label (new name and color): the badge on the task page and the project task list change. Create a label here with "New Label".
+8. The project task list and the board cards show the label badges of each task.
+9. Delete a label that is on tasks: the confirmation names the number of tasks; after confirming, the badges are gone but the tasks remain.
+10. Close and reopen the app: labels and their links are kept. Delete a task and a project that have labels: no error, and the Settings counts still make sense.
+11. `npm run build` passes.
+
+**2. Next after that:** project documents (Phase 3), then local activity history; drag and drop for the board (3b) is still postponed; filtering by label comes in Phase 4.
 
 Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.

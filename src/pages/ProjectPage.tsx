@@ -10,6 +10,7 @@ import { PlaceholderNotice } from "../components/ui/PlaceholderNotice";
 import { ProgressBar } from "../components/ui/ProgressBar";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { ActivitySection } from "../features/activity/ActivitySection";
+import { ProjectLabelsSection } from "../features/labels/ProjectLabelsSection";
 import { ProjectFormDialog } from "../features/projects/ProjectFormDialog";
 import { TaskFormDialog } from "../features/tasks/TaskFormDialog";
 import { TaskList } from "../features/tasks/TaskList";
@@ -19,7 +20,7 @@ import { describeError } from "../lib/errors";
 export function ProjectPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const { state, createTask, updateTask, updateProject, setTaskDone, deleteTask, setProjectStatus, deleteProject } =
+  const { state, createTask, updateTask, updateProject, setTaskDone, deleteTask, setProjectStatus, deleteProject, createLabel, updateLabel, deleteLabel } =
     useProjectDetail(projectId);
   const [newTaskOpen, setNewTaskOpen] = useState(false);
   const [editProjectOpen, setEditProjectOpen] = useState(false);
@@ -106,6 +107,8 @@ export function ProjectPage() {
         </div>
         <TaskList tasks={project.tasks} onSetDone={setTaskDone} onDelete={deleteTask} onUpdate={updateTask} />
       </section>
+
+      <ProjectLabelsSection labels={project.labels} onCreate={createLabel} onUpdate={updateLabel} onDelete={deleteLabel} />
 
       <ActivitySection entries={project.activity} />
 

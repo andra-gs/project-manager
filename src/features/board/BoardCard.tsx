@@ -3,6 +3,7 @@ import { taskPath } from "../../app/navigation";
 import { Badge } from "../../components/ui/Badge";
 import { IconButton } from "../../components/ui/IconButton";
 import { PriorityBadge } from "../../components/ui/PriorityBadge";
+import { LabelBadges } from "../labels/LabelBadges";
 import { getDueInfo } from "../../lib/dueDate";
 import { TASK_STATUSES, type TaskItem, type TaskStatus } from "../../types/task";
 
@@ -30,6 +31,7 @@ export function BoardCard({ task, disabled, onMove }: BoardCardProps) {
       <div className="flex flex-wrap items-center gap-2">
         <PriorityBadge priority={task.priority} />
         {due && <Badge tone={due.tone}>{due.label}</Badge>}
+        <LabelBadges labels={task.labels} />
       </div>
       <div className="flex justify-end gap-1">
         <IconButton

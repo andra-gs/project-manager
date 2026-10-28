@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-28
 
-> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here. **Migration 3 (checklist items and notes) is applied** (the developer reported `schema version 3`, 7 tables on 2026-10-28).
+> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here. **Migration 4 (labels) is written but not yet run by the developer.** **Migration 3 (checklist items and notes) is applied** (the developer reported `schema version 3`, 7 tables on 2026-10-28).
 
 ## Rules for the schema (Agreed)
 
@@ -66,12 +66,15 @@ Deletion behavior (Agreed 2026-10-25): deleting a workspace deletes its projects
 
 Trigger (migration 2, verified 2026-10-25 by a new workspace showing 1 member): `trg_workspaces_add_owner_member` runs after a row is inserted into `workspaces` and adds the owner to `workspace_members` with the role `owner`. It replaces a manual transaction: the workspace and its owner membership are saved by one statement, so both rows exist or neither does.
 
-Deferred to Phase 3 (no tables yet): labels, documents, activity history, preferences. Checklists and notes are in migration 3 (see above). Nested subtasks are not planned for the MVP.
+Migration 4 (written 2026-10-28, not yet run by the developer) adds `labels` (`id`, `project_id` to `projects` with CASCADE, `name` not empty after trimming, `color` limited by `CHECK` to `neutral`, `accent`, `success`, `danger`, `info`, `warning`, `created_at`, `updated_at`; the name is unique per project ignoring upper and lower case) and `task_labels` (`task_id` to `tasks` with CASCADE, `label_id` to `labels` with CASCADE; primary key is the pair; index on `label_id`). A label belongs to one project; the rule that a task only carries labels of its own project is kept in `labelService` and in the SQL that links them (a label of another project is not linked). Claude ran migrations 1 to 4 and the repository's SQL in an in-memory SQLite database (Python, 2026-10-28): "Bug" and "bug" are rejected in one project but allowed in two projects, a color outside the list is rejected, linking twice or to a task of another project adds nothing, deleting a label, a task, or a project removes the links or labels that depend on it.
+
+Deferred to Phase 3 (no tables yet): documents, activity history, preferences. Checklists and notes are in migration 3 (see above). Nested subtasks are not planned for the MVP.
 
 ## Migrations
 
 | Version | Description | Applied in | Status |
 |---|---|---|---|
+| 4 | `labels` (`src-tauri/migrations/0004_labels.sql`) | on app start, after migration 3 | written 2026-10-28, **not yet run by the developer** (expected: schema version 4, 9 tables) |
 | 3 | `task_checklist_and_notes` (`src-tauri/migrations/0003_task_checklist_and_notes.sql`) | on app start, after migration 2 | applied (reported by the developer 2026-10-28: schema version 3, 7 tables) |
 | 2 | `workspace_owner_member_trigger` (`src-tauri/migrations/0002_workspace_owner_member.sql`) | on app start, after migration 1 | applied (reported by the developer 2026-10-25: schema version 2, a new workspace shows 1 member) |
 | 1 | `create_initial_tables` (`src-tauri/migrations/0001_initial.sql`) | on app start, when the database is opened | applied (reported by the developer 2026-10-25) |

@@ -11,6 +11,7 @@ import { PriorityBadge } from "../components/ui/PriorityBadge";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { SelectField } from "../components/ui/SelectField";
 import { StatusBadge } from "../components/ui/StatusBadge";
+import { TaskLabelsSection } from "../features/labels/TaskLabelsSection";
 import { ChecklistSection } from "../features/tasks/ChecklistSection";
 import { NotesSection } from "../features/tasks/NotesSection";
 import { TaskFormDialog } from "../features/tasks/TaskFormDialog";
@@ -125,6 +126,7 @@ export function TaskPage() {
                 disabled={busy}
                 onChange={(event) => void changeStatus(event.target.value as TaskStatus)}
               />
+              <TaskLabelsSection taskId={task.id} />
               <dl className="flex flex-col gap-3">
                 <Property label="Priority">
                   <PriorityBadge priority={task.priority} />

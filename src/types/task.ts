@@ -1,3 +1,5 @@
+import type { Label } from "./label";
+
 // Task values shared by screens. They match the values stored in the database (migration 1).
 export type TaskPriority = "low" | "medium" | "high";
 export type TaskStatus = "todo" | "in_progress" | "review" | "done";
@@ -12,10 +14,12 @@ export interface TaskItem {
   priority: TaskPriority;
   // Calendar date "YYYY-MM-DD", or undefined when the task has no deadline.
   dueDate: string | undefined;
+  // The labels of the task, by name.
+  labels: Label[];
 }
 
 // Everything the task page shows: the task, the project and workspace it belongs to, and its dates.
-export interface TaskDetail extends TaskItem {
+export interface TaskDetail extends Omit<TaskItem, "labels"> {
   projectId: string;
   projectName: string;
   workspaceId: string;

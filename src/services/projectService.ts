@@ -1,5 +1,6 @@
 import { ValidationError } from "../lib/errors";
 import { calculateProgress } from "../lib/progress";
+import * as labelRepository from "../repositories/labelRepository";
 import * as repository from "../repositories/projectRepository";
 import type { ProjectDetail, ProjectStatus } from "../types/project";
 
@@ -43,6 +44,10 @@ export async function getProjectDetail(id: string): Promise<ProjectDetail | unde
   const data = await repository.getProjectDetail(id);
   if (!data) return undefined;
 
+  const [labelsByTask, labels] = await Promise.all([
+    labelRepository.listLabelsByTask(id),
+    labelRepository.listProjectLabels(id),
+  ]);
   const completedTaskCount = data.tasks.filter((task) => task.status === "done").length;
   return {
     id: data.id,
@@ -54,7 +59,8 @@ export async function getProjectDetail(id: string): Promise<ProjectDetail | unde
     workspaceName: data.workspaceName,
     taskCount: data.tasks.length,
     completedTaskCount,
-    tasks: data.tasks,
+    tasks: data.tasks.map((task) => ({ ...task, labels: labelsByTask.get(task.id) ?? [] })),
+    labels,
     activity: [],
   };
 }
