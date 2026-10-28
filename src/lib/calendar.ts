@@ -51,3 +51,20 @@ export function addMonths(year: number, month: number, delta: number): { year: n
 export function formatMonthTitle(year: number, month: number): string {
   return new Date(year, month, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
+
+// Corrects what a date box reports so the form never holds an unusable date. The browser's date box can
+// report a year with more than four digits; such a year becomes 9999. Anything that is not a real
+// calendar date becomes "" (no deadline). A real date is returned unchanged, also with a small year such as
+// "0002-10-28", which appears while the user is still typing the year.
+export function normalizeDateInput(value: string): string {
+  const match = /^(\d+)-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return "";
+  const year = Math.min(Number(match[1]), 9999);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  // setFullYear keeps years below 100 as they are, while new Date(year, ...) would turn them into 19xx.
+  const date = new Date(2000, 0, 1);
+  date.setFullYear(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return "";
+  return `${String(year).padStart(4, "0")}-${match[2]}-${match[3]}`;
+}

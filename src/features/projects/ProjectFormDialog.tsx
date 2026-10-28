@@ -23,7 +23,7 @@ interface ProjectFormDialogProps {
 type FormProps = Omit<ProjectFormDialogProps, "open" | "title">;
 
 // The inputs that show their own message. Any other message is shown above the buttons.
-const FIELDS = ["name", "description"];
+const FIELDS = ["name"];
 
 function fieldMessage(error: FormError | undefined, field: string): string | undefined {
   return error?.field === field ? error.message : undefined;
@@ -71,7 +71,6 @@ function ProjectForm({ submitLabel, onClose, initial, workspaces, onSubmit }: Fo
       <TextArea
         label="Description (optional)"
         value={description}
-        error={fieldMessage(error, "description")}
         maxLength={PROJECT_DESCRIPTION_MAX_LENGTH}
         onChange={(event) => setDescription(event.target.value)}
       />

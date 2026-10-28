@@ -4,6 +4,7 @@ import { Dialog } from "../../components/ui/Dialog";
 import { SelectField } from "../../components/ui/SelectField";
 import { TextArea } from "../../components/ui/TextArea";
 import { TextField } from "../../components/ui/TextField";
+import { normalizeDateInput } from "../../lib/calendar";
 import { toFormError, type FormError } from "../../lib/errors";
 import { TASK_DESCRIPTION_MAX_LENGTH, TASK_TITLE_MAX_LENGTH } from "../../services/taskService";
 import type { TaskPriority } from "../../types/task";
@@ -21,7 +22,7 @@ interface TaskFormDialogProps {
 type FormProps = Omit<TaskFormDialogProps, "open" | "title">;
 
 // The inputs that show their own message. Any other message is shown above the buttons.
-const FIELDS = ["title", "description", "dueDate"];
+const FIELDS = ["title"];
 
 function fieldMessage(error: FormError | undefined, field: string): string | undefined {
   return error?.field === field ? error.message : undefined;
@@ -68,7 +69,6 @@ function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
       <TextArea
         label="Description (optional)"
         value={description}
-        error={fieldMessage(error, "description")}
         maxLength={TASK_DESCRIPTION_MAX_LENGTH}
         rows={4}
         onChange={(event) => setDescription(event.target.value)}
@@ -83,8 +83,8 @@ function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
         label="Deadline (optional)"
         type="date"
         value={dueDate}
-        error={fieldMessage(error, "dueDate")}
-        onChange={(event) => setDueDate(event.target.value)}
+        max="9999-12-31"
+        onChange={(event) => setDueDate(normalizeDateInput(event.target.value))}
       />
       {error && !FIELDS.includes(error.field ?? "") && <p className="text-caption text-danger">{error.message}</p>}
       <div className="flex justify-end gap-2">

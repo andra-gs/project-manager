@@ -7,6 +7,7 @@ interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>
 }
 
 export function TextArea({ label, error, ...rest }: TextAreaProps) {
+  const { maxLength, value } = rest;
   const id = useId();
   const errorId = `${id}-error`;
   return (
@@ -22,6 +23,12 @@ export function TextArea({ label, error, ...rest }: TextAreaProps) {
         className="resize-none rounded-control border border-border bg-surface px-3 py-2 text-body outline-offset-2 placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-accent aria-invalid:border-danger"
         {...rest}
       />
+      {/* With a character limit the box shows how many characters are used. The browser stops typing at the limit. */}
+      {maxLength !== undefined && typeof value === "string" && (
+        <p className="text-caption text-ink-muted">
+          {value.length} / {maxLength}
+        </p>
+      )}
       {error && (
         <p id={errorId} className="text-caption text-danger">
           {error}
