@@ -1,116 +1,113 @@
-# Project Manager Desktop
+# Avenqor
 
-A local-first desktop application for organizing workspaces, projects, tasks, deadlines, documents, and progress in one place.
+<div align="center">
 
-> **Status: Phases 0 to 2 complete (branch `phase-1-ui`, not yet merged into `main`).** Workspaces, projects, and basic tasks work on a local SQLite database, verified by the developer on Windows (2026-10-27). Calendar, My Tasks, Documents, Kanban, and backup are not built yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
+<!-- Replace this placeholder with the Avenqor logo when it is ready. -->
+<img src="assets/brand/avenqor-logo.png" alt="Avenqor logo" width="180" />
 
-The product name is **Avenqor** (Agreed by the developer on 2026-10-25; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App.
+### Bring Every Project Forward.
 
-## What this project is
+**One workspace. Clear priorities. Meaningful progress.**
 
-An application for students, programmers, content creators, and small teams who need a simple way to manage projects. The first release targets **Windows** and works **fully offline**: your data is stored on your own computer, and no server or cloud account is needed.
+Avenqor is a local-first desktop project management app designed to help students, developers, creators, and small teams organize their work without depending on a cloud account.
 
-Later phases may add GitHub integration, online collaboration, and more platforms (web, Android, iOS). Those are plans, not features. See [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md).
+**Status: In development · Windows desktop first**
 
-## Documentation
+</div>
 
-| File | What it covers |
-|---|---|
-| [CLAUDE.md](CLAUDE.md) | Project instructions and development rules |
-| [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md) | Goals, target users, MVP scope, roadmap |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the application is (and will be) structured |
-| [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | SQLite tables and migrations |
-| [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) | What is done, what is broken, what is next |
+---
 
-## Technology stack (Agreed)
+## Why Avenqor?
 
-| Layer | Choice |
-|---|---|
-| Desktop framework | Tauri 2 |
-| Frontend | React, TypeScript, Vite |
-| Native backend | Rust (Tauri commands) |
-| Database | SQLite (local file) |
-| Styling | Tailwind CSS 4, with design tokens in `src/styles/tokens.css` and the DM Sans font bundled locally |
-| Version control | Git |
-| First release target | Windows |
+Projects can quickly become scattered across notes, chat messages, and separate task lists. Avenqor is being built to bring the essentials together in one focused workspace, so it is easier to see what you are working on and keep projects moving.
 
-## Prerequisites (Windows)
+The first release prioritizes a practical, understandable interface and local data storage. Your project data stays on your computer, and the core app is designed to work without a permanent internet connection.
 
-These come from the official Tauri 2 documentation: <https://v2.tauri.app/start/prerequisites/> (read on 2026-10-20). They were checked on the development computer on 2026-10-21; see [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the results.
+## Who is it for?
 
-Two problems came up on that computer, and may affect you too:
+- **Students** organizing assignments, campus activities, and group projects.
+- **Programming students and developers** keeping track of software projects and tasks.
+- **Content creators** managing ideas and production work.
+- **Small teams and independent makers** who want a straightforward way to structure projects.
 
-- **Build Tools installed, but the C++ part missing.** Installing "Build Tools for Visual Studio" is not enough. Open Visual Studio Installer, choose Modify, and tick the **"Desktop development with C++"** workload.
-- **`npm` blocked in PowerShell** with "running scripts is disabled on this system". Run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` once, then try again.
+## Current features
 
-1. **Microsoft C++ Build Tools** with the **"Desktop development with C++"** workload. Rust on Windows needs these to compile.
-2. **Microsoft Edge WebView2.** Tauri uses it to display the interface. It is already included in Windows 10 (version 1803 and later) and in Windows 11.
-3. **Rust**, installed with `rustup`, using the **MSVC toolchain** as the default. If Rust is already installed, the Tauri docs say to run `rustup default stable-msvc`.
-4. **Node.js** (the LTS version). It runs the frontend tooling and provides `npm`. Verified with Node.js v24.22.0 and npm 11.19.1.
-5. *Only if building MSI installers:* the Windows optional feature **VBSCRIPT** must be enabled.
+Avenqor is actively being developed. The following core features are implemented on the `phase-1-ui` branch; the project is not yet merged into `main`.
 
-From Phase 2 the app uses the official Tauri SQL plugin (`tauri-plugin-sql` 2.x, SQLite). Its documentation asks for Rust 1.90 or newer; the development computer has 1.99.1.
+### Dashboard
+Get an overview of your workspaces and projects from one place, using locally stored application data.
 
-### Check what is installed
+### Workspace management
+Create and manage workspaces to group related projects. For example, keep college assignments separate from personal development projects.
 
-Run these in Windows PowerShell. Each command prints a version number if the tool is installed, and an error if it is not.
+### Project management
+Create, edit, archive, restore, and delete projects. Project progress is calculated from stored task data rather than entered as an arbitrary percentage.
 
-```powershell
-node -v
-npm -v
-rustc --version
-cargo --version
-rustup show
-```
+### Basic task management
+Create and update tasks with essential information such as title, priority, and deadline. Mark tasks as complete, reopen them, or delete them.
 
-`rustup show` also reports the active toolchain. It should mention `msvc`.
+### Local profile and storage
+The current app stores its data in a local SQLite database. The offline-first approach avoids requiring a cloud account or a hosted server for core use.
 
-## Setup
+> **Development note:** Avenqor is still a work in progress. Features such as a Kanban board, calendar view, project documents, checklists, notifications, and backup/restore are planned or under development and should not be considered available in this version.
 
-Get the code and install the frontend dependencies:
+## Preview
 
-```powershell
-git clone https://github.com/andra-gs/project-manager.git
-cd project-manager
-npm install
-```
+Screenshots will be added as the interface evolves. Add your images to `assets/screenshots/` and uncomment or update the image references below.
 
-`npm install` was run on the developer's computer on 2026-10-21: 27 packages added, no reported vulnerabilities, about 2 minutes.
+<!--
+### Dashboard
+![Avenqor dashboard](assets/screenshots/dashboard.png)
 
-How the project was created: with `create-tauri-app` 4.7.5 (template `react-ts`, package manager npm) in a temporary folder outside the repository, then renamed and copied in. You do not need to repeat this.
+### Workspaces and projects
+![Avenqor workspaces and projects](assets/screenshots/workspaces-projects.png)
 
-## Development
+### Task management
+![Avenqor task management](assets/screenshots/task-management.png)
+-->
 
-Start the desktop app in development mode:
+## Product direction
 
-```powershell
-npm run tauri dev
-```
+Avenqor is being developed in phases, with the aim of making the core project workflow reliable before expanding the feature set.
 
-- The first run compiles all Rust dependencies and took about 18 minutes on the developer's computer. Later runs are expected to be faster because compiled dependencies are cached, but this has not been timed.
-- A window titled "Avenqor" opens (1200x680, centered). It shows the application frame (sidebar, top bar), the Dashboard, workspaces, projects, and tasks. Calendar, My Tasks, and Documents are still placeholder pages.
-- To stop: close the window, then press `Ctrl+C` in the terminal.
+- **Next:** Kanban board, richer task details, checklists, and notes.
+- **Later:** Calendar and deadline views, project documents, activity history, search and filters, and backup/restore.
+- **Long-term possibilities:** GitHub integration, online accounts and shared workspaces, synchronization, and expansion to web and mobile platforms.
 
-## Build
+These are future plans, not features currently available in the app. The project roadmap may change as development and testing continue.
 
-Produce a Windows release build and installers:
+## Built with
 
-```powershell
-npm run tauri build
-```
+- **Tauri 2** — desktop application framework
+- **React 19** — user interface
+- **TypeScript** — application code
+- **Vite** — development and build tooling
+- **Rust** — native desktop layer
+- **SQLite** — local database
+- **Tailwind CSS 4** — styling
 
-- The first build took about 34 minutes on the developer's computer and downloaded the WiX and NSIS packaging tools from GitHub, so it needs internet access the first time.
-- Output goes to `src-tauri\target\release\`: the program `project-manager.exe`, an MSI installer in `bundle\msi\`, and an NSIS installer in `bundle\nsis\`. These files are not committed to Git.
-- The installers were built but have not yet been installed or run. The release program `project-manager.exe` was started and showed the same page as development (reported by the developer, 2026-10-22).
+## Getting started
 
-## Where data will be stored
+Avenqor is currently a development project rather than a stable public release. To explore the source code, visit the repository:
 
-The application keeps structured data (workspaces, projects, tasks, and the local profile) in a local SQLite database file `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor` (the app config folder, not the installation folder). Backup this file yourself until the JSON backup exists. Data on one computer is not shared with other computers. Backup and restore (JSON export and import) is planned for Phase 4.
+**[andra-gs/project-manager on GitHub](https://github.com/andra-gs/project-manager)**
 
-## Known limitations
+Build and development instructions may change while the project is evolving. Check the project documentation before setting up a local development environment.
 
-- No Kanban board, calendar, documents, activity history, labels, subtasks, or checklists yet (Phase 3).
-- No backup and restore yet (Phase 4). Data stays on this computer and is not synchronized.
-- The database folder is Roaming (see `docs/DEVELOPMENT_STATUS.md`, Known issues 7).
-- Changing the look: edit the values in `src/styles/tokens.css`.
-- Online features (accounts, sync, shared workspaces, real-time editing) are not part of the first release.
+## Project documentation
+
+- [Project overview](docs/PROJECT_OVERVIEW.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Development status](docs/DEVELOPMENT_STATUS.md)
+- [Database schema](docs/DATABASE_SCHEMA.md)
+- [Brand guidelines](docs/BRAND.md)
+
+## About Avenqor
+
+Avenqor is built around three ideas: **clarity, structure, and progress**. The goal is to make project management feel more manageable by keeping essential information organized and close at hand.
+
+<div align="center">
+
+**Avenqor — Bring Every Project Forward.**
+
+</div>
