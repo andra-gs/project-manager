@@ -161,6 +161,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-28 | `npm run build` (corrections to step 3e-1) | Passed: `tsc` and Vite build (124 modules) without errors |
 | reported 2026-10-28 | `npm run tauri dev` (second round of corrections), checks 1 to 3 | Passed: description counters, empty-title message, deadline auto-correct. Developer's change request: counters on every name and description box (new and edit), at the lower right, shown only after 10 percent of the limit is typed; implemented the same day, not yet re-tested |
 | reported 2026-10-28 | `npm run build` (second round of corrections) | Passed without errors (output not pasted) |
+| reported 2026-10-28 | `npm run tauri dev` (counter change, then step 3e-2 with migration 3), checks 1 to 8 | Passed, all as expected: Database line `Connected · schema version 3 · 7 tables`; existing data intact; checklist (add, tick, edit, delete, order, limit and counter) and notes (add, newest first, edit, delete with confirmation, line breaks, long words) work; data kept after restart; deleting a task with items and notes causes no error; checklist progress does not change project progress; counters at the lower right of every limited box. Developer's change request: delete a checklist item with a small cross icon instead of a Delete button (too many Delete buttons on the page); done the same day, not yet re-tested |
+| reported 2026-10-28 | `npm run build` (step 3e-2) | Passed: `tsc` and Vite build (134 modules) without errors |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -209,17 +211,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Step 3e-2: test checklists and notes, including migration 3 (developer, on Windows).** Code written 2026-10-28 on branch `phase-3-kanban`, not yet run in the app. This step changes the Rust side (a new migration), so the first `npm run tauri dev` compiles again and takes longer. Claude verified only the SQL (migrations 1 to 3 and every repository query in an in-memory SQLite database) and ran `tsc` without the npm packages (no errors except missing-package noise).
+**1. Developer: test the cross button** (`git pull origin phase-3-kanban`, `npm run tauri dev`): on a task page each checklist item has a small cross instead of a "Delete" button, it removes the item at once, it has a tooltip "Delete item", and it can be reached and used with the keyboard; the Edit button and everything else in the checklist still work; `npm run build` passes.
 
-First, the counter change from the previous step is still untested (see the "Counter" check below).
+**2. Step 3e-3: labels** (migration 4). Claude proposes the table design first; waiting for the developer's approval, no code before that.
 
-```powershell
-cd D:\project-manager
-git pull origin phase-3-kanban
-npm run tauri dev
-npm run build
-```
-
-Check: (1) Settings > Data, the Database line now says `schema version 3` and `7 tables`; your existing workspaces, projects, and tasks are all still there; (2) a task page has "Checklist" and "Notes" panels under the description; (3) checklist: add an item (an empty item shows its message under the box), tick it (the text turns grey and struck through, "1 of 1 done" appears), untick it, edit its text, delete it; several items keep the order you added them; the 120-character limit and the counter (from 12 characters) work; (4) notes: save a note (an empty note shows its message), the newest note is on top, each shows `Andra · date time`, edit a note (it then says "· edited"), Delete asks for confirmation and Cancel keeps it; line breaks in a note are kept and a very long word wraps at the smallest window; (5) everything is still there after closing and reopening the app; (6) delete a task that has items and notes, then use the Database line to confirm the other data is intact (the new tables have no row counts on that line yet: only check that the app shows no error); (7) marking checklist items done does not change the project's progress; (8) Counter: the counter at the lower right of every limited text box (see the previous check list); (9) `npm run build` passes. Report what worked and any error text. If the app shows a database error at start, copy the message exactly: it can only come from migration 3.
-
-**Then step 3e-3: labels** (migration 4), after Claude's table design is approved. Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.
+Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.

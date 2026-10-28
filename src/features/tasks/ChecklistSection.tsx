@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Checkbox } from "../../components/ui/Checkbox";
 import { EmptyMessage } from "../../components/ui/EmptyMessage";
+import { IconButton } from "../../components/ui/IconButton";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 import { TextField } from "../../components/ui/TextField";
 import { useChecklist } from "../../hooks/useChecklist";
@@ -119,9 +120,12 @@ export function ChecklistSection({ taskId }: { taskId: string }) {
                         >
                           Edit
                         </Button>
-                        <Button variant="danger" disabled={busy} onClick={() => void runAction(() => deleteItem(item.id))}>
-                          Delete
-                        </Button>
+                        <IconButton
+                          icon="close"
+                          label="Delete item"
+                          disabled={busy}
+                          onClick={() => void runAction(() => deleteItem(item.id))}
+                        />
                       </div>
                     </div>
                   )}
