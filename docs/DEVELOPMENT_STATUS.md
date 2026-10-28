@@ -153,6 +153,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-28 | `npm run build` (Phase 3 step 3c) | Passed: `tsc` and Vite build (109 modules) without errors |
 | reported 2026-10-28 | `npm run tauri dev` (Phase 3 step 3d, branch `phase-3-kanban`), My Tasks checks 1 to 9 | Passed, all as expected: Open filter default and order, row contents, all filter buttons, empty messages, row opens the project, archived project excluded, list updates after board changes, 960x600 layout |
 | reported 2026-10-28 | `npm run build` (Phase 3 step 3d) | Passed: `tsc` and Vite build (113 modules) without errors |
+| reported 2026-10-28 | `npm run tauri dev` (custom title bar, branch `phase-3-kanban`), checks 1 to 6, 8, 9 | Passed, all as expected: native bar gone, app-colored strip, path text and links, minimize/maximize/restore/close, dragging, double-click maximize, resizing from edges and minimum size, strip not responding while a dialog is open (expected), layout below unchanged. Check 7 (Windows 11 snap layout popup) could not be judged: the developer uses Windows 10 Pro |
+| reported 2026-10-28 | `npm run build` (custom title bar) | Passed: `tsc` and Vite build (121 modules) without errors. The output pasted was from `npm run build`; the release program `project-manager.exe` check (item 10) was not reported separately |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -201,15 +203,4 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Custom title bar: test it (developer, on Windows).** Agreed 2026-10-28 (option "custom title bar"). Code written the same day on branch `phase-3-kanban`, not yet run by anyone. Claude could only check that the two JSON files parse; the rest depends on Windows behavior that has not been tried.
-
-```powershell
-cd D:\project-manager
-git pull origin phase-3-kanban
-npm run tauri dev
-npm run build
-```
-
-Check: (1) the native Windows title bar is gone and a strip with the app color is at the top; (2) it shows `Avenqor / <page>`; on a workspace page `Avenqor / <workspace>`; on a project page `Avenqor / <workspace> / <project>`; on its board `Avenqor / <workspace> / <project> / Board`; the earlier parts are links and the last one is not; (3) minimize, maximize and restore (the icon changes), and close work; (4) dragging an empty part of the strip moves the window, also when starting on the text; (5) double-clicking an empty part maximizes and restores; (6) the window can still be resized from its edges and corners, and the minimum size 960x600 still holds; (7) with Windows 11, hovering the maximize button: note whether the snap layout popup appears (expected: it does not); (8) while a dialog is open (for example New Task) note whether the strip still responds (expected: it does not, because dialogs block the page); (9) the layout under the strip is unchanged (sidebar, top bar, scrolling); (10) `npm run build` passes, then also `npm run tauri build` and start the release `project-manager.exe` to check (1) to (6) there. To change the strip color edit `--color-titlebar` and `--color-titlebar-hover` in `src/styles/tokens.css`. Report what worked and any error text.
-
-**Then step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan first. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).
+**Phase 3, step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan first; the developer approves it before code is written. Open from the title bar test: the release program (`project-manager.exe` from `npm run tauri build`) has not been checked with the custom title bar; do it once before merging. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).
