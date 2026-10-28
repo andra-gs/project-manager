@@ -1,7 +1,7 @@
 import { Card } from "../components/ui/Card";
 import { ListRow } from "../components/ui/ListRow";
 import { SectionHeading } from "../components/ui/SectionHeading";
-import { APP_NAME, APP_NAME_NOTE } from "../lib/appInfo";
+import { APP_NAME } from "../lib/appInfo";
 
 export function HelpPage() {
   return (
@@ -10,7 +10,7 @@ export function HelpPage() {
         <SectionHeading>About</SectionHeading>
         <Card>
           <div className="flex flex-col gap-3">
-            <ListRow title={APP_NAME} subtitle={APP_NAME_NOTE} />
+            <ListRow title={APP_NAME} subtitle="Local-first project manager" />
             <ListRow
               title="What this app is"
               subtitle="A local-first project manager for Windows. It is built to work without internet or an account."

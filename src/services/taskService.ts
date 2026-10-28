@@ -11,7 +11,7 @@ const PRIORITIES: TaskPriority[] = ["low", "medium", "high"];
 function parseDueDate(input: string): string | null {
   const value = input.trim();
   if (value === "") return null;
-  const invalid = new ValidationError("Enter a valid deadline date.");
+  const invalid = new ValidationError("Enter a valid deadline date.", "dueDate");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw invalid;
   const [year, month, day] = value.split("-").map(Number);
   const date = new Date(year, month - 1, day);
@@ -27,13 +27,13 @@ function validateTaskFields(
   descriptionInput: string,
 ): { title: string; description: string; dueDate: string | null } {
   const title = titleInput.trim();
-  if (title.length === 0) throw new ValidationError("Enter a task title.");
+  if (title.length === 0) throw new ValidationError("Enter a task title.", "title");
   if (title.length > TASK_TITLE_MAX_LENGTH) {
-    throw new ValidationError(`The title can have at most ${TASK_TITLE_MAX_LENGTH} characters.`);
+    throw new ValidationError(`The title can have at most ${TASK_TITLE_MAX_LENGTH} characters.`, "title");
   }
   const description = descriptionInput.trim();
   if (description.length > TASK_DESCRIPTION_MAX_LENGTH) {
-    throw new ValidationError(`The description can have at most ${TASK_DESCRIPTION_MAX_LENGTH} characters.`);
+    throw new ValidationError(`The description can have at most ${TASK_DESCRIPTION_MAX_LENGTH} characters.`, "description");
   }
   if (!PRIORITIES.includes(priority)) throw new ValidationError("Choose a priority.");
   return { title, description, dueDate: parseDueDate(dueDateInput) };

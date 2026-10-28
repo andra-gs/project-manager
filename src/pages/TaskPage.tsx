@@ -31,7 +31,7 @@ function Property({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5">
       <dt className="text-caption text-ink-muted">{label}</dt>
-      <dd className="text-body break-words">{children}</dd>
+      <dd className="text-body [overflow-wrap:anywhere]">{children}</dd>
     </div>
   );
 }
@@ -83,7 +83,7 @@ export function TaskPage() {
       <Card>
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h2 className="text-title font-bold break-words">{task.title}</h2>
+            <h2 className="text-title font-bold [overflow-wrap:anywhere]">{task.title}</h2>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <StatusBadge status={task.status} />
               <PriorityBadge priority={task.priority} />
@@ -96,12 +96,12 @@ export function TaskPage() {
         </div>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <section className="flex flex-col gap-3">
           <SectionHeading>Description</SectionHeading>
           <Card>
             {task.description ? (
-              <p className="text-body whitespace-pre-line break-words">{task.description}</p>
+              <p className="text-body whitespace-pre-line [overflow-wrap:anywhere]">{task.description}</p>
             ) : (
               <EmptyMessage>No description yet. Use “Edit task” to add one.</EmptyMessage>
             )}

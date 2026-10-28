@@ -10,12 +10,12 @@ export const PROJECT_DESCRIPTION_MAX_LENGTH = 300;
 function validateProjectFields(nameInput: string, descriptionInput: string): { name: string; description: string } {
   const name = nameInput.trim();
   const description = descriptionInput.trim();
-  if (name.length === 0) throw new ValidationError("Enter a project name.");
+  if (name.length === 0) throw new ValidationError("Enter a project name.", "name");
   if (name.length > PROJECT_NAME_MAX_LENGTH) {
-    throw new ValidationError(`The name can have at most ${PROJECT_NAME_MAX_LENGTH} characters.`);
+    throw new ValidationError(`The name can have at most ${PROJECT_NAME_MAX_LENGTH} characters.`, "name");
   }
   if (description.length > PROJECT_DESCRIPTION_MAX_LENGTH) {
-    throw new ValidationError(`The description can have at most ${PROJECT_DESCRIPTION_MAX_LENGTH} characters.`);
+    throw new ValidationError(`The description can have at most ${PROJECT_DESCRIPTION_MAX_LENGTH} characters.`, "description");
   }
   return { name, description };
 }
