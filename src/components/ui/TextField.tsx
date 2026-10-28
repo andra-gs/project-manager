@@ -1,4 +1,5 @@
 import { useId, type InputHTMLAttributes } from "react";
+import { FieldFooter } from "./FieldFooter";
 
 // className is not accepted on purpose: the look lives here and in the tokens.
 interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "id" | "type"> {
@@ -24,11 +25,12 @@ export function TextField({ label, error, type = "text", ...rest }: TextFieldPro
         className="h-9 rounded-control border border-border bg-surface px-3 text-body outline-offset-2 placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-accent aria-invalid:border-danger"
         {...rest}
       />
-      {error && (
-        <p id={errorId} className="text-caption text-danger">
-          {error}
-        </p>
-      )}
+      <FieldFooter
+        errorId={errorId}
+        error={error}
+        value={typeof rest.value === "string" ? rest.value : undefined}
+        maxLength={rest.maxLength}
+      />
     </div>
   );
 }

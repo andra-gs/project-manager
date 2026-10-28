@@ -159,6 +159,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-28 | `npm run build` (Phase 3 step 3e-1) | Passed: `tsc` and Vite build (124 modules) without errors |
 | reported 2026-10-28 | `npm run tauri dev` (corrections to step 3e-1), checks 1 to 5 | Passed: long title and description wrap at the smallest window; the empty-title message appears under the box with a red border in the task and project forms; workspace and display-name forms unchanged; sidebar changes as wanted. Developer's change request: descriptions need no message (a character counter at the lower left and a hard limit instead) and the deadline needs no message (auto-correct instead); implemented the same day, not yet re-tested |
 | reported 2026-10-28 | `npm run build` (corrections to step 3e-1) | Passed: `tsc` and Vite build (124 modules) without errors |
+| reported 2026-10-28 | `npm run tauri dev` (second round of corrections), checks 1 to 3 | Passed: description counters, empty-title message, deadline auto-correct. Developer's change request: counters on every name and description box (new and edit), at the lower right, shown only after 10 percent of the limit is typed; implemented the same day, not yet re-tested |
+| reported 2026-10-28 | `npm run build` (second round of corrections) | Passed without errors (output not pasted) |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
 The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of the release build.
@@ -207,15 +209,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Test the second round of corrections (developer, on Windows)**, branch `phase-3-kanban`:
+**1. Test the counter change (developer, on Windows)**, branch `phase-3-kanban`: `git pull origin phase-3-kanban`, `npm run tauri dev`, `npm run build`. Check: (a) the counter (`used / limit`) is at the lower right of the box, not the left; (b) it is hidden when less than 10 percent of the limit is typed (for example under 6 characters for a 60-character name, under 12 for a 120-character task title, under 30 for a 300-character project description, under 200 for a 2000-character task description) and appears from that point on; (c) it exists in every box with a limit: workspace name (create and rename) and display name in Settings, project name and description (new and edit), task title and description (new and edit); (d) the deadline box has no counter; (e) an empty-title message still shows on the left under the box, with the counter on the right when both apply; (f) `npm run build` passes.
 
-```powershell
-cd D:\project-manager
-git pull origin phase-3-kanban
-npm run tauri dev
-npm run build
-```
+**2. Step 3e-2: checklists and notes (migration 3).** The table design was sent to the developer on 2026-10-28 and is waiting for approval. No code is written before approval.
 
-Check: (1) in "New task", "Edit task", "New project", and "Edit project" the description box shows a counter at its lower left (for example `0 / 2000` for tasks and `0 / 300` for projects), the number follows typing, and typing or pasting stops at the limit with no message; (2) an empty title or name still shows its message under the box with a red border; (3) the deadline box: pick a date, clear it, type a date by hand, and try typing a year with more than 4 digits: no message appears, the value stays usable, and saving works; (4) `npm run build` passes. Report what worked and any error text.
-
-**Then step 3e-2: checklists and notes** (migration 3). Claude proposes the table design first. Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.
+Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.
