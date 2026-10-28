@@ -22,13 +22,13 @@ export function useProjectDetail(projectId: string | undefined) {
 
   return {
     state: loader.stateFor(snapshot, projectId),
-    async createTask(title: string, priority: TaskPriority, dueDate: string) {
+    async createTask(title: string, priority: TaskPriority, dueDate: string, description: string) {
       if (!projectId) return;
-      await taskService.createTask(projectId, title, priority, dueDate);
+      await taskService.createTask(projectId, title, priority, dueDate, description);
       await refresh();
     },
-    async updateTask(taskId: string, title: string, priority: TaskPriority, dueDate: string) {
-      await taskService.updateTask(taskId, title, priority, dueDate);
+    async updateTask(taskId: string, title: string, priority: TaskPriority, dueDate: string, description: string) {
+      await taskService.updateTask(taskId, title, priority, dueDate, description);
       await refresh();
     },
     async updateProject(name: string, description: string) {

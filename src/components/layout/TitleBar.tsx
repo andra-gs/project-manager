@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router";
-import { getBreadcrumbs, getProjectIdFromPath, getWorkspaceIdFromPath } from "../../app/navigation";
+import { getBreadcrumbs, getProjectIdFromPath, getTaskIdFromPath, getWorkspaceIdFromPath } from "../../app/navigation";
 import { useProjectDetail } from "../../hooks/useProjectDetail";
+import { useTaskDetail } from "../../hooks/useTaskDetail";
 import { useWorkspaceDetail } from "../../hooks/useWorkspaceDetail";
 import { APP_NAME } from "../../lib/appInfo";
 import { WindowControls } from "./WindowControls";
@@ -16,11 +17,13 @@ export function TitleBar() {
   const { pathname } = useLocation();
   const { state: projectState } = useProjectDetail(getProjectIdFromPath(pathname));
   const project = projectState?.kind === "ready" ? projectState.data : undefined;
+  const { state: taskState } = useTaskDetail(getTaskIdFromPath(pathname));
+  const task = taskState?.kind === "ready" ? taskState.data : undefined;
   // The path of a project page starts with the workspace the project belongs to.
   const workspaceId = getWorkspaceIdFromPath(pathname) ?? project?.workspaceId;
   const { state: workspaceState } = useWorkspaceDetail(workspaceId);
   const workspaceName = workspaceState?.kind === "ready" ? workspaceState.data.name : undefined;
-  const crumbs = getBreadcrumbs(pathname, { workspaceName, project });
+  const crumbs = getBreadcrumbs(pathname, { workspaceName, project, task });
 
   return (
     <div

@@ -8,6 +8,7 @@ import { HelpPage } from "./pages/HelpPage";
 import { MyTasksPage } from "./pages/MyTasksPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ProjectPage } from "./pages/ProjectPage";
+import { TaskPage } from "./pages/TaskPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { WorkspacePage } from "./pages/WorkspacePage";
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="workspaces/:workspaceId" element={<WorkspacePage />} />
           <Route path="projects/:projectId" element={<ProjectPage />} />
           <Route path="projects/:projectId/board" element={<BoardPage />} />
+          <Route path="tasks/:taskId" element={<TaskPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="help" element={<HelpPage />} />
           <Route path="*" element={<NotFoundPage />} />

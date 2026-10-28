@@ -203,4 +203,15 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**Phase 3, step 3e: task details** (description, labels, checklists, notes; needs migration 3). Claude proposes the plan first; the developer approves it before code is written. Open from the title bar test: the release program (`project-manager.exe` from `npm run tauri build`) has not been checked with the custom title bar; do it once before merging. Merging `phase-3-kanban` into `main` is the developer's to do later (agreed 2026-10-28).
+**Phase 3, step 3e-1: test the task page (developer, on Windows).** Code written 2026-10-28 on branch `phase-3-kanban`, not yet run in the app. No database migration in this step (the `description` column exists since migration 1). Claude verified only the SQL (in an in-memory SQLite database) and ran `tsc` without the npm packages (no errors except missing-package noise).
+
+```powershell
+cd D:\project-manager
+git pull origin phase-3-kanban
+npm run tauri dev
+npm run build
+```
+
+Check: (1) clicking a task title in the project's task list, on the board, in My Tasks, on a Calendar chip or in its deadline list, and in the Dashboard "My Tasks" opens the task page; (2) the page shows the title, status, priority, and deadline badges, the description (line breaks kept; "No description yet" when empty), and the properties (project and workspace are links, assigned to, created, last changed, completed only for done tasks); (3) "Edit task" opens the form with the current values, saving a changed title, description, priority, and deadline updates the page; clearing the deadline works; an empty title and a description over 2000 characters are rejected with a message; (4) the Status box changes the status at once, the badge follows, and moving to Done fills "Completed"; the change shows on the board and in the progress of the project; (5) "New Task" now has a description field and a new task keeps it; (6) editing a task from the project's task list also shows and saves the description; (7) "Delete task" asks for confirmation, Cancel keeps the task, Delete removes it and returns to the project page; (8) the title bar path reads `Avenqor / <workspace> / <project> / <task>` with the first two as links, and the top bar says "Task Details"; (9) the page fits 960x600 (properties move below the description); (10) data is still there after closing and reopening the app; (11) `npm run build` passes. Report what worked and any error text.
+
+**Then step 3e-2: checklists and notes** (migration 3). Claude proposes the table design first. Also still open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.

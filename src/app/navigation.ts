@@ -2,6 +2,7 @@ import { matchPath } from "react-router";
 import type { IconName } from "../components/icons/Icon";
 import { pluralize } from "../lib/text";
 import type { ProjectDetail } from "../types/project";
+import type { TaskDetail } from "../types/task";
 import type { WorkspaceDetail } from "../types/workspace";
 
 // The single list of sidebar destinations. The sidebar and the top bar both read it.
@@ -27,6 +28,7 @@ export const FOOTER_NAV: NavItem[] = [
 const WORKSPACE_PATH_PATTERN = "/workspaces/:workspaceId";
 const PROJECT_PATH_PATTERN = "/projects/:projectId";
 const BOARD_PATH_PATTERN = "/projects/:projectId/board";
+const TASK_PATH_PATTERN = "/tasks/:taskId";
 
 export function workspacePath(workspaceId: string): string {
   return `/workspaces/${workspaceId}`;
@@ -39,6 +41,14 @@ export function projectPath(projectId: string): string {
 // The workspace or project id in an address, or undefined when the address is another page.
 export function getWorkspaceIdFromPath(pathname: string): string | undefined {
   return matchPath(WORKSPACE_PATH_PATTERN, pathname)?.params.workspaceId;
+}
+
+export function taskPath(taskId: string): string {
+  return `/tasks/${taskId}`;
+}
+
+export function getTaskIdFromPath(pathname: string): string | undefined {
+  return matchPath(TASK_PATH_PATTERN, pathname)?.params.taskId;
 }
 
 export function boardPath(projectId: string): string {
@@ -62,6 +72,7 @@ export interface Breadcrumb {
 interface BreadcrumbContext {
   workspaceName?: string;
   project?: ProjectDetail;
+  task?: TaskDetail;
 }
 
 // The path to the current page, for example Workspace > Project > Board.
@@ -71,6 +82,16 @@ export function getBreadcrumbs(pathname: string, context: BreadcrumbContext): Br
 
   const workspaceId = getWorkspaceIdFromPath(pathname);
   if (workspaceId) return [{ label: context.workspaceName ?? "Workspace" }];
+
+  if (getTaskIdFromPath(pathname)) {
+    const { task } = context;
+    if (!task) return [{ label: "Task" }];
+    return [
+      { label: task.workspaceName, to: workspacePath(task.workspaceId) },
+      { label: task.projectName, to: projectPath(task.projectId) },
+      { label: task.title },
+    ];
+  }
 
   const projectId = getProjectIdFromPath(pathname);
   if (projectId) {
@@ -89,6 +110,7 @@ export function getBreadcrumbs(pathname: string, context: BreadcrumbContext): Br
 interface HeadingContext {
   workspace?: WorkspaceDetail;
   project?: ProjectDetail;
+  task?: TaskDetail;
 }
 
 // Title and subtitle shown in the top bar for the current address.
@@ -97,7 +119,10 @@ export function getPageHeading(pathname: string, context: HeadingContext): { tit
   if (item) {
     return { title: item.label, subtitle: item.subtitle };
   }
-  const { workspace, project } = context;
+  const { workspace, project, task } = context;
+  if (getTaskIdFromPath(pathname)) {
+    return { title: "Task Details", subtitle: task ? `${task.projectName} · ${task.workspaceName}` : "" };
+  }
   if (getWorkspaceIdFromPath(pathname)) {
     // Until the workspace is loaded (or if it does not exist) only a general title is shown.
     if (!workspace) return { title: "Workspace", subtitle: "" };

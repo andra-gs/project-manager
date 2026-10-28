@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { projectPath } from "../../app/navigation";
+import { taskPath } from "../../app/navigation";
 import { WEEKDAY_LABELS, type CalendarDay } from "../../lib/calendar";
 import { cx } from "../../lib/classNames";
 import { getDaysUntil } from "../../lib/dueDate";
@@ -50,7 +50,7 @@ export function MonthGrid({ weeks, tasksByDate, today }: MonthGridProps) {
                 {tasks.slice(0, MAX_CHIPS_PER_DAY).map((task) => (
                   <Link
                     key={task.id}
-                    to={projectPath(task.projectId)}
+                    to={taskPath(task.id)}
                     title={`${task.title} · ${task.projectName}`}
                     className={cx(
                       "truncate rounded-control px-1.5 py-0.5 text-caption outline-offset-2 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-accent",

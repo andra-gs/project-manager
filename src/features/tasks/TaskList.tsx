@@ -7,6 +7,7 @@ import { EmptyMessage } from "../../components/ui/EmptyMessage";
 import { ListRow } from "../../components/ui/ListRow";
 import { PriorityBadge } from "../../components/ui/PriorityBadge";
 import { StatusBadge } from "../../components/ui/StatusBadge";
+import { taskPath } from "../../app/navigation";
 import { getDueInfo } from "../../lib/dueDate";
 import { describeError } from "../../lib/errors";
 import type { TaskItem, TaskPriority } from "../../types/task";
@@ -16,7 +17,7 @@ interface TaskListProps {
   tasks: TaskItem[];
   onSetDone: (taskId: string, done: boolean) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
-  onUpdate: (taskId: string, title: string, priority: TaskPriority, dueDate: string) => Promise<void>;
+  onUpdate: (taskId: string, title: string, priority: TaskPriority, dueDate: string, description: string) => Promise<void>;
 }
 
 export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps) {
@@ -51,6 +52,7 @@ export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps
               <ListRow
                 key={task.id}
                 title={task.title}
+                titleTo={taskPath(task.id)}
                 trailing={
                   <div className="flex items-center gap-2">
                     {due && <Badge tone={due.tone}>{due.label}</Badge>}
@@ -85,9 +87,15 @@ export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps
         open={editing !== undefined}
         title="Edit task"
         submitLabel="Save"
-        initial={editing ? { title: editing.title, priority: editing.priority, dueDate: editing.dueDate } : undefined}
+        initial={
+          editing
+            ? { title: editing.title, description: editing.description, priority: editing.priority, dueDate: editing.dueDate }
+            : undefined
+        }
         onClose={() => setEditing(undefined)}
-        onSubmit={(title, priority, dueDate) => (editing ? onUpdate(editing.id, title, priority, dueDate) : Promise.resolve())}
+        onSubmit={(title, priority, dueDate, description) =>
+          editing ? onUpdate(editing.id, title, priority, dueDate, description) : Promise.resolve()
+        }
       />
       <ConfirmDialog
         open={deleting !== undefined}

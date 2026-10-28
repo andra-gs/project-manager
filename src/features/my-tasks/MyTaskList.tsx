@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { projectPath } from "../../app/navigation";
+import { taskPath } from "../../app/navigation";
 import { Badge } from "../../components/ui/Badge";
 import { Card } from "../../components/ui/Card";
 import { EmptyMessage } from "../../components/ui/EmptyMessage";
@@ -14,7 +14,7 @@ interface MyTaskListProps {
   emptyMessage: string;
 }
 
-// Rows of tasks. Each row opens the project the task belongs to.
+// Rows of tasks. Each row opens the task.
 export function MyTaskList({ tasks, emptyMessage }: MyTaskListProps) {
   return (
     <Card>
@@ -27,7 +27,7 @@ export function MyTaskList({ tasks, emptyMessage }: MyTaskListProps) {
             return (
               <Link
                 key={task.id}
-                to={projectPath(task.projectId)}
+                to={taskPath(task.id)}
                 className="block rounded-control outline-offset-2 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <ListRow

@@ -2,9 +2,10 @@ import { useState, type FormEvent } from "react";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { SelectField } from "../../components/ui/SelectField";
+import { TextArea } from "../../components/ui/TextArea";
 import { TextField } from "../../components/ui/TextField";
 import { describeError } from "../../lib/errors";
-import { TASK_TITLE_MAX_LENGTH } from "../../services/taskService";
+import { TASK_DESCRIPTION_MAX_LENGTH, TASK_TITLE_MAX_LENGTH } from "../../services/taskService";
 import type { TaskPriority } from "../../types/task";
 
 interface TaskFormDialogProps {
@@ -13,8 +14,8 @@ interface TaskFormDialogProps {
   submitLabel: string;
   onClose: () => void;
   // Values to start with (when editing). Leave out for an empty form with medium priority.
-  initial?: { title: string; priority: TaskPriority; dueDate: string | undefined };
-  onSubmit: (title: string, priority: TaskPriority, dueDate: string) => Promise<void>;
+  initial?: { title: string; description: string; priority: TaskPriority; dueDate: string | undefined };
+  onSubmit: (title: string, priority: TaskPriority, dueDate: string, description: string) => Promise<void>;
 }
 
 type FormProps = Omit<TaskFormDialogProps, "open" | "title">;
@@ -27,6 +28,7 @@ const PRIORITY_OPTIONS = [
 
 function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
   const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
   const [priority, setPriority] = useState<TaskPriority>(initial?.priority ?? "medium");
   const [dueDate, setDueDate] = useState(initial?.dueDate ?? "");
   const [error, setError] = useState<string>();
@@ -37,7 +39,7 @@ function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
     setBusy(true);
     setError(undefined);
     try {
-      await onSubmit(title, priority, dueDate);
+      await onSubmit(title, priority, dueDate, description);
       onClose();
     } catch (failure) {
       setError(describeError(failure));
@@ -54,6 +56,13 @@ function TaskForm({ submitLabel, onClose, initial, onSubmit }: FormProps) {
         maxLength={TASK_TITLE_MAX_LENGTH}
         autoFocus
         onChange={(event) => setTitle(event.target.value)}
+      />
+      <TextArea
+        label="Description (optional)"
+        value={description}
+        maxLength={TASK_DESCRIPTION_MAX_LENGTH}
+        rows={4}
+        onChange={(event) => setDescription(event.target.value)}
       />
       <SelectField
         label="Priority"

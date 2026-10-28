@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+import { taskPath } from "../../app/navigation";
 import { Badge } from "../../components/ui/Badge";
 import { IconButton } from "../../components/ui/IconButton";
 import { PriorityBadge } from "../../components/ui/PriorityBadge";
@@ -19,7 +21,12 @@ export function BoardCard({ task, disabled, onMove }: BoardCardProps) {
 
   return (
     <div className="flex flex-col gap-2 rounded-control border border-border bg-surface p-3">
-      <p className="text-small font-semibold break-words">{task.title}</p>
+      <Link
+        to={taskPath(task.id)}
+        className="rounded-control text-small font-semibold break-words outline-offset-2 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+      >
+        {task.title}
+      </Link>
       <div className="flex flex-wrap items-center gap-2">
         <PriorityBadge priority={task.priority} />
         {due && <Badge tone={due.tone}>{due.label}</Badge>}

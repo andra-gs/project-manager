@@ -7,8 +7,23 @@ export const TASK_STATUSES: TaskStatus[] = ["todo", "in_progress", "review", "do
 export interface TaskItem {
   id: string;
   title: string;
+  description: string;
   status: TaskStatus;
   priority: TaskPriority;
   // Calendar date "YYYY-MM-DD", or undefined when the task has no deadline.
   dueDate: string | undefined;
+}
+
+// Everything the task page shows: the task, the project and workspace it belongs to, and its dates.
+export interface TaskDetail extends TaskItem {
+  projectId: string;
+  projectName: string;
+  workspaceId: string;
+  workspaceName: string;
+  // Name of the profile the task is assigned to, or undefined when it is assigned to nobody.
+  assigneeName: string | undefined;
+  // UTC ISO 8601 timestamps.
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | undefined;
 }
