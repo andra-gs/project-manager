@@ -22,7 +22,8 @@ export function DocumentList({ documents, selectedId, emptyMessage, showProject 
       {documents.map((document) => (
         <li key={document.id}>
           <Link
-            to={documentPath(document.id)}
+            // Clicking the open document again closes it (back to the list alone).
+            to={document.id === selectedId ? "/documents" : documentPath(document.id)}
             aria-current={document.id === selectedId ? "page" : undefined}
             className={cx(
               "flex items-center gap-3 rounded-control px-3 py-2.5 outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent",

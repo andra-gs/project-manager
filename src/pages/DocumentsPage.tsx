@@ -50,7 +50,7 @@ export function DocumentsPage() {
       {projects.length === 0 && (
         <p className="text-caption text-ink-muted">Create a project first: every document belongs to a project.</p>
       )}
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[24rem_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[24rem_minmax(0,1fr)]">
         <Card>
           <div className="flex flex-col gap-4">
             <TextField label="Search by title" value={query} onChange={(event) => setQuery(event.target.value)} />
