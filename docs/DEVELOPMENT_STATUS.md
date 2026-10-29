@@ -166,6 +166,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-29 | `npm run build` (step 3e-3) | Passed: `tsc` and Vite build (143 modules) without errors |
 | reported 2026-10-29 | `npm run tauri dev` (step 3f documents, migration 5), checks 1 to 10 | Passed, all as expected: Database line `Connected · schema version 5 · 10 tables`; create, edit, delete, search, filters, project page section, long text, data kept after restart. Developer's change requests (done the same day, not yet re-tested): clicking the open document in the list closes it; the list box fits its content instead of stretching to the height of the document |
 | reported 2026-10-29 | `npm run build` (step 3f) | Passed: `tsc` and Vite build (152 modules) without errors |
+| reported 2026-10-29 | `npm run tauri dev` (step 3g activity history, migration 6, and the two document list changes), checks 1 to 10 | Passed, all as expected: Database line `Connected · schema version 6 · 11 tables`; activity entries for workspaces, projects, tasks, and documents on the Dashboard, project page, and workspace page; deletes handled as designed; data kept after restart |
+| reported 2026-10-29 | `npm run build` (step 3g) | Passed: `tsc` and Vite build (155 modules) without errors |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 6, the SQL of `activityRepository.ts`, and a Node script for `activityText.ts`; partial `tsc --noEmit` | SQL: one entry per change with the right values; updates of `updated_at` alone, checklist, notes, and labels give none; deleting a project removes its entries and leaves one "project deleted" entry; deleting a workspace removes all its entries; `PRAGMA foreign_key_check` empty; the three read queries return the right rows with the 20-entry limit. Text: sentences read as intended. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the activity lists are untested until the developer's run |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
@@ -220,26 +222,18 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] 3e-2 Checklist and notes, migration 3 (verified 2026-10-28)
   - [x] 3e-3 Labels, migration 4 (verified 2026-10-29)
   - [x] 3f Project documents, migration 5 (verified 2026-10-29; two small adjustments below were made after the test)
-  - [ ] 3g Local activity history, migration 6 (written 2026-10-29, awaiting the developer's test)
+  - [x] 3g Local activity history, migration 6 (verified 2026-10-29)
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**1. Developer: test the two document list changes and step 3g (local activity history).** `git pull origin phase-3-kanban`, then `npm run tauri dev` (migration 6 runs on start), then:
+**1. Developer: test two adjustments** (`git pull origin phase-3-kanban`, `npm run tauri dev`):
 
-1. Settings, Database line: `Connected · schema version 6 · 11 tables`. Everything from before is still there. The Activity lists start empty: events from before this version were not recorded, and none are invented.
-2. Documents page: clicking the open document in the list closes it; clicking another opens that one; the list box is only as tall as its rows.
-3. Create a workspace, then a project in it, then two tasks. Dashboard "Activity": entries such as `created workspace “…”`, `created project “…”`, `created task “…”` with your display name and "Just now" (newest on top).
-4. Move a task to another column on the board (or change its status on the task page): `moved task “…” from To Do to In Progress`. Mark a task done and reopen it: two entries.
-5. Edit a task (title, priority, deadline, or description): `edited task “…”`. Saving without changing anything adds nothing. Ticking a checklist item, adding a note, and adding or removing a label add nothing.
-6. Project page "Activity": it shows the entries of that project only (its tasks and documents, project edits, archive, restore). Create, edit, and delete a document: three entries.
-7. Workspace page "Workspace Activity": entries of all its projects, task and document entries end with `in <project name>`. Rename the workspace: `renamed workspace “old” to “new”`.
-8. Delete a task: `deleted task “…”` stays readable after the task is gone. Delete a project that has tasks: the workspace shows one `deleted project “…”` entry and not one entry per task, and the project's other entries are gone.
-9. Delete a whole workspace: no error, and its entries disappear from the Dashboard too.
-10. Close and reopen the app: the history is kept. The Help page text about the history reads correctly.
-11. `npm run build` passes.
+1. Open any form with a text box (new workspace, new project, new task, new document, label, checklist item, note, search box, display name in Settings) and type in it: the "Saved info" pop-up does not appear any more. If it still appears in a particular box, report which one.
+2. Project page, task list: each task has one button with three dots instead of Edit, Mark done, and Delete. Click it: a small menu opens with Edit, Mark done (Reopen task for a finished task), and Delete in red. Each choice works as before (Edit opens the form, Mark done and Reopen change the status, Delete still asks for confirmation). The menu closes after a choice, when you click elsewhere, and with Escape; the arrow keys move between the choices. The menu of the last task in the list is fully visible.
+3. `npm run build` passes.
 
-**2. Next after that:** Phase 3 is then complete except drag and drop for the board (3b, postponed); a short Phase 3 closing check and a decision about Phase 4 (backup and restore, search and filters, notifications). Search inside document text and filtering by label also belong to Phase 4.
+**2. Next after that:** Phase 3 closing check (all Phase 3 items verified, the documentation reviewed, the release program checked once with the custom title bar), then the decision about Phase 4 (backup and restore, search and filters, notifications). Drag and drop for the board (3b) is still postponed.
 
-Also open: check the release program `project-manager.exe` once with the custom title bar before merging. Merging `phase-3-kanban` into `main` is the developer's to do later.
+Also open: merging `phase-3-kanban` into `main` is the developer's to do later.

@@ -20,6 +20,8 @@ export function TextField({ label, error, type = "text", ...rest }: TextFieldPro
       <input
         id={id}
         type={type}
+        // Without this the Windows web view offers its "Saved info" list while typing.
+        autoComplete="off"
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className="h-9 rounded-control border border-border bg-surface px-3 text-body outline-offset-2 placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-accent aria-invalid:border-danger"

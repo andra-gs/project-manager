@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Badge } from "../../components/ui/Badge";
-import { Button } from "../../components/ui/Button";
+import { ActionMenu } from "../../components/ui/ActionMenu";
 import { Card } from "../../components/ui/Card";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { EmptyMessage } from "../../components/ui/EmptyMessage";
@@ -60,22 +60,22 @@ export function TaskList({ tasks, onSetDone, onDelete, onUpdate }: TaskListProps
                     {due && <Badge tone={due.tone}>{due.label}</Badge>}
                     <PriorityBadge priority={task.priority} />
                     <StatusBadge status={task.status} />
-                    <Button variant="secondary" disabled={busy} onClick={() => setEditing(task)}>
-                      Edit
-                    </Button>
-                    <Button variant="secondary" disabled={busy} onClick={() => void run(() => onSetDone(task.id, !done))}>
-                      {done ? "Reopen" : "Mark done"}
-                    </Button>
-                    <Button
-                      variant="danger"
+                    <ActionMenu
+                      label={`Actions for ${task.title}`}
                       disabled={busy}
-                      onClick={() => {
-                        setDeleting(task);
-                        setError(undefined);
-                      }}
-                    >
-                      Delete
-                    </Button>
+                      items={[
+                        { label: "Edit", onSelect: () => setEditing(task) },
+                        { label: done ? "Reopen task" : "Mark done", onSelect: () => void run(() => onSetDone(task.id, !done)) },
+                        {
+                          label: "Delete",
+                          tone: "danger",
+                          onSelect: () => {
+                            setDeleting(task);
+                            setError(undefined);
+                          },
+                        },
+                      ]}
+                    />
                   </div>
                 }
               />
