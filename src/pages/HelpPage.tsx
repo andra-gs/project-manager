@@ -23,7 +23,7 @@ export function HelpPage() {
         <SectionHeading>Current state</SectionHeading>
         <Card>
           <div className="flex flex-col gap-3">
-            <ListRow title="Your data" subtitle="Workspaces, projects, and tasks are saved in a database on this computer. Activity history is not recorded yet." />
+            <ListRow title="Your data" subtitle="Workspaces, projects, and tasks are saved in a database on this computer. Important changes (creating, editing, moving, and deleting) are also written to a local history, shown as Activity." />
             <ListRow title="Not available yet" subtitle="Kanban board, calendar, documents, task details, backup, and online features." />
           </div>
         </Card>

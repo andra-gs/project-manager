@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-28
 
-> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here. **Migration 4 (labels) is applied** (schema version 4, 9 tables, reported 2026-10-29). **Migration 3 (checklist items and notes) is applied** (the developer reported `schema version 3`, 7 tables on 2026-10-28).
+> **Status (2026-10-27): migrations 1 and 2 are applied** (schema version 2, 5 tables, foreign keys on, reported by the developer; also on a fresh database in the release program). Screens read and write these tables (workspaces, projects, tasks, local profile). The delete behavior was verified with data (see below). Only tables from a migration in the repository are listed here. **Migration 6 (activity history) is written but not yet run by the developer.** **Migration 4 (labels) is applied** (schema version 4, 9 tables, reported 2026-10-29). **Migration 3 (checklist items and notes) is applied** (the developer reported `schema version 3`, 7 tables on 2026-10-28).
 
 ## Rules for the schema (Agreed)
 
@@ -70,12 +70,15 @@ Migration 4 (written 2026-10-28, applied: the developer reported `schema version
 
 Migration 5 (written 2026-10-29, applied) adds `documents` (`id`, `project_id` to `projects` with CASCADE, `title` not empty after trimming, `kind` limited by `CHECK` to `notes`, `requirements`, `meeting`, `api`, `design`, `body` plain text with default empty, `created_at`, `updated_at`; indexes on `project_id` and `updated_at`). Claude ran migrations 1 to 5 and the repository's SQL in an in-memory SQLite database (Python, 2026-10-29): an empty title, an unknown type, and a missing project are rejected; the list is newest first and has no body; the project choices list only active projects; update and delete report whether the row existed; deleting a project deletes its documents.
 
-Deferred to Phase 3 (no tables yet): activity history, preferences. Checklists and notes are in migration 3 (see above). Nested subtasks are not planned for the MVP.
+Migration 6 (written 2026-10-29, not yet run by the developer) adds `activity_log` (`id` UUID text made by the trigger, `workspace_id` to `workspaces` with CASCADE, `project_id` optional to `projects` with CASCADE, `actor_profile_id` optional to `profiles` with SET NULL, `action` limited by `CHECK` to 14 values such as `task_created` and `task_status_changed`, `subject_title` (a copy of the name or title, so the entry stays readable after the thing is deleted), `old_value` and `new_value` (used for a status change and a workspace rename), `created_at` UTC ISO 8601 with milliseconds; indexes on `(workspace_id, created_at)`, `(project_id, created_at)`, and `created_at`). The entries are written by 14 SQLite triggers named `trg_activity_*` (workspace created and renamed; project created, edited, archived, restored, deleted; task created, edited, status changed, deleted; document created, edited, deleted), in the same statement as the change, so both are saved or neither is. The person is the local profile (the first profile created). Not recorded: checklist items, notes, labels, and the deletion of a workspace. Deletes caused by a parent's deletion are not recorded one by one (the triggers check that the parent still exists). Deleting a project removes its entries and leaves one "project deleted" entry in its workspace; deleting a workspace removes all its entries. Claude ran migrations 1 to 6 in an in-memory SQLite database (Python, 2026-10-29) through a scenario of creates, edits, moves, archive and restore, deletes, a project delete, and a workspace delete: each change produced exactly one entry with the right values, changes to `updated_at` alone produced none, no foreign key violation occurred (`PRAGMA foreign_key_check` empty), and the three read queries returned the expected rows.
+
+Deferred to Phase 3 (no tables yet): preferences. Checklists and notes are in migration 3 (see above). Nested subtasks are not planned for the MVP.
 
 ## Migrations
 
 | Version | Description | Applied in | Status |
 |---|---|---|---|
+| 6 | `activity_log` (`src-tauri/migrations/0006_activity_log.sql`) | on app start, after migration 5 | written 2026-10-29, **not yet run by the developer** (expected: schema version 6, 11 tables) |
 | 5 | `documents` (`src-tauri/migrations/0005_documents.sql`) | on app start, after migration 4 | applied (reported by the developer 2026-10-29: schema version 5, 10 tables) |
 | 4 | `labels` (`src-tauri/migrations/0004_labels.sql`) | on app start, after migration 3 | applied (reported by the developer 2026-10-29: schema version 4, 9 tables) |
 | 3 | `task_checklist_and_notes` (`src-tauri/migrations/0003_task_checklist_and_notes.sql`) | on app start, after migration 2 | applied (reported by the developer 2026-10-28: schema version 3, 7 tables) |

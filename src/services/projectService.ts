@@ -3,6 +3,7 @@ import { calculateProgress } from "../lib/progress";
 import * as labelRepository from "../repositories/labelRepository";
 import * as repository from "../repositories/projectRepository";
 import type { ProjectDetail, ProjectStatus } from "../types/project";
+import { getProjectActivity } from "./activityService";
 
 export const PROJECT_NAME_MAX_LENGTH = 60;
 export const PROJECT_DESCRIPTION_MAX_LENGTH = 300;
@@ -39,14 +40,14 @@ export async function updateProject(id: string, nameInput: string, descriptionIn
 }
 
 // Everything the project page shows. Progress is calculated from the tasks, never stored.
-// Activity history arrives in Phase 3, so the list is empty until then.
 export async function getProjectDetail(id: string): Promise<ProjectDetail | undefined> {
   const data = await repository.getProjectDetail(id);
   if (!data) return undefined;
 
-  const [labelsByTask, labels] = await Promise.all([
+  const [labelsByTask, labels, activity] = await Promise.all([
     labelRepository.listLabelsByTask(id),
     labelRepository.listProjectLabels(id),
+    getProjectActivity(id),
   ]);
   const completedTaskCount = data.tasks.filter((task) => task.status === "done").length;
   return {
@@ -61,7 +62,7 @@ export async function getProjectDetail(id: string): Promise<ProjectDetail | unde
     completedTaskCount,
     tasks: data.tasks.map((task) => ({ ...task, labels: labelsByTask.get(task.id) ?? [] })),
     labels,
-    activity: [],
+    activity,
   };
 }
 

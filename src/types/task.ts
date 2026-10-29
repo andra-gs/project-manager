@@ -6,6 +6,14 @@ export type TaskStatus = "todo" | "in_progress" | "review" | "done";
 // The board columns, in order from left to right.
 export const TASK_STATUSES: TaskStatus[] = ["todo", "in_progress", "review", "done"];
 
+// The names shown for each status.
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  todo: "To Do",
+  in_progress: "In Progress",
+  review: "Review",
+  done: "Done",
+};
+
 export interface TaskItem {
   id: string;
   title: string;
