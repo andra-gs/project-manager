@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
 import { FOOTER_NAV, MAIN_NAV, workspacePath } from "../../app/navigation";
 import { useWorkspaces } from "../../hooks/useWorkspaces";
-import { APP_NAME } from "../../lib/appInfo";
+import { BrandLogo } from "../ui/BrandLogo";
 import { cx } from "../../lib/classNames";
 import { Icon, type IconName } from "../icons/Icon";
 import { IconButton } from "../ui/IconButton";
@@ -59,7 +59,9 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
         </div>
       ) : (
         <div className="flex items-start justify-between gap-2 py-4 pr-3 pl-6">
-          <p className="min-w-0 truncate pt-0.5 text-title font-bold text-accent">{APP_NAME}</p>
+          <div className="min-w-0 pt-1">
+            <BrandLogo variant="wordmark" />
+          </div>
           <IconButton icon="chevronsLeft" label={toggleLabel} onClick={() => onCollapsedChange(true)} />
         </div>
       )}

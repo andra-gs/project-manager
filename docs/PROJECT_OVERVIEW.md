@@ -93,6 +93,13 @@ Real-time cross-device sync, cloud accounts and authentication, online chat and 
 
 Tauri does not automatically produce a complete mobile application. Mobile options will be evaluated when that phase begins.
 
+## Ideas from the developer (Proposed: under discussion, not agreed, not scheduled)
+
+Both ideas were described by the developer on 2026-10-29 as concepts for **after the application is finished**. Nothing here is a requirement or a plan yet; the details are being clarified with the developer.
+
+- **Documents as files and folders.** Documents would have a file format (for example `.md`, `.txt`, `.html`) and be shown as a tree of folders and files like a GitHub repository, separated by workspace; creating a project would automatically create a folder with the project's name. This would replace or extend the current plain-text documents (step 3f, Implemented).
+- **Whiteboard.** A new page with a grid background (square cells, like a spreadsheet). The user could create widgets (sticky-note style, resizable with a minimum of 2x2 cells, containing text), drag them around, connect them with lines ("red string") to other widgets, draw flowcharts, and zoom the page in and out.
+
 ## Design reference (Agreed)
 
 Figma concept: <https://www.figma.com/design/K22NNL2AkbZKjRDMzPXn7c>

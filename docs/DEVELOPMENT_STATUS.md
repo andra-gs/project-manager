@@ -171,6 +171,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 6, the SQL of `activityRepository.ts`, and a Node script for `activityText.ts`; partial `tsc --noEmit` | SQL: one entry per change with the right values; updates of `updated_at` alone, checklist, notes, and labels give none; deleting a project removes its entries and leaves one "project deleted" entry; deleting a workspace removes all its entries; `PRAGMA foreign_key_check` empty; the three read queries return the right rows with the 20-entry limit. Text: sentences read as intended. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the activity lists are untested until the developer's run |
 | reported 2026-10-29 | `npm run tauri dev` (adjustments: no "Saved info" pop-up, task actions menu), checks 1 and 2 | Passed, all as expected: the pop-up no longer appears in text boxes; the three-dot menu on each task of the project page offers Edit, Mark done or Reopen, and Delete, and each works |
 | reported 2026-10-29 | `npm run build` (actions menu) | Passed: `tsc` and Vite build (156 modules) without errors |
+| reported 2026-10-29 | Phase 3 closing check with the release program `src-tauri\target\release\project-manager.exe` (built with `npm run tauri build`), checks 1 to 4 | Passed, all as expected: custom title bar (path, drag, maximize, minimize, restore, close), Settings Database line (schema version 6, 11 tables, existing data), one round through every area (project, task, board, checklist, note, label, document, Activity), all data kept after closing and reopening. Check 5 (fresh database file) was skipped by the developer, so a fresh database with migration 6 has not been tried in the release program (a fresh database through migrations 1 to 6 was run by Claude in an in-memory SQLite database) |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
@@ -214,36 +215,27 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Dashboard, local profile, and progress on real data; mock data removed (verified 2026-10-26)
   - [x] Closing check: release build with the existing and with a fresh database file (reported by the developer 2026-10-27), documentation review (2026-10-27)
   - [x] Database location decision: Roaming folder kept for now, to be revisited before a public release (Agreed by the developer 2026-10-27; see Known issues 7)
-- [ ] **Phase 3:** Kanban, calendar, task details, documents, progress, activity (in progress, on branch `phase-3-kanban`)
+- [x] **Phase 3:** Kanban, calendar, task details, documents, progress, activity (complete 2026-10-29 except drag and drop for the board, which is postponed; on branch `phase-3-kanban`, not yet merged into `main`)
   - [x] 3a Kanban board with buttons to move tasks (verified 2026-10-27)
   - [ ] 3b Drag and drop on the board (postponed)
   - [x] 3c Calendar and deadlines (verified 2026-10-28)
   - [x] 3d My Tasks page (verified 2026-10-28)
-  - [x] Custom title bar with path (verified 2026-10-28 in development mode; release program not yet checked)
+  - [x] Custom title bar with path (verified 2026-10-28 in development mode and 2026-10-29 in the release program)
   - [x] 3e-1 Task page with description (verified 2026-10-28)
   - [x] 3e-2 Checklist and notes, migration 3 (verified 2026-10-28)
   - [x] 3e-3 Labels, migration 4 (verified 2026-10-29)
   - [x] 3f Project documents, migration 5 (verified 2026-10-29; two small adjustments below were made after the test)
   - [x] 3g Local activity history, migration 6 (verified 2026-10-29)
+  - [x] Closing check with the release program (reported 2026-10-29; the optional fresh-database check was skipped)
 - [ ] Phase 4: backup and restore, search, validation, notifications, testing
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**1. Phase 3 closing check.** Claude reviewed the documentation for stale statements on 2026-10-29 (status lines, MVP table, test results). The developer's part, in PowerShell:
+**1. Developer: check the logo** (`git pull origin phase-3-kanban`, then `npm run tauri dev`): the full "Avenqor" logo is at the top of the sidebar (collapsed sidebar shows only the expand button, as before); a small letter A appears before "Avenqor" at the left of the title bar; the window and taskbar icon is the letter A in indigo on a white rounded square (the taskbar and window icon in development mode may need the program to be restarted; if Windows still shows the old icon, it is an icon cache issue, see the note below); `npm run build` passes. For the installed or release program, run `npm run tauri build` again.
 
-```powershell
-git pull origin phase-3-kanban
-npm run tauri build
-```
+Note: Windows caches icons. If the old icon still appears on `project-manager.exe` or on a shortcut after rebuilding, restart Explorer or rename the file to see the new icon; this is not a code problem.
 
-Then start the release program (`src-tauri\target\release\project-manager.exe`, or install the new installer) and check:
+**2. Discussion before any work (Proposed ideas, see PROJECT_OVERVIEW.md):** the developer described two future ideas on 2026-10-29: documents as files and folders (like a GitHub repository, per workspace, with formats such as `.md`, `.txt`, `.html`) and a Whiteboard page (grid, resizable sticky-note widgets, connecting lines, flowcharts, zoom). Claude asks clarifying questions first; no code and no design is decided yet. Both are meant for after the application is finished.
 
-1. The custom title bar: the path text, drag to move, double-click to maximize, minimize, maximize, restore, and close all work (this was only checked in development mode so far).
-2. Settings, Database line: `Connected · schema version 6 · 11 tables`, with your existing data.
-3. One round through each area: create a project and a task, move it on the board, add a checklist item, a note, and a label, write a document, and look at the Activity list.
-4. Close the program and open it again: everything is kept.
-5. If you want, also run it once with a fresh database file (rename `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor\` first, and rename it back afterwards): the program starts empty with schema version 6.
-
-**2. Decision for the developer after that:** what comes next. Options: (a) drag and drop on the Kanban board (step 3b, still postponed); (b) start Phase 4, whose first item is backup and restore (data safety), then search and filters, validation review, and local notifications; (c) merge `phase-3-kanban` into `main` first (the developer's to do, when ready). Claude recommends (b) after the closing check, because backup and restore protects the data that now exists; drag and drop can be added later without changing the data.
-
+**3. After the discussion:** choose the next step: (a) drag and drop on the Kanban board (3b, postponed; Claude recommends doing it next because it is small and changes no data), (b) Phase 4 (backup and restore first, then search and filters, validation review, local notifications), (c) merge `phase-3-kanban` into `main` (the developer's to do, when ready).

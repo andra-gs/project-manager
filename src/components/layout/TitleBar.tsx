@@ -12,6 +12,7 @@ import { useProjectDetail } from "../../hooks/useProjectDetail";
 import { useTaskDetail } from "../../hooks/useTaskDetail";
 import { useWorkspaceDetail } from "../../hooks/useWorkspaceDetail";
 import { APP_NAME } from "../../lib/appInfo";
+import { BrandLogo } from "../ui/BrandLogo";
 import { WindowControls } from "./WindowControls";
 
 const LINK_STYLE =
@@ -42,6 +43,7 @@ export function TitleBar() {
       className="flex h-(--layout-titlebar-height) shrink-0 items-center justify-between gap-3 border-b border-border bg-titlebar pl-3 text-caption text-ink-muted select-none"
     >
       <nav aria-label="Current location" data-tauri-drag-region className="pointer-events-none flex min-w-0 items-center gap-1">
+        <BrandLogo variant="mark" />
         <Link to="/" className={`${LINK_STYLE} font-semibold text-ink`}>
           {APP_NAME}
         </Link>
