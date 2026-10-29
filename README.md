@@ -2,7 +2,7 @@
 
 A local-first desktop application for organizing workspaces, projects, tasks, deadlines, documents, and progress in one place.
 
-> **Status: Phases 0 to 2 complete (branch `phase-1-ui`, not yet merged into `main`).** Workspaces, projects, and basic tasks work on a local SQLite database, verified by the developer on Windows (2026-10-27). Calendar, My Tasks, Documents, Kanban, and backup are not built yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
+> **Status: Phases 0 to 2 complete; Phase 3 nearly complete (branch `phase-3-kanban`, not yet merged into `main`).** Workspaces, projects, tasks (with checklists, notes, and labels), the Kanban board, Calendar, My Tasks, project documents, and local activity history work on a local SQLite database, verified by the developer on Windows (2026-10-29). Drag and drop on the board and backup and restore are not built yet. See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for the current state.
 
 The product name is **Avenqor** (Agreed by the developer on 2026-10-25; see [docs/BRAND.md](docs/BRAND.md)). Earlier working name: Project Collaboration App.
 

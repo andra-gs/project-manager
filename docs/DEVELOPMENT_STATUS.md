@@ -6,10 +6,10 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phases 0, 1, and 2 are **complete** (verified by the developer; Phase 2 closing check reported 2026-10-27). All work is on branch `phase-1-ui`, not yet merged into `main`. `main` still holds the Phase 0 template. Next: Phase 3.
-- **Application code:** on `main`, the unmodified template; on `phase-3-kanban` (contains `phase-1-ui`), the app frame, design tokens, and working workspace, project, task, Kanban board, Calendar, and My Tasks features on a local SQLite database (`avenqor.db`, schema version 4, nine tables), plus the task page with checklist, notes, and labels. Documents is still a placeholder page. **Git repository:** `https://github.com/andra-gs/project-manager` (public).
+- **Phase:** Phases 0, 1, and 2 are **complete** (verified by the developer; Phase 2 closing check reported 2026-10-27). Phase 3 is **nearly complete**: every step is verified except drag and drop for the board (3b, postponed); the closing check is next. Work is on branches `phase-1-ui` (Phases 0 to 2) and `phase-3-kanban` (contains `phase-1-ui`), neither merged into `main`. `main` still holds the Phase 0 template.
+- **Application code:** on `main`, the unmodified template; on `phase-3-kanban` (contains `phase-1-ui`), the app frame, design tokens, and working workspace, project, task, Kanban board, Calendar, and My Tasks features on a local SQLite database (`avenqor.db`, schema version 6, eleven tables), plus the task page with checklist, notes, and labels, project documents, and local activity history. **Git repository:** `https://github.com/andra-gs/project-manager` (public).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
-- Implemented (verified by the developer): workspaces, projects, basic tasks, Dashboard on real data, local profile. See the MVP table in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md). Status labels are explained there too.
+- Implemented (verified by the developer): workspaces, projects, tasks with checklists, notes, and labels, Kanban board (buttons), Calendar, My Tasks, project documents, local activity history, custom title bar, Dashboard on real data, local profile. See the MVP table in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md). Status labels are explained there too.
 
 ### Environment note
 
@@ -169,6 +169,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-29 | `npm run tauri dev` (step 3g activity history, migration 6, and the two document list changes), checks 1 to 10 | Passed, all as expected: Database line `Connected · schema version 6 · 11 tables`; activity entries for workspaces, projects, tasks, and documents on the Dashboard, project page, and workspace page; deletes handled as designed; data kept after restart |
 | reported 2026-10-29 | `npm run build` (step 3g) | Passed: `tsc` and Vite build (155 modules) without errors |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 6, the SQL of `activityRepository.ts`, and a Node script for `activityText.ts`; partial `tsc --noEmit` | SQL: one entry per change with the right values; updates of `updated_at` alone, checklist, notes, and labels give none; deleting a project removes its entries and leaves one "project deleted" entry; deleting a workspace removes all its entries; `PRAGMA foreign_key_check` empty; the three read queries return the right rows with the 20-entry limit. Text: sentences read as intended. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the activity lists are untested until the developer's run |
+| reported 2026-10-29 | `npm run tauri dev` (adjustments: no "Saved info" pop-up, task actions menu), checks 1 and 2 | Passed, all as expected: the pop-up no longer appears in text boxes; the three-dot menu on each task of the project page offers Edit, Mark done or Reopen, and Delete, and each works |
+| reported 2026-10-29 | `npm run build` (actions menu) | Passed: `tsc` and Vite build (156 modules) without errors |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
@@ -228,12 +230,20 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**1. Developer: test two adjustments** (`git pull origin phase-3-kanban`, `npm run tauri dev`):
+**1. Phase 3 closing check.** Claude reviewed the documentation for stale statements on 2026-10-29 (status lines, MVP table, test results). The developer's part, in PowerShell:
 
-1. Open any form with a text box (new workspace, new project, new task, new document, label, checklist item, note, search box, display name in Settings) and type in it: the "Saved info" pop-up does not appear any more. If it still appears in a particular box, report which one.
-2. Project page, task list: each task has one button with three dots instead of Edit, Mark done, and Delete. Click it: a small menu opens with Edit, Mark done (Reopen task for a finished task), and Delete in red. Each choice works as before (Edit opens the form, Mark done and Reopen change the status, Delete still asks for confirmation). The menu closes after a choice, when you click elsewhere, and with Escape; the arrow keys move between the choices. The menu of the last task in the list is fully visible.
-3. `npm run build` passes.
+```powershell
+git pull origin phase-3-kanban
+npm run tauri build
+```
 
-**2. Next after that:** Phase 3 closing check (all Phase 3 items verified, the documentation reviewed, the release program checked once with the custom title bar), then the decision about Phase 4 (backup and restore, search and filters, notifications). Drag and drop for the board (3b) is still postponed.
+Then start the release program (`src-tauri\target\release\project-manager.exe`, or install the new installer) and check:
 
-Also open: merging `phase-3-kanban` into `main` is the developer's to do later.
+1. The custom title bar: the path text, drag to move, double-click to maximize, minimize, maximize, restore, and close all work (this was only checked in development mode so far).
+2. Settings, Database line: `Connected · schema version 6 · 11 tables`, with your existing data.
+3. One round through each area: create a project and a task, move it on the board, add a checklist item, a note, and a label, write a document, and look at the Activity list.
+4. Close the program and open it again: everything is kept.
+5. If you want, also run it once with a fresh database file (rename `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor\` first, and rename it back afterwards): the program starts empty with schema version 6.
+
+**2. Decision for the developer after that:** what comes next. Options: (a) drag and drop on the Kanban board (step 3b, still postponed); (b) start Phase 4, whose first item is backup and restore (data safety), then search and filters, validation review, and local notifications; (c) merge `phase-3-kanban` into `main` first (the developer's to do, when ready). Claude recommends (b) after the closing check, because backup and restore protects the data that now exists; drag and drop can be added later without changing the data.
+
