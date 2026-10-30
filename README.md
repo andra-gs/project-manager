@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" alt="Avenqor icon" width="128" height="128">
+<img src="Avenqor-logo.png" alt="Avenqor icon" width="128" height="128">
 
 # Avenqor
 
