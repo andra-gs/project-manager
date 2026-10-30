@@ -1,6 +1,6 @@
 # Project Overview
 
-Last updated: 2026-10-20
+Last updated: 2026-10-31
 
 This document describes **what** the product is meant to be. For **how** it is built, see [ARCHITECTURE.md](ARCHITECTURE.md). For **where the work stands**, see [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md).
 
@@ -13,13 +13,13 @@ This document describes **what** the product is meant to be. For **how** it is b
 | **Implemented** | Exists in the repository and has been verified to work. |
 | **Future** | Planned for a later phase; not part of the current work. |
 
-Today, every feature below is **Agreed** or **Future**. Nothing is **Implemented** yet.
+Features that the developer has tested on a real computer are marked **Implemented** in the table below. Everything else is **Agreed** or **Future**.
 
 ## Identity
 
-- Project name: **Project Manager Desktop**
-- Repository and folder name: `project-manager-desktop`
-- Product name: **Avenqor** (**Agreed** by the developer on 2026-10-25; earlier name: Project Collaboration App). Whether trademark checks were done is not recorded.
+- Working project name: **Project Manager Desktop** (from `CLAUDE.md`)
+- Repository and folder name: `CLAUDE.md` says `project-manager-desktop`; the actual GitHub repository is `project-manager` (an open mismatch, see [DEVELOPMENT_STATUS.md](DEVELOPMENT_STATUS.md), Known issues)
+- Product name: **Avenqor** (**Agreed** by the developer on 2026-10-25; earlier name: Project Collaboration App). Whether trademark checks were done is not recorded; the check is a 1.0 item.
 
 ## Product goals (Agreed)
 
@@ -58,16 +58,16 @@ The roadmap in `CLAUDE.md` places the MVP features in these phases.
 
 | ID | Feature | Planned phase | Status |
 |---|---|---|---|
-| A | **Dashboard**: workspace summary, recent projects, my tasks, upcoming deadlines, project progress, recent activity | Phase 1 (interface), Phase 2 (real data) | Agreed; interface and real data verified by the developer 2026-10-26 (activity history and upcoming-deadline list arrive in Phase 3) |
+| A | **Dashboard**: workspace summary, recent projects, my tasks, upcoming deadlines, project progress, recent activity | Phase 1 (interface), Phase 2 (real data) | Agreed; interface and real data verified by the developer 2026-10-26 (local activity history verified 2026-10-29; the upcoming-deadline list is on the Calendar page, not on the Dashboard) |
 | B | **Workspace management**: create, view, edit, delete; list projects in a workspace | Phase 2 | Implemented (create, rename, delete, project list; verified by the developer 2026-10-25 and 2026-10-27) |
 | C | **Project management**: create, view, edit, archive or delete; description, status, progress; members as a data model only | Phase 2 | Implemented (create, edit, archive, restore, delete, calculated progress; verified 2026-10-26; members exist only as data) |
 | D | **Task management**: title, description, status, priority, deadline, labels, assignee or local responsibility field, subtasks, checklists, notes | Phase 2 (create and edit), Phase 3 (details, checklists) | Implemented, except subtasks (create, edit, mark done, reopen, delete; verified 2026-10-26). Task page with description, status, and properties verified 2026-10-28 (step 3e-1). Checklists and notes verified 2026-10-28 (step 3e-2); labels verified 2026-10-29 (step 3e-3, migration 4; filtering by label comes in Phase 4); nested subtasks are not planned for the MVP |
 | E | **Kanban board**: columns To Do, In Progress, Review, Done; move tasks; changes saved to SQLite | Phase 3 | Implemented: board page, move with buttons (verified 2026-10-27), and drag and drop between columns (verified 2026-10-30), saved to SQLite |
-| F | **Calendar and deadlines**: calendar view, upcoming list, overdue versus upcoming | Phase 3 | Implemented (month grid, upcoming list, overdue versus upcoming; verified by the developer 2026-10-27) |
+| F | **Calendar and deadlines**: calendar view, upcoming list, overdue versus upcoming | Phase 3 | Implemented (month grid, upcoming list, overdue versus upcoming; verified by the developer 2026-10-28) |
 | G | **Project documents**: notes, requirements, meeting notes, API references, UI/UX decisions | Phase 3 | Verified by the developer 2026-10-29 (step 3f, migration 5): plain-text documents of five types per project, a Documents page with search by title and filters, and a Documents section on each project page. Attachments and search inside the text are Future (Phase 4 or later) |
 | H | **Progress and activity**: completion statistics computed from stored data, local activity history | Phase 3 | Implemented: progress is calculated from real task data (verified 2026-10-26); local activity history (step 3g, migration 6) verified 2026-10-29, shown as Activity on the Dashboard, project page, and workspace page |
 | I | **Templates**: reusable project or task templates, where practical | Not scheduled in the roadmap | Agreed, not started |
-| J | **Backup and restore**: JSON export and validated import, format version, no silent overwrite | Phase 4 | Written 2026-10-30 (step 4a, awaiting the developer's test): export of all data to a JSON file, validated restore that replaces all data after a mandatory safety backup. Merge mode and automatic or encrypted backups are not planned for 1.0 |
+| J | **Backup and restore**: JSON export and validated import, format version, no silent overwrite | Phase 4 | Implemented (step 4a, verified by the developer 2026-10-30): export of all data to a JSON file, validated restore that replaces all data after a mandatory safety backup. Merge mode and automatic or encrypted backups are not planned for 1.0 |
 | K | **Local notifications**: deadline reminders once the core is stable | Phase 4 ("where appropriate") | Agreed, not started |
 
 Search and filters, error handling and validation, and testing are also listed for Phase 4.
@@ -77,7 +77,7 @@ Search and filters, error handling and validation, and testing are also listed f
 - Progress must be **derived from stored data**, not arbitrary percentages.
 - There is **no real-time collaborative editing** in the offline version.
 - Local data on one computer is **not shared** with other computers.
-- Attachments are only supported "if" needed. Whether the MVP includes them is **not decided**.
+- Attachments are not part of the current documents. Importing files into documents is planned after 1.0 (see "Documents as files and folders"); the scope of templates is not decided.
 
 ## Deferred (Agreed: do not prioritize)
 
@@ -133,17 +133,17 @@ Direction: clean, modern desktop interface; light theme; DM Sans typography; ind
 
 Screens in the Figma file: Dashboard, Workspace, Project Board, Project Overview and GitHub, Mobile Dashboard, Calendar and Deadlines, Task Details, Project Documents, Local Data and Backup. The GitHub and Mobile screens are references for **future** phases, not MVP work.
 
-**Note:** the Figma file has not been inspected for this documentation. Exact visual details must be checked in Figma before each screen is built.
+**Note:** the Figma file was inspected only through its structure (frames and names); screenshots could not be downloaded in Claude's workspace. Since 2026-10-22 the design is a reference, not a binding specification, and each deviation is mentioned when it happens.
 
 ## Open questions (Proposed or undecided)
 
-These come directly from wording in `CLAUDE.md` and need a decision before the related work starts.
+These need a decision before the related work starts.
 
-- The final public product name.
-- Whether Tailwind CSS is used (it is an "acceptable preferred option", not a requirement).
-- How the database is accessed (see [ARCHITECTURE.md](ARCHITECTURE.md)).
-- How the "current local user or profile" is represented in a single-user offline app.
-- Whether the MVP supports file attachments, and the scope of templates.
+- Whether the trademark check of the name Avenqor was or will be done (the name itself is Agreed).
+- The scope of templates (feature I).
+- Whether file attachments are supported: planned only through the Documents update after 1.0.
+
+Decided since this document was first written: the product name (Avenqor), Tailwind CSS (used), database access (the Tauri SQL plugin, see [ARCHITECTURE.md](ARCHITECTURE.md)), and the local profile (one profile stored in the database).
 
 ## MVP success criteria (Agreed)
 

@@ -282,16 +282,18 @@ export function parseBackup(fileText: string): BackupFile {
   if (!isPlainObject(data) || data.app !== "Avenqor") fail("This file is not an Avenqor backup.");
   const { formatVersion, schemaVersion, createdAt, tables } = data;
   if (typeof formatVersion !== "number" || !Number.isInteger(formatVersion)) fail("This file is not a valid backup: the format version is missing.");
-  if (formatVersion > BACKUP_FORMAT_VERSION) {
-    fail("This backup was made by a newer version of Avenqor. Update the app to restore it.");
+  if (formatVersion !== BACKUP_FORMAT_VERSION) {
+    fail(
+      `This file uses backup format ${formatVersion}, but this version of Avenqor can only restore format ${BACKUP_FORMAT_VERSION}. ` +
+        "The file may have been edited or damaged, or it may not have been made by this application.",
+    );
   }
-  if (formatVersion < BACKUP_FORMAT_VERSION) fail("This backup uses an old format that this version cannot restore.");
   if (typeof schemaVersion !== "number" || !Number.isInteger(schemaVersion)) fail("This file is not a valid backup: the schema version is missing.");
-  if (schemaVersion > BACKUP_SCHEMA_VERSION) {
-    fail("This backup comes from a newer database version. Update the app to restore it.");
-  }
-  if (schemaVersion < BACKUP_SCHEMA_VERSION) {
-    fail(`This backup comes from an older database version (${schemaVersion}) that this version cannot restore.`);
+  if (schemaVersion !== BACKUP_SCHEMA_VERSION) {
+    fail(
+      `This file contains data for database version ${schemaVersion}, but this version of Avenqor can only restore database version ${BACKUP_SCHEMA_VERSION}. ` +
+        "The file may have been edited or damaged, or it may not have been made by this application.",
+    );
   }
   if (typeof createdAt !== "string" || Number.isNaN(Date.parse(createdAt))) fail("This file is not a valid backup: the creation time is missing.");
   if (!isPlainObject(tables)) fail("This file is not a valid backup: the data is missing.");
