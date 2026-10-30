@@ -4,8 +4,6 @@
 
 <img src="Avenqor-logo.png" alt="Avenqor icon" width="128" height="128">
 
-# Avenqor
-
 **A local-first project manager for Windows.**
 Organize workspaces, projects, tasks, deadlines, and documents in one place, on your own computer, with no account and no internet.
 
