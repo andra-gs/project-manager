@@ -6,7 +6,7 @@ This file is the project's memory between sessions. It must be updated before ev
 
 ## Current state
 
-- **Phase:** Phases 0, 1, and 2 are **complete** (verified by the developer; Phase 2 closing check reported 2026-10-27). Phase 3 is **nearly complete**: every step is verified except drag and drop for the board (3b, postponed); the closing check is next. Work is on branches `phase-1-ui` (Phases 0 to 2) and `phase-3-kanban` (contains `phase-1-ui`), neither merged into `main`. `main` still holds the Phase 0 template.
+- **Phase:** Phases 0, 1, and 2 are **complete** (verified by the developer; Phase 2 closing check reported 2026-10-27). Phase 3 is **complete** (drag and drop for the board was verified 2026-10-30). Work is on branches `phase-1-ui` (Phases 0 to 2) and `phase-3-kanban` (contains `phase-1-ui`), neither merged into `main`. `main` still holds the Phase 0 template.
 - **Application code:** on `main`, the unmodified template; on `phase-3-kanban` (contains `phase-1-ui`), the app frame, design tokens, and working workspace, project, task, Kanban board, Calendar, and My Tasks features on a local SQLite database (`avenqor.db`, schema version 6, eleven tables), plus the task page with checklist, notes, and labels, project documents, and local activity history. **Git repository:** `https://github.com/andra-gs/project-manager` (public).
 - The desktop app starts in development mode and builds a Windows release on the developer's computer (details below).
 - Implemented (verified by the developer): workspaces, projects, tasks with checklists, notes, and labels, Kanban board (buttons), Calendar, My Tasks, project documents, local activity history, custom title bar, Dashboard on real data, local profile. See the MVP table in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md). Status labels are explained there too.
@@ -172,6 +172,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-29 | `npm run tauri dev` (adjustments: no "Saved info" pop-up, task actions menu), checks 1 and 2 | Passed, all as expected: the pop-up no longer appears in text boxes; the three-dot menu on each task of the project page offers Edit, Mark done or Reopen, and Delete, and each works |
 | reported 2026-10-29 | `npm run build` (actions menu) | Passed: `tsc` and Vite build (156 modules) without errors |
 | reported 2026-10-29 | Phase 3 closing check with the release program `src-tauri\target\release\project-manager.exe` (built with `npm run tauri build`), checks 1 to 4 | Passed, all as expected: custom title bar (path, drag, maximize, minimize, restore, close), Settings Database line (schema version 6, 11 tables, existing data), one round through every area (project, task, board, checklist, note, label, document, Activity), all data kept after closing and reopening. Check 5 (fresh database file) was skipped by the developer, so a fresh database with migration 6 has not been tried in the release program (a fresh database through migrations 1 to 6 was run by Claude in an in-memory SQLite database) |
+| reported 2026-10-30 | `npm run tauri dev` (step 3b drag and drop), checks 1 to 6 | Passed, all as expected: dragging between columns with highlight, saved status and progress, Activity entries, same-column drop ignored, drag by the title, click still opens the task, outside drops and dragged text ignored, arrow buttons, positions kept after restart |
+| reported 2026-10-30 | `npm run build` (step 3b) | Passed: `tsc` and Vite build (160 modules) without errors |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
@@ -215,9 +217,9 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Dashboard, local profile, and progress on real data; mock data removed (verified 2026-10-26)
   - [x] Closing check: release build with the existing and with a fresh database file (reported by the developer 2026-10-27), documentation review (2026-10-27)
   - [x] Database location decision: Roaming folder kept for now, to be revisited before a public release (Agreed by the developer 2026-10-27; see Known issues 7)
-- [x] **Phase 3:** Kanban, calendar, task details, documents, progress, activity (complete 2026-10-29 except drag and drop for the board, which is postponed; on branch `phase-3-kanban`, not yet merged into `main`)
+- [x] **Phase 3:** Kanban, calendar, task details, documents, progress, activity (complete 2026-10-30; on branch `phase-3-kanban`, not yet merged into `main`)
   - [x] 3a Kanban board with buttons to move tasks (verified 2026-10-27)
-  - [ ] 3b Drag and drop on the board (written 2026-10-30, awaiting the developer's test)
+  - [x] 3b Drag and drop on the board (verified 2026-10-30 in development mode; the release program was not reported)
   - [x] 3c Calendar and deadlines (verified 2026-10-28)
   - [x] 3d My Tasks page (verified 2026-10-28)
   - [x] Custom title bar with path (verified 2026-10-28 in development mode and 2026-10-29 in the release program)
@@ -232,18 +234,6 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**0. Developer: Windows icon check (pending).** Run `npm run tauri build` and look at the new `project-manager.exe`. If the old icon still shows, run `cargo clean` in `src-tauri` and build again; if it still looks old, restart Explorer (icon cache). Report the result.
+**0. Developer, still open (not reported):** the Windows icon check of `project-manager.exe` (`npm run tauri build`; if the old icon shows, `cargo clean` in `src-tauri` and build again, then restart Explorer), and drag and drop in the release program.
 
-**1. Developer: test drag and drop (step 3b).** `git pull origin phase-3-kanban`, then `npm run tauri dev`. The window setting changed, so stop and restart the dev command fully (do not rely on hot reload). Then:
-
-1. Project, Open board: drag a card from To Do to In Progress with the mouse. The card looks faded while dragging, the column under the pointer turns light indigo, and after the drop the card is in the new column, the counts change, and the project progress is right.
-2. Drag a card to Done and back out of Done: progress changes accordingly. Open the project page: the Activity list shows `moved task “…” from … to …` for each move.
-3. Drop a card on its own column: nothing happens (no new Activity entry).
-4. Drag by pressing on the title text: the card moves (the link does not start its own drag). A plain click on the title still opens the task page.
-5. Drop a card in the gap between columns or outside the board: nothing changes. Drag some text from a task description onto a column: nothing happens.
-6. The arrow buttons still work. Restart the app: the moved cards stay where they were dropped.
-7. `npm run build` passes, and repeat checks 1 and 6 in the release program (`npm run tauri build`), because the Windows drag setting matters most there.
-
-If dragging does not work at all on Windows, report it: the fallback is `@dnd-kit`.
-
-**2. After that:** Phase 4 (backup and restore first, then search and filters, validation review, local notifications), then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). The plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
+**1. Phase 4, step 4a: backup and restore.** Claude proposes the design first (what the backup file contains, its format and version, how restore validates and avoids overwriting data, the screens) and waits for the developer's approval; no code before that. Then: search and filters, validation review, local notifications. After Phase 4: release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
