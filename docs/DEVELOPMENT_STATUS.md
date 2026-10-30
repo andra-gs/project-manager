@@ -174,6 +174,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-29 | Phase 3 closing check with the release program `src-tauri\target\release\project-manager.exe` (built with `npm run tauri build`), checks 1 to 4 | Passed, all as expected: custom title bar (path, drag, maximize, minimize, restore, close), Settings Database line (schema version 6, 11 tables, existing data), one round through every area (project, task, board, checklist, note, label, document, Activity), all data kept after closing and reopening. Check 5 (fresh database file) was skipped by the developer, so a fresh database with migration 6 has not been tried in the release program (a fresh database through migrations 1 to 6 was run by Claude in an in-memory SQLite database) |
 | reported 2026-10-30 | `npm run tauri dev` (step 3b drag and drop), checks 1 to 6 | Passed, all as expected: dragging between columns with highlight, saved status and progress, Activity entries, same-column drop ignored, drag by the title, click still opens the task, outside drops and dragged text ignored, arrow buttons, positions kept after restart |
 | reported 2026-10-30 | `npm run build` (step 3b) | Passed: `tsc` and Vite build (160 modules) without errors |
+| run by Claude 2026-10-30 | Node (`--experimental-strip-types`) on a scratch copy of `backupFormat.ts` plus Python `sqlite3` in memory against migrations 1 to 6, with data containing quotes, semicolons, SQL comment marks, line breaks, accents, Japanese text, and an emoji; partial `tsc --noEmit` | Restore SQL: a backup of one database restored into a different populated database and into an empty one gave rows identical to the backup in all 11 tables; `PRAGMA foreign_key_check` empty; no transaction left open; a failing statement at the end of the script (a bad color) rolled everything back and the old data stayed intact. Checker: file saved and read again equal; 15 damaged files each rejected with a clear message (wrong app, newer or older format or schema, missing list, unknown value, impossible date, empty title, missing reference, repeated row, number instead of text, NUL character, label on another project's task, duplicate label name, value 2 for a yes/no, text that is not JSON); an extra unknown field was accepted and ignored. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. **Not verified here:** the Tauri plugins (dialog, fs) and the SQL plugin running a multi-statement script in one call; the Rust side was not compiled in the Claude workspace |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
@@ -229,11 +230,35 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] 3f Project documents, migration 5 (verified 2026-10-29; two small adjustments below were made after the test)
   - [x] 3g Local activity history, migration 6 (verified 2026-10-29)
   - [x] Closing check with the release program (reported 2026-10-29; the optional fresh-database check was skipped)
-- [ ] Phase 4: backup and restore, search, validation, notifications, testing
+- [ ] **Phase 4:** backup and restore, search, validation, notifications, testing (in progress)
+  - [ ] 4a Backup and restore (written 2026-10-30, awaiting the developer's test)
+  - [ ] 4b Search and filters
+  - [ ] 4c Validation review
+  - [ ] 4d Local notifications
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
 **0. Developer, still open (not reported):** the Windows icon check of `project-manager.exe` (`npm run tauri build`; if the old icon shows, `cargo clean` in `src-tauri` and build again, then restart Explorer), and drag and drop in the release program.
 
-**1. Phase 4, step 4a: backup and restore.** Claude proposes the design first (what the backup file contains, its format and version, how restore validates and avoids overwriting data, the screens) and waits for the developer's approval; no code before that. Then: search and filters, validation review, local notifications. After Phase 4: release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
+**1. Developer: test step 4a (backup and restore).** Two new packages and two new Rust crates are needed, so:
+
+```powershell
+git pull origin phase-3-kanban
+npm install
+npm run tauri dev
+```
+
+The first run downloads and compiles the new Rust crates (a few minutes). If it fails, copy the error text to Claude: the Rust side could not be compiled in the Claude workspace. Then, in Settings, "Backup and restore":
+
+1. Click "Export backup": the Windows "Save as" window opens with a name like `avenqor-backup-2026-10-30-1530.json`. Save it on the Desktop. A green message names the file and counts (workspaces, projects, tasks, documents, labels, activity entries) that match what you have. "Last backup from this computer" shows the time. Cancelling the window shows no message and creates no file.
+2. Open the file in Notepad: it is readable JSON with `"app": "Avenqor"`, `"formatVersion": 1`, `"schemaVersion": 6`, and your data. Do not edit this copy.
+3. Make some changes in the app (create a task, delete a label, edit a document).
+4. "Choose backup file", pick the file from step 1: the path, the date, and the counts appear. Nothing has changed yet (check a screen).
+5. "Restore this backup…": the window explains that everything is replaced; "Replace all data" is disabled until you click "Save safety backup…" and save a second file (for example `avenqor-safety-backup-….json`). Then "Replace all data": the message "The backup was restored. Reloading…" appears, the window reloads, and your data is exactly as in step 1 (the changes of step 3 are gone, the Activity lists are those of the backup). Check the Dashboard, a project, a task with checklist, notes, and labels, a document, and the board.
+6. Restore the safety backup the same way: the changes of step 3 are back.
+7. Bad files: choose a file that is not a backup (for example a `.json` you make in Notepad with `{"hello": 1}`, or a copy of the backup where you change `"formatVersion": 1` to `2`, or delete a closing bracket): a red message explains the problem and nothing changes. Also try cancelling the "Open" window.
+8. Settings, Database line: still `schema version 6 · 11 tables` and the counts are right. Close and reopen the app: the restored data is kept.
+9. `npm run build` passes.
+
+**2. After that:** Phase 4 continues with search and filters (4b), the validation review (4c), and local notifications (4d); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.

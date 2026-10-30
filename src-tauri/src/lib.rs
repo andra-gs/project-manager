@@ -53,6 +53,9 @@ pub fn run() {
                 .add_migrations("sqlite:avenqor.db", migrations())
                 .build(),
         )
+        // "Save as" and "Open" windows, and file access limited to the files chosen in them.
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

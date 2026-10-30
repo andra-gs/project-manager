@@ -105,7 +105,9 @@ npm run tauri build
 
 ## Where data will be stored
 
-The application keeps structured data (workspaces, projects, tasks, and the local profile) in a local SQLite database file `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor` (the app config folder, not the installation folder). Backup this file yourself until the JSON backup exists. Data on one computer is not shared with other computers. Backup and restore (JSON export and import) is planned for Phase 4.
+The application keeps structured data (workspaces, projects, tasks, and the local profile) in a local SQLite database file `avenqor.db` in `%APPDATA%\io.github.andra-gs.avenqor` (the app config folder, not the installation folder). Data on one computer is not shared with other computers. **Backup and restore** (Settings, "Backup and restore"; written 2026-10-30, awaiting the developer's test) saves all data to a JSON file you choose and can replace all data from such a file. The JSON file is plain text, so keep it somewhere safe.
+
+After pulling the backup feature, run `npm install` once (two new packages, `@tauri-apps/plugin-dialog` and `@tauri-apps/plugin-fs`); the first `npm run tauri dev` also downloads two new Rust crates. Commit the changed `package-lock.json` and `Cargo.lock` afterwards.
 
 ## Known limitations
 

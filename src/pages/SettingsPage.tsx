@@ -1,6 +1,7 @@
 import { Card } from "../components/ui/Card";
 import { ListRow } from "../components/ui/ListRow";
 import { SectionHeading } from "../components/ui/SectionHeading";
+import { BackupSection } from "../features/backup/BackupSection";
 import { ProfileEditor } from "../features/profile/ProfileEditor";
 import { WorkspaceManager } from "../features/workspaces/WorkspaceManager";
 import { useDatabaseStatus, type DatabaseStatusState } from "../hooks/useDatabaseStatus";
@@ -47,10 +48,11 @@ export function SettingsPage() {
               subtitle="Your data is kept in a database file on this computer. It is not shared with other computers."
             />
             <ListRow title="Database" subtitle={describeDatabase(database)} />
-            <ListRow title="Backup and restore" subtitle="Planned for Phase 4." />
           </div>
         </Card>
       </section>
+
+      <BackupSection />
     </div>
   );
 }

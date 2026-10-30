@@ -67,7 +67,7 @@ The roadmap in `CLAUDE.md` places the MVP features in these phases.
 | G | **Project documents**: notes, requirements, meeting notes, API references, UI/UX decisions | Phase 3 | Verified by the developer 2026-10-29 (step 3f, migration 5): plain-text documents of five types per project, a Documents page with search by title and filters, and a Documents section on each project page. Attachments and search inside the text are Future (Phase 4 or later) |
 | H | **Progress and activity**: completion statistics computed from stored data, local activity history | Phase 3 | Implemented: progress is calculated from real task data (verified 2026-10-26); local activity history (step 3g, migration 6) verified 2026-10-29, shown as Activity on the Dashboard, project page, and workspace page |
 | I | **Templates**: reusable project or task templates, where practical | Not scheduled in the roadmap | Agreed, not started |
-| J | **Backup and restore**: JSON export and validated import, format version, no silent overwrite | Phase 4 | Agreed, not started |
+| J | **Backup and restore**: JSON export and validated import, format version, no silent overwrite | Phase 4 | Written 2026-10-30 (step 4a, awaiting the developer's test): export of all data to a JSON file, validated restore that replaces all data after a mandatory safety backup. Merge mode and automatic or encrypted backups are not planned for 1.0 |
 | K | **Local notifications**: deadline reminders once the core is stable | Phase 4 ("where appropriate") | Agreed, not started |
 
 Search and filters, error handling and validation, and testing are also listed for Phase 4.
