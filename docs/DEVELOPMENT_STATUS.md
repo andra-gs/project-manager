@@ -217,7 +217,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Database location decision: Roaming folder kept for now, to be revisited before a public release (Agreed by the developer 2026-10-27; see Known issues 7)
 - [x] **Phase 3:** Kanban, calendar, task details, documents, progress, activity (complete 2026-10-29 except drag and drop for the board, which is postponed; on branch `phase-3-kanban`, not yet merged into `main`)
   - [x] 3a Kanban board with buttons to move tasks (verified 2026-10-27)
-  - [ ] 3b Drag and drop on the board (postponed)
+  - [ ] 3b Drag and drop on the board (written 2026-10-30, awaiting the developer's test)
   - [x] 3c Calendar and deadlines (verified 2026-10-28)
   - [x] 3d My Tasks page (verified 2026-10-28)
   - [x] Custom title bar with path (verified 2026-10-28 in development mode and 2026-10-29 in the release program)
@@ -232,10 +232,18 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**0. Developer: Windows icon check (pending).** In the app the logo is correct. The `.exe` and taskbar icons are set when the program is compiled: run `npm run tauri build` and look at the new `project-manager.exe`. If the old icon still shows, run `cargo clean` in `src-tauri` and build again; if it still looks old, restart Explorer to clear Windows' icon cache. Report the result.
+**0. Developer: Windows icon check (pending).** Run `npm run tauri build` and look at the new `project-manager.exe`. If the old icon still shows, run `cargo clean` in `src-tauri` and build again; if it still looks old, restart Explorer (icon cache). Report the result.
 
-**1. Discussion finished (2026-10-30).** The developer's decisions about documents as files and folders, the Whiteboard, the scope of 1.0, and the order of work are recorded in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) under "Version 1.0 and the plans after it" (Future; details Agreed). No code or design for them is started.
+**1. Developer: test drag and drop (step 3b).** `git pull origin phase-3-kanban`, then `npm run tauri dev`. The window setting changed, so stop and restart the dev command fully (do not rely on hot reload). Then:
 
-**2. Next step: drag and drop on the Kanban board (step 3b)**, the first item of the 1.0 scope. Plan, to be approved first: `@dnd-kit/core` (pointer-based drag and drop with keyboard support; the one new dependency, explained before installing), cards dragged between columns, the status saved through the existing `setTaskStatus` (no database change), arrow buttons kept as the keyboard and screen-reader fallback, the target column highlighted, the card returning with an error message if saving fails. Known risk to test in the release program: Tauri's window option `dragDropEnabled` can intercept drags on Windows.
+1. Project, Open board: drag a card from To Do to In Progress with the mouse. The card looks faded while dragging, the column under the pointer turns light indigo, and after the drop the card is in the new column, the counts change, and the project progress is right.
+2. Drag a card to Done and back out of Done: progress changes accordingly. Open the project page: the Activity list shows `moved task “…” from … to …` for each move.
+3. Drop a card on its own column: nothing happens (no new Activity entry).
+4. Drag by pressing on the title text: the card moves (the link does not start its own drag). A plain click on the title still opens the task page.
+5. Drop a card in the gap between columns or outside the board: nothing changes. Drag some text from a task description onto a column: nothing happens.
+6. The arrow buttons still work. Restart the app: the moved cards stay where they were dropped.
+7. `npm run build` passes, and repeat checks 1 and 6 in the release program (`npm run tauri build`), because the Windows drag setting matters most there.
 
-**3. After that:** Phase 4 (backup and restore first, then search and filters, validation review, local notifications), then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
+If dragging does not work at all on Windows, report it: the fallback is `@dnd-kit`.
+
+**2. After that:** Phase 4 (backup and restore first, then search and filters, validation review, local notifications), then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). The plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.

@@ -68,6 +68,7 @@ export function BoardPage() {
           <BoardColumn
             key={status}
             title={COLUMN_TITLES[status]}
+            status={status}
             tasks={project.tasks.filter((task) => task.status === status)}
             disabled={busy}
             onMove={(taskId, nextStatus) => void move(taskId, nextStatus)}
