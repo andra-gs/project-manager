@@ -93,12 +93,37 @@ Real-time cross-device sync, cloud accounts and authentication, online chat and 
 
 Tauri does not automatically produce a complete mobile application. Mobile options will be evaluated when that phase begins.
 
-## Ideas from the developer (Proposed: under discussion, not agreed, not scheduled)
+## Version 1.0 and the plans after it (Future; details Agreed 2026-10-30)
 
-Both ideas were described by the developer on 2026-10-29 as concepts for **after the application is finished**. Nothing here is a requirement or a plan yet; the details are being clarified with the developer.
+**Order of work (Agreed 2026-10-30).** First finish the application up to release **1.0**. Only after 1.0 does the developer decide whether to build the mobile version first or to update Documents and the Whiteboard. Nothing in the two sections below is built before then, and the details may still change when that work starts.
 
-- **Documents as files and folders.** Documents would have a file format (for example `.md`, `.txt`, `.html`) and be shown as a tree of folders and files like a GitHub repository, separated by workspace; creating a project would automatically create a folder with the project's name. This would replace or extend the current plain-text documents (step 3f, Implemented).
-- **Whiteboard.** A new page with a grid background (square cells, like a spreadsheet). The user could create widgets (sticky-note style, resizable with a minimum of 2x2 cells, containing text), drag them around, connect them with lines ("red string") to other widgets, draw flowcharts, and zoom the page in and out.
+**Scope of 1.0 (Agreed 2026-10-30):** Phase 4 complete (backup and restore, search and filters, validation review, local notifications); drag and drop on the Kanban board (step 3b); release preparation (a tested installer, the decision on the database folder now in Roaming, trademark check of the name Avenqor, customizing the installer and uninstaller). **Not in 1.0:** GitHub integration (Phase 5) and online features (Phase 6).
+
+**Installer and uninstaller look (Agreed as a 1.0 item 2026-10-30; not started).** Tauri's NSIS installer (the `-setup.exe`) can be customized in `tauri.conf.json` under `bundle > windows > nsis`: header and sidebar pictures (`headerImage` 150x57 px, `sidebarImage` 164x314 px), installer and uninstaller icons, a separate header picture for the uninstaller, the language list, the Start Menu folder, and a hooks file (`installerHooks`) or a full custom template for more. The MSI installer has fewer options (banner and dialog pictures). The pages and layout of the NSIS wizard cannot be redesigned freely without a custom template, which is more work. (Source: the Tauri `NsisConfig` reference, read 2026-10-30.)
+
+### Documents as files and folders (Future)
+
+- Documents become **files** with a format and are shown as a **tree of folders and files** like a GitHub repository, **separated by workspace**.
+- Creating a project **automatically creates a folder** with the project's name inside its workspace. Only that folder is automatic.
+- One compact "New" button offers **New folder** and **New file**. Folders may contain folders, and files may sit directly at the top level of a workspace.
+- Formats: `.md`, `.txt`, `.html`, and others. **`.md` has two modes: editing the raw text and a rendered preview.** Other text formats have raw text editing only.
+- Files can be **imported from the computer**. PDF and image files have **preview only**. Imported files are stored **inside the SQLite database** (BLOB), so there is one data file and backups stay simple. A limit of **10 MB per file** with a clear message (Agreed). Trade-offs noted: the database grows, JSON backups become large, and large files are slower to read through the SQL plugin; `CLAUDE.md` asks to avoid large binaries in the database unless there is a clear reason, and the developer's reason is a single data file.
+- Today's documents (step 3f) are **migrated to `.txt` files** in their project's folder, and each file **keeps its type as a tag** (Notes, Requirements, Meeting notes, API reference, UI/UX decision).
+- Deleting a project **does not delete its folder**: it stays as an ordinary folder in the workspace with all its contents. When the project is renamed, the folder name follows while it is still linked. Moving a project to another workspace **moves the folder and its contents**. Deleting a workspace deletes all its folders and files, after a confirmation that names the number of files.
+- Open for later: how `.html` is shown (as code, or rendered, which needs a security decision), and how the SQL plugin copes with 10 MB files (to be tested before building).
+
+### Whiteboard (Future)
+
+A simple whiteboard in the spirit of Miro or FigJam.
+
+- **One whiteboard per workspace.** The canvas is **unlimited** (pan in any direction) if technically possible, has a **square grid background** (one cell like a spreadsheet), and can be **zoomed** in and out.
+- **Sticky-note widgets** (text), resizable with a **minimum of 2x2 cells**, draggable. They can be connected to other widgets with **arrow lines or "cables"** (right-angled arrow lines).
+- **Flowchart items** are a separate kind of item from sticky notes, inspired by the software Flowgorithm: the basic shapes (start/end oval, input/output parallelogram, process box, decision diamond, loop) joined with right-angled cables with arrowheads.
+- **Icon items** for the target audience (students, programmers, networking): server, database, PC, laptop, phone, router, switch, firewall, cloud, user, folder, code (Agreed list; may grow).
+- **Links in a widget:** typing `@` and a project or task name shows suggestions and creates a link that opens that page. When the task or project is deleted, the link becomes plain grey text.
+- Also wanted: **undo/redo, selecting several widgets at once, and widget colors**.
+- Stored in the **database** (positions, sizes, content) and included in backups. **Export to an image is postponed**, to be done later if hard.
+- Open for later: the canvas library (a technical decision with long-term consequences, to be explained and approved before building), and how many whiteboard features fit a first version.
 
 ## Design reference (Agreed)
 
