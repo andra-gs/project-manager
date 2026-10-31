@@ -230,7 +230,7 @@ There is no automated test suite yet. Features are tested by hand and the result
 
 **Version 1.0** means Phase 4 plus release preparation: a tested installer, a decision on where the database folder lives, a trademark check of the name, and a custom installer look. After 1.0, the plan is to choose between a mobile version and a bigger update: documents as files and folders, and a whiteboard for each workspace (details in [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)). GitHub and online features are later phases and are **not** part of 1.0.
 
-Known limitations today: no subtasks, no search across everything yet, no reminders or notifications yet, no templates, and single-user only. The database folder is in Roaming (see Known issues in the status file).
+Known limitations today: no subtasks, no reminders or notifications yet, no templates, and single-user only. The database folder is in Roaming (see Known issues in the status file).
 
 ## Documentation
 

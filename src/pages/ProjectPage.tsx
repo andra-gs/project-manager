@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { boardPath, workspacePath } from "../app/navigation";
+import { activityPath, boardPath, workspacePath } from "../app/navigation";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
@@ -113,7 +113,7 @@ export function ProjectPage() {
 
       <ProjectLabelsSection labels={project.labels} onCreate={createLabel} onUpdate={updateLabel} onDelete={deleteLabel} />
 
-      <ActivitySection entries={project.activity} />
+      <ActivitySection entries={project.activity} viewAllTo={activityPath({ kind: "project", id: project.id })} />
 
       <div className="flex flex-col gap-2 border-t border-border pt-6">
         <div className="flex gap-2">

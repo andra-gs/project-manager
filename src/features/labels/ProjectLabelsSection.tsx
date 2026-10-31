@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ActionMenu } from "../../components/ui/ActionMenu";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
@@ -64,20 +65,20 @@ export function ProjectLabelsSection({ labels, onCreate, onUpdate, onDelete }: P
                 subtitle={taskCountText(label.taskCount)}
                 leading={<Badge tone={label.color}>{colorName(label.color)}</Badge>}
                 trailing={
-                  <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => setEditing(label)}>
-                      Edit
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => {
-                        setDeleting(label);
-                        setError(undefined);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  <ActionMenu
+                    label={`Actions for label ${label.name}`}
+                    items={[
+                      { label: "Edit", onSelect: () => setEditing(label) },
+                      {
+                        label: "Delete",
+                        tone: "danger",
+                        onSelect: () => {
+                          setDeleting(label);
+                          setError(undefined);
+                        },
+                      },
+                    ]}
+                  />
                 }
               />
             ))}

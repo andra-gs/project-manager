@@ -4,6 +4,7 @@ import { useLocalProfile } from "../../hooks/useLocalProfile";
 import { useProjectDetail } from "../../hooks/useProjectDetail";
 import { useTaskDetail } from "../../hooks/useTaskDetail";
 import { useWorkspaceDetail } from "../../hooks/useWorkspaceDetail";
+import { SearchBox } from "../../features/search/SearchBox";
 import { Avatar } from "../ui/Avatar";
 
 export function TopBar() {
@@ -23,11 +24,14 @@ export function TopBar() {
         <h1 className="truncate text-title font-bold">{heading.title}</h1>
         <p className="truncate text-small text-ink-muted">{heading.subtitle}</p>
       </div>
-      <div className="flex shrink-0 items-center gap-3">
-        <Avatar initials={profile.initials} />
-        <div>
-          <p className="text-body font-semibold">{profile.displayName}</p>
-          <p className="text-caption text-ink-muted">Local profile</p>
+      <div className="flex shrink-0 items-center gap-5">
+        <SearchBox />
+        <div className="flex items-center gap-3">
+          <Avatar initials={profile.initials} />
+          <div>
+            <p className="text-body font-semibold">{profile.displayName}</p>
+            <p className="text-caption text-ink-muted">Local profile</p>
+          </div>
         </div>
       </div>
     </header>

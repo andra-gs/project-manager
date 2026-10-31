@@ -177,6 +177,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | run by Claude 2026-10-30 | Node (`--experimental-strip-types`) on a scratch copy of `backupFormat.ts` plus Python `sqlite3` in memory against migrations 1 to 6, with data containing quotes, semicolons, SQL comment marks, line breaks, accents, Japanese text, and an emoji; partial `tsc --noEmit` | Restore SQL: a backup of one database restored into a different populated database and into an empty one gave rows identical to the backup in all 11 tables; `PRAGMA foreign_key_check` empty; no transaction left open; a failing statement at the end of the script (a bad color) rolled everything back and the old data stayed intact. Checker: file saved and read again equal; 15 damaged files each rejected with a clear message (wrong app, newer or older format or schema, missing list, unknown value, impossible date, empty title, missing reference, repeated row, number instead of text, NUL character, label on another project's task, duplicate label name, value 2 for a yes/no, text that is not JSON); an extra unknown field was accepted and ignored. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. **Not verified here:** the Tauri plugins (dialog, fs) and the SQL plugin running a multi-statement script in one call; the Rust side was not compiled in the Claude workspace |
 | reported 2026-10-30 | `npm run tauri dev` (step 4a backup and restore), checks 1 to 9 | Passed, all as expected: export with the Windows save window and the count message, readable JSON file, restore preview, safety backup required before "Replace all data", restore and reload, restoring the safety backup, rejection of bad files (not a backup, wrong `formatVersion`, broken JSON), Database line unchanged, data kept after restart. Developer's change request: the message for a wrong `formatVersion` suggested updating the app, which is misleading; reworded 2026-10-31 (the file may be edited, damaged, or not from Avenqor), not yet re-tested |
 | reported 2026-10-30 | `npm run build` (step 4a) | Passed: `tsc` and Vite build (172 modules) without errors |
+| run by Claude 2026-10-31 | Python `sqlite3` in memory against migrations 1 to 6 with the four search queries of `searchRepository.ts`; Node (`--experimental-strip-types`) on the pure functions of `searchService.ts` (`cleanSearchText`, `toLikePattern`, `makeSnippet`); partial `tsc --noEmit` | SQL: a match in a name, description, title, or text is found regardless of letter case; `50%` and `_menu` match only those characters after escaping; no match gives empty lists. Functions: text under 2 characters gives no search, spaces are collapsed, `%` and `_` are escaped, the snippet is cut with an ellipsis and is empty when the text is not in the body. `tsc`: no errors except the known noise. The app was not built or run in the Claude workspace, so the screens (search box, activity page, label menu, bar colors) are untested |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
 
@@ -193,7 +194,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 7. **Database folder is Roaming (found 2026-10-25; keeping it for now was Agreed 2026-10-27, revisit before a public release).** The plugin puts `avenqor.db` in `%APPDATA%` (Roaming), the app config folder. On a company or school computer with roaming profiles, Windows may copy that folder to a server at logon. For a personal computer this is harmless. Moving it to the Local folder would need a Rust-side path setting; decide before release.
 8. **Open decisions** are listed in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Open questions) and [ARCHITECTURE.md](ARCHITECTURE.md): the Avenqor trademark check, the scope of attachments and templates, and the release preparation items.
 9. **New packages need a lockfile commit.** Claude's workspace cannot reach the npm registry or build Rust, so `package-lock.json` and `Cargo.lock` change only on the developer's computer after `npm install` and the first `npm run tauri dev`. They must be committed by the developer.
-10. **Drag and drop does not work in the release program (reported 2026-10-31).** It works in `npm run tauri dev` (verified 2026-10-30) but not in `project-manager.exe` built with `npm run tauri build`, also after rebuilding. Cause not known. The code and `tauri.conf.json` are the same in both; differences are the page address (`http://tauri.localhost` instead of `http://localhost:1420`), the CSP, minified code, and the configuration embedded at compile time. Claude's first suspect is an outdated compiled program (the embedded window setting `dragDropEnabled: false` not applied), to be checked with a clean build. The arrow buttons still work.
+10. **Drag and drop in the release program (reported broken 2026-10-31, working the same day).** After a clean rebuild the release program drags cards correctly (reported by the developer). The cause was most likely an outdated compiled program, but this was not confirmed.
 
 ## Roadmap checklist
 
@@ -236,22 +237,30 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Closing check with the release program (reported 2026-10-29; the optional fresh-database check was skipped)
 - [ ] **Phase 4:** backup and restore, search, validation, notifications, testing (in progress)
   - [x] 4a Backup and restore (verified 2026-10-30; the wording of the wrong-version messages was changed afterwards, 2026-10-31, and not yet re-tested)
-  - [ ] 4b Search and filters
+  - [ ] 4b Search and filters (global search box written 2026-10-31, awaiting the developer's test; the filters on the project page's task list are not written yet)
   - [ ] 4c Validation review
   - [ ] 4d Local notifications
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
-**0. Developer:** the Windows icon of `project-manager.exe` and of the taskbar is verified (reported 2026-10-31, in the release program and in `npm run tauri dev`). Drag and drop in the release program fails (Known issues 10); diagnosis steps were sent on 2026-10-31.
+**0. Developer, done:** the Windows icon of `project-manager.exe` and the taskbar (reported 2026-10-31), drag and drop in the release program (reported 2026-10-31), and the new screenshots in `docs/screenshots/` (pushed 2026-10-31).
 
-**1. Developer: pull and check the reworded backup message, the new README, and the updated documents.**
+**1. Developer: test step 4b and the three design adjustments (written 2026-10-31).**
 
 ```powershell
 git pull origin phase-3-kanban
 npm run tauri dev
 ```
 
-In Settings, "Backup and restore", choose a copy of a backup where `"formatVersion": 1` is changed to `2`: the red message must say the file uses backup format 2 and that this version restores format 1 only, without telling you to update the app. Then add the screenshots listed in the README (`docs/screenshots/`).
+1. **Progress bars:** on the Dashboard, a workspace page, and a project page, every bar is the accent color.
+2. **Activity:** the Dashboard, a workspace page, and a project page show at most 8 entries. When there are more, "View all activity" appears at the right of the heading (with 8 or fewer, no link). The link opens a full list (50 at a time, "Show 50 more" at the bottom), newest first; the title bar path reads for example `Workspace / Activity`. An empty history shows "No activity yet." Try the three addresses (Dashboard, workspace, project).
+3. **Labels:** in the Labels section of a project, each label has one three-dot button with Edit and Delete (Delete in red, still asks first), like the task list.
+4. **Search:** the box at the top right shows "Search…  Ctrl+K". Ctrl+K from any page jumps into it.
+   - One letter shows "Type at least 2 characters."; two or more letters show results grouped as Workspaces, Projects, Tasks, Documents (at most 6 per group), found by name, description, or document text; upper or lower case does not matter. A word only in a document's text shows a short piece of the text under the title.
+   - Arrow keys move through the results, Enter opens the highlighted one, a click opens it, Escape clears the box, a click outside closes the list. Opening a result clears the box.
+   - A search with no match shows `No results for "…".`. Typing `%` or `_` looks for those characters (it does not match everything). An archived project shows "Archived".
+   - The box fits at the smallest window (960x600), and the list stays above the page.
+5. `npm run build` passes.
 
-**2. Claude, next:** Phase 4 continues with search and filters (4b), the validation review (4c), and local notifications (4d); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
+**2. Claude, next:** Phase 4 continues with the task filters on the project page (the rest of 4b), the validation review (4c), and local notifications (4d); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.

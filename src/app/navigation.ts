@@ -1,6 +1,7 @@
 import { matchPath } from "react-router";
 import type { IconName } from "../components/icons/Icon";
 import { pluralize } from "../lib/text";
+import type { ActivityScope } from "../types/activity";
 import type { ProjectDetail } from "../types/project";
 import type { TaskDetail } from "../types/task";
 import type { WorkspaceDetail } from "../types/workspace";
@@ -30,6 +31,9 @@ const PROJECT_PATH_PATTERN = "/projects/:projectId";
 const BOARD_PATH_PATTERN = "/projects/:projectId/board";
 const TASK_PATH_PATTERN = "/tasks/:taskId";
 const DOCUMENT_PATH_PATTERN = "/documents/:documentId";
+const ALL_ACTIVITY_PATH_PATTERN = "/activity";
+const WORKSPACE_ACTIVITY_PATH_PATTERN = "/workspaces/:workspaceId/activity";
+const PROJECT_ACTIVITY_PATH_PATTERN = "/projects/:projectId/activity";
 
 export function workspacePath(workspaceId: string): string {
   return `/workspaces/${workspaceId}`;
@@ -41,7 +45,17 @@ export function projectPath(projectId: string): string {
 
 // The workspace or project id in an address, or undefined when the address is another page.
 export function getWorkspaceIdFromPath(pathname: string): string | undefined {
-  return matchPath(WORKSPACE_PATH_PATTERN, pathname)?.params.workspaceId;
+  return (
+    matchPath(WORKSPACE_PATH_PATTERN, pathname)?.params.workspaceId ??
+    matchPath(WORKSPACE_ACTIVITY_PATH_PATTERN, pathname)?.params.workspaceId
+  );
+}
+
+// The address of the full activity list of everything, one workspace, or one project.
+export function activityPath(scope: ActivityScope): string {
+  if (scope.kind === "workspace") return `/workspaces/${scope.id}/activity`;
+  if (scope.kind === "project") return `/projects/${scope.id}/activity`;
+  return "/activity";
 }
 
 export function taskPath(taskId: string): string {
@@ -64,11 +78,12 @@ export function boardPath(projectId: string): string {
   return `/projects/${projectId}/board`;
 }
 
-// Both the project page and its board belong to one project, so both give its id.
+// The project page, its board, and its activity list all belong to one project, so all give its id.
 export function getProjectIdFromPath(pathname: string): string | undefined {
   return (
     matchPath(PROJECT_PATH_PATTERN, pathname)?.params.projectId ??
-    matchPath(BOARD_PATH_PATTERN, pathname)?.params.projectId
+    matchPath(BOARD_PATH_PATTERN, pathname)?.params.projectId ??
+    matchPath(PROJECT_ACTIVITY_PATH_PATTERN, pathname)?.params.projectId
   );
 }
 
@@ -91,7 +106,12 @@ export function getBreadcrumbs(pathname: string, context: BreadcrumbContext): Br
   const item = [...MAIN_NAV, ...FOOTER_NAV].find((navItem) => navItem.path === pathname);
   if (item) return [{ label: item.label }];
 
+  if (matchPath(ALL_ACTIVITY_PATH_PATTERN, pathname)) return [{ label: "Activity" }];
+
   const workspaceId = getWorkspaceIdFromPath(pathname);
+  if (workspaceId && matchPath(WORKSPACE_ACTIVITY_PATH_PATTERN, pathname)) {
+    return [{ label: context.workspaceName ?? "Workspace", to: workspacePath(workspaceId) }, { label: "Activity" }];
+  }
   if (workspaceId) return [{ label: context.workspaceName ?? "Workspace" }];
 
   if (getDocumentIdFromPath(pathname)) {
@@ -114,9 +134,11 @@ export function getBreadcrumbs(pathname: string, context: BreadcrumbContext): Br
     const trail: Breadcrumb[] = [];
     if (project) trail.push({ label: context.workspaceName ?? "Workspace", to: workspacePath(project.workspaceId) });
     const onBoard = matchPath(BOARD_PATH_PATTERN, pathname) !== null;
+    const onActivity = matchPath(PROJECT_ACTIVITY_PATH_PATTERN, pathname) !== null;
     const projectLabel = project?.name ?? "Project";
-    trail.push(onBoard ? { label: projectLabel, to: projectPath(projectId) } : { label: projectLabel });
+    trail.push(onBoard || onActivity ? { label: projectLabel, to: projectPath(projectId) } : { label: projectLabel });
     if (onBoard) trail.push({ label: "Board" });
+    if (onActivity) trail.push({ label: "Activity" });
     return trail;
   }
   return [{ label: "Page not found" }];
@@ -135,6 +157,13 @@ export function getPageHeading(pathname: string, context: HeadingContext): { tit
     return { title: item.label, subtitle: item.subtitle };
   }
   const { workspace, project, task } = context;
+  if (matchPath(ALL_ACTIVITY_PATH_PATTERN, pathname)) return { title: "Activity", subtitle: "Everything that changed, newest first" };
+  if (matchPath(WORKSPACE_ACTIVITY_PATH_PATTERN, pathname)) {
+    return { title: "Activity", subtitle: workspace ? `${workspace.name} · newest first` : "Newest first" };
+  }
+  if (matchPath(PROJECT_ACTIVITY_PATH_PATTERN, pathname)) {
+    return { title: "Activity", subtitle: project ? `${project.name} · newest first` : "Newest first" };
+  }
   if (getDocumentIdFromPath(pathname)) return { title: "Documents", subtitle: "Notes and project documentation" };
   if (getTaskIdFromPath(pathname)) {
     return { title: "Task Details", subtitle: task ? `${task.projectName} · ${task.workspaceName}` : "" };

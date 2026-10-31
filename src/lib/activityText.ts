@@ -1,6 +1,10 @@
 import { TASK_STATUS_LABELS, type TaskStatus } from "../types/task";
 
 // The kinds of history entry. They match the values stored in the database (migration 6).
+// How many entries a summary on the Dashboard, a workspace page, or a project page shows. A link to the
+// full list appears when there are more.
+export const ACTIVITY_PREVIEW_COUNT = 8;
+
 export type ActivityAction =
   | "workspace_created"
   | "workspace_renamed"
