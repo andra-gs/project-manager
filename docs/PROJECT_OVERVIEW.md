@@ -70,7 +70,7 @@ The roadmap in `CLAUDE.md` places the MVP features in these phases.
 | J | **Backup and restore**: JSON export and validated import, format version, no silent overwrite | Phase 4 | Implemented (step 4a, verified by the developer 2026-10-30): export of all data to a JSON file, validated restore that replaces all data after a mandatory safety backup. Merge mode and automatic or encrypted backups are not planned for 1.0 |
 | K | **Local notifications**: deadline reminders once the core is stable | Phase 4 ("where appropriate") | Agreed, not started |
 
-Search and filters (a search box in the top bar was written 2026-10-31, awaiting test), error handling and validation, and testing are also listed for Phase 4.
+Search and filters (search box in the top bar verified 2026-10-31; task filters on the project page awaiting test), error handling and validation, and testing are also listed for Phase 4.
 
 ### Rules that shape the MVP
 

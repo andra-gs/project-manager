@@ -1,6 +1,6 @@
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/taskRepository";
-import { TASK_STATUSES, type TaskDetail, type TaskPriority, type TaskStatus } from "../types/task";
+import { TASK_STATUSES, type TaskDetail, type TaskItem, type TaskPriority, type TaskStatus } from "../types/task";
 import { getLocalProfileId } from "./profileService";
 
 export const TASK_TITLE_MAX_LENGTH = 120;
@@ -95,4 +95,28 @@ export async function setTaskDone(id: string, done: boolean): Promise<void> {
 export async function deleteTask(id: string): Promise<void> {
   const deleted = await repository.deleteTask(id);
   if (!deleted) throw new ValidationError("This task no longer exists.");
+}
+
+// Choices for the task list of a project. "all" means no limit on that point.
+export interface TaskFilters {
+  status: TaskStatus | "all";
+  priority: TaskPriority | "all";
+  // A label id, or "all".
+  labelId: string;
+}
+
+export const NO_TASK_FILTERS: TaskFilters = { status: "all", priority: "all", labelId: "all" };
+
+export function hasTaskFilters(filters: TaskFilters): boolean {
+  return filters.status !== "all" || filters.priority !== "all" || filters.labelId !== "all";
+}
+
+// The tasks that match every choice, in the same order.
+export function filterTasks(tasks: TaskItem[], filters: TaskFilters): TaskItem[] {
+  return tasks.filter(
+    (task) =>
+      (filters.status === "all" || task.status === filters.status) &&
+      (filters.priority === "all" || task.priority === filters.priority) &&
+      (filters.labelId === "all" || task.labels.some((label) => label.id === filters.labelId)),
+  );
 }
