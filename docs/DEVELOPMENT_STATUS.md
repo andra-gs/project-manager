@@ -184,6 +184,8 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-31 | `npm run build` (step 4b task filters) | Passed: `tsc` and Vite build (180 modules) without errors |
 | reported 2026-10-31 | Browser inspector (Issues) in the app | Message "A form field element should have an id or name attribute", pointing at the search box. Fixed 2026-10-31 (`id` and `name` added); not re-checked |
 | run by Claude 2026-10-31 | Node (`--experimental-strip-types`) on a scratch copy of `hasVisibleText`; partial `tsc --noEmit` | Empty text, spaces, and zero-width characters give false; letters, Japanese text, and an emoji give true. `tsc`: no errors except the known noise. The services and screens were not run |
+| reported 2026-10-31 | `npm run tauri dev` (step 4c validation fix, pencil icon for checklist, note action menu, search box id), checks 1 to 4 | Passed, all as expected; the inspector no longer shows the form-field issue |
+| reported 2026-10-31 | `npm run build` (step 4c) | Passed: `tsc` and Vite build (180 modules) without errors |
 | run by Claude 2026-10-31 | Python `sqlite3` in memory against migrations 1 to 6 with the four search queries of `searchRepository.ts`; Node (`--experimental-strip-types`) on the pure functions of `searchService.ts` (`cleanSearchText`, `toLikePattern`, `makeSnippet`); partial `tsc --noEmit` | SQL: a match in a name, description, title, or text is found regardless of letter case; `50%` and `_menu` match only those characters after escaping; no match gives empty lists. Functions: text under 2 characters gives no search, spaces are collapsed, `%` and `_` are escaped, the snippet is cut with an ellipsis and is empty when the text is not in the body. `tsc`: no errors except the known noise. The app was not built or run in the Claude workspace, so the screens (search box, activity page, label menu, bar colors) are untested |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
@@ -245,7 +247,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 - [ ] **Phase 4:** backup and restore, search, validation, notifications, testing (in progress)
   - [x] 4a Backup and restore (verified 2026-10-30; the wording of the wrong-version messages was changed afterwards, 2026-10-31, and not yet re-tested)
   - [x] 4b Search and filters (verified 2026-10-31: search box and the task filters)
-  - [ ] 4c Validation review (review done and first fix written 2026-10-31, awaiting the developer's test)
+  - [x] 4c Validation review (verified 2026-10-31)
   - [ ] 4d Local notifications
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
@@ -253,17 +255,6 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 **0. Developer, done:** the Windows icon of `project-manager.exe` and the taskbar (reported 2026-10-31), drag and drop in the release program (reported 2026-10-31), and the new screenshots in `docs/screenshots/` (pushed 2026-10-31).
 
-**1. Developer: test the two design adjustments and the validation fix (written 2026-10-31).**
+**1. Claude, waiting for the developer's decision on step 4d (local notifications):** where the reminder settings are stored, and whether reminders work only while the app is open. Design sent 2026-10-31; no code written yet.
 
-```powershell
-git pull origin phase-3-kanban
-npm run tauri dev
-```
-
-1. **Checklist:** each item has a pencil icon (tooltip "Edit item") instead of the Edit button; it still opens the edit form, and the cross still deletes.
-2. **Notes:** each note has one three-dot button with Edit and Delete (Delete in red, still asks first), like the task list.
-3. **Inspector:** open the inspector (Issues) again; the message about the form field should be gone for the search box.
-4. **Visually empty text:** try to create a workspace, project, task, label, checklist item, note, or document with a title that is only spaces, and one that is made only of invisible characters (paste `​​​`, three zero-width spaces, from this line: `[​​​]`). Each must show its usual "Enter …" message. Normal names, accents, Japanese text, and emoji still work.
-5. `npm run build` passes.
-
-**2. Claude, next:** after 4c is verified, local notifications (4d). The findings of the validation review are in ARCHITECTURE.md (step notes); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
+**2. After 4d:** the findings of the validation review are in ARCHITECTURE.md (step notes); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
