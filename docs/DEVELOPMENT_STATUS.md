@@ -193,6 +193,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 7. **Database folder is Roaming (found 2026-10-25; keeping it for now was Agreed 2026-10-27, revisit before a public release).** The plugin puts `avenqor.db` in `%APPDATA%` (Roaming), the app config folder. On a company or school computer with roaming profiles, Windows may copy that folder to a server at logon. For a personal computer this is harmless. Moving it to the Local folder would need a Rust-side path setting; decide before release.
 8. **Open decisions** are listed in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Open questions) and [ARCHITECTURE.md](ARCHITECTURE.md): the Avenqor trademark check, the scope of attachments and templates, and the release preparation items.
 9. **New packages need a lockfile commit.** Claude's workspace cannot reach the npm registry or build Rust, so `package-lock.json` and `Cargo.lock` change only on the developer's computer after `npm install` and the first `npm run tauri dev`. They must be committed by the developer.
+10. **Drag and drop does not work in the release program (reported 2026-10-31).** It works in `npm run tauri dev` (verified 2026-10-30) but not in `project-manager.exe` built with `npm run tauri build`, also after rebuilding. Cause not known. The code and `tauri.conf.json` are the same in both; differences are the page address (`http://tauri.localhost` instead of `http://localhost:1420`), the CSP, minified code, and the configuration embedded at compile time. Claude's first suspect is an outdated compiled program (the embedded window setting `dragDropEnabled: false` not applied), to be checked with a clean build. The arrow buttons still work.
 
 ## Roadmap checklist
 
@@ -242,7 +243,7 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 ## Next task (exact)
 
-**0. Developer, still open (not reported):** the Windows icon check of `project-manager.exe` (`npm run tauri build`; if the old icon shows, `cargo clean` in `src-tauri` and build again, then restart Explorer), and drag and drop in the release program.
+**0. Developer:** the Windows icon of `project-manager.exe` and of the taskbar is verified (reported 2026-10-31, in the release program and in `npm run tauri dev`). Drag and drop in the release program fails (Known issues 10); diagnosis steps were sent on 2026-10-31.
 
 **1. Developer: pull and check the reworded backup message, the new README, and the updated documents.**
 
