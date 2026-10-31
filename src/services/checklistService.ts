@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/checklistRepository";
 import type { ChecklistItem } from "../types/taskExtras";
@@ -6,7 +7,7 @@ export const CHECKLIST_ITEM_MAX_LENGTH = 120;
 
 function validateText(input: string): string {
   const text = input.trim();
-  if (text.length === 0) throw new ValidationError("Enter the checklist item.", "text");
+  if (!hasVisibleText(text)) throw new ValidationError("Enter the checklist item.", "text");
   if (text.length > CHECKLIST_ITEM_MAX_LENGTH) {
     throw new ValidationError(`The item can have at most ${CHECKLIST_ITEM_MAX_LENGTH} characters.`, "text");
   }

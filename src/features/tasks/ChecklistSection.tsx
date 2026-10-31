@@ -109,17 +109,16 @@ export function ChecklistSection({ taskId }: { taskId: string }) {
                         onChange={(event) => void runAction(() => setItemDone(item.id, event.target.checked))}
                       />
                       <div className="flex shrink-0 gap-2">
-                        <Button
-                          variant="secondary"
+                        <IconButton
+                          icon="pencil"
+                          label="Edit item"
                           disabled={busy}
                           onClick={() => {
                             setEditingId(item.id);
                             setEditText(item.text);
                             setEditError(undefined);
                           }}
-                        >
-                          Edit
-                        </Button>
+                        />
                         <IconButton
                           icon="close"
                           label="Delete item"

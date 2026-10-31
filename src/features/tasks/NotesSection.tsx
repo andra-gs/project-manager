@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { ActionMenu } from "../../components/ui/ActionMenu";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
@@ -122,29 +123,28 @@ export function NotesSection({ taskId }: { taskId: string }) {
                           {note.authorName ?? "Unknown"} · {formatDateTime(note.createdAt)}
                           {note.updatedAt !== note.createdAt && " · edited"}
                         </p>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="secondary"
-                            disabled={busy}
-                            onClick={() => {
-                              setEditingId(note.id);
-                              setEditBody(note.body);
-                              setEditError(undefined);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="danger"
-                            disabled={busy}
-                            onClick={() => {
-                              setDeleting(note);
-                              setDeleteError(undefined);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </div>
+                        <ActionMenu
+                          label="Actions for this note"
+                          disabled={busy}
+                          items={[
+                            {
+                              label: "Edit",
+                              onSelect: () => {
+                                setEditingId(note.id);
+                                setEditBody(note.body);
+                                setEditError(undefined);
+                              },
+                            },
+                            {
+                              label: "Delete",
+                              tone: "danger",
+                              onSelect: () => {
+                                setDeleting(note);
+                                setDeleteError(undefined);
+                              },
+                            },
+                          ]}
+                        />
                       </div>
                     </div>
                   )}

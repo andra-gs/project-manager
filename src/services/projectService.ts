@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { ValidationError } from "../lib/errors";
 import { calculateProgress } from "../lib/progress";
 import * as labelRepository from "../repositories/labelRepository";
@@ -12,7 +13,7 @@ export const PROJECT_DESCRIPTION_MAX_LENGTH = 300;
 function validateProjectFields(nameInput: string, descriptionInput: string): { name: string; description: string } {
   const name = nameInput.trim();
   const description = descriptionInput.trim();
-  if (name.length === 0) throw new ValidationError("Enter a project name.", "name");
+  if (!hasVisibleText(name)) throw new ValidationError("Enter a project name.", "name");
   if (name.length > PROJECT_NAME_MAX_LENGTH) {
     throw new ValidationError(`The name can have at most ${PROJECT_NAME_MAX_LENGTH} characters.`, "name");
   }

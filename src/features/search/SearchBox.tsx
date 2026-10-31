@@ -120,6 +120,8 @@ export function SearchBox() {
       <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted" />
       <input
         ref={inputRef}
+        id="search-box"
+        name="search"
         type="text"
         role="combobox"
         aria-label="Search workspaces, projects, tasks, and documents"

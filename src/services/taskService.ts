@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/taskRepository";
 import { TASK_STATUSES, type TaskDetail, type TaskItem, type TaskPriority, type TaskStatus } from "../types/task";
@@ -27,7 +28,7 @@ function validateTaskFields(
   descriptionInput: string,
 ): { title: string; description: string; dueDate: string | null } {
   const title = titleInput.trim();
-  if (title.length === 0) throw new ValidationError("Enter a task title.", "title");
+  if (!hasVisibleText(title)) throw new ValidationError("Enter a task title.", "title");
   if (title.length > TASK_TITLE_MAX_LENGTH) {
     throw new ValidationError(`The title can have at most ${TASK_TITLE_MAX_LENGTH} characters.`, "title");
   }

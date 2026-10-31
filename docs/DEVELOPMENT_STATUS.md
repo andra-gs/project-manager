@@ -180,6 +180,10 @@ No automated tests exist and no test framework is installed. Commands actually r
 | reported 2026-10-31 | `npm run tauri dev` (step 4b search box and the three design adjustments), checks 1 to 4 | Passed, all as expected: every progress bar in the accent color; Activity summaries with 8 entries and the "View all activity" link and full list; label actions in the three-dot menu; search box (Ctrl+K, grouping, text of documents, keys, no result) |
 | reported 2026-10-31 | `npm run build` (step 4b) | Passed: `tsc` and Vite build (180 modules) without errors |
 | run by Claude 2026-10-31 | Node (`--experimental-strip-types`) on a scratch copy of `filterTasks` and `hasTaskFilters`; partial `tsc --noEmit` | Status, priority, and label choices combine correctly (3, 2, 2, 2, 1, 0 tasks for the six cases tried); no choice returns all. The filter bar on the project page was not run |
+| reported 2026-10-31 | `npm run tauri dev` (step 4b task filters), checks 1 to 5 | Passed, all as expected: the three choices above the task list, they limit and combine, "Clear filters", empty messages, filters kept while editing, deleting, or marking done |
+| reported 2026-10-31 | `npm run build` (step 4b task filters) | Passed: `tsc` and Vite build (180 modules) without errors |
+| reported 2026-10-31 | Browser inspector (Issues) in the app | Message "A form field element should have an id or name attribute", pointing at the search box. Fixed 2026-10-31 (`id` and `name` added); not re-checked |
+| run by Claude 2026-10-31 | Node (`--experimental-strip-types`) on a scratch copy of `hasVisibleText`; partial `tsc --noEmit` | Empty text, spaces, and zero-width characters give false; letters, Japanese text, and an emoji give true. `tsc`: no errors except the known noise. The services and screens were not run |
 | run by Claude 2026-10-31 | Python `sqlite3` in memory against migrations 1 to 6 with the four search queries of `searchRepository.ts`; Node (`--experimental-strip-types`) on the pure functions of `searchService.ts` (`cleanSearchText`, `toLikePattern`, `makeSnippet`); partial `tsc --noEmit` | SQL: a match in a name, description, title, or text is found regardless of letter case; `50%` and `_menu` match only those characters after escaping; no match gives empty lists. Functions: text under 2 characters gives no search, spaces are collapsed, `%` and `_` are escaped, the snippet is cut with an ellipsis and is empty when the text is not in the body. `tsc`: no errors except the known noise. The app was not built or run in the Claude workspace, so the screens (search box, activity page, label menu, bar colors) are untested |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
@@ -240,8 +244,8 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] Closing check with the release program (reported 2026-10-29; the optional fresh-database check was skipped)
 - [ ] **Phase 4:** backup and restore, search, validation, notifications, testing (in progress)
   - [x] 4a Backup and restore (verified 2026-10-30; the wording of the wrong-version messages was changed afterwards, 2026-10-31, and not yet re-tested)
-  - [ ] 4b Search and filters (search box verified 2026-10-31; filters on the project page's task list written 2026-10-31, awaiting the developer's test)
-  - [ ] 4c Validation review
+  - [x] 4b Search and filters (verified 2026-10-31: search box and the task filters)
+  - [ ] 4c Validation review (review done and first fix written 2026-10-31, awaiting the developer's test)
   - [ ] 4d Local notifications
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
@@ -249,20 +253,17 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
 
 **0. Developer, done:** the Windows icon of `project-manager.exe` and the taskbar (reported 2026-10-31), drag and drop in the release program (reported 2026-10-31), and the new screenshots in `docs/screenshots/` (pushed 2026-10-31).
 
-**1. Developer: commit the lock files, then test the task filters (written 2026-10-31).** `package-lock.json` and `Cargo.lock` changed because of the new plugins; commit them (`git add package-lock.json src-tauri/Cargo.lock`, commit, push).
+**1. Developer: test the two design adjustments and the validation fix (written 2026-10-31).**
 
 ```powershell
 git pull origin phase-3-kanban
 npm run tauri dev
 ```
 
-On a project page with several tasks (different statuses, priorities, and labels):
+1. **Checklist:** each item has a pencil icon (tooltip "Edit item") instead of the Edit button; it still opens the edit form, and the cross still deletes.
+2. **Notes:** each note has one three-dot button with Edit and Delete (Delete in red, still asks first), like the task list.
+3. **Inspector:** open the inspector (Issues) again; the message about the form field should be gone for the search box.
+4. **Visually empty text:** try to create a workspace, project, task, label, checklist item, note, or document with a title that is only spaces, and one that is made only of invisible characters (paste `​​​`, three zero-width spaces, from this line: `[​​​]`). Each must show its usual "Enter …" message. Normal names, accents, Japanese text, and emoji still work.
+5. `npm run build` passes.
 
-1. Above the task list there are three choices: Status, Priority, Label. With no tasks in the project the choices are not shown.
-2. Each choice limits the list; the three combine (for example Status = To Do and Priority = High). The Label choice lists only labels that at least one task has.
-3. "Clear filters" appears only while a choice is active, and resets all three.
-4. When nothing matches, the list says "No tasks match these filters."; with no tasks at all it still says "No tasks yet."
-5. Marking a task done, editing, or deleting while a filter is active keeps the filter. Leaving the page and coming back shows all tasks again.
-6. The bar fits at the smallest window (960x600). `npm run build` passes.
-
-**2. Claude, next:** Phase 4 continues with the validation review (4c), and local notifications (4d); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.
+**2. Claude, next:** after 4c is verified, local notifications (4d). The findings of the validation review are in ARCHITECTURE.md (step notes); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.

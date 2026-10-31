@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/noteRepository";
 import type { TaskNote } from "../types/taskExtras";
@@ -7,7 +8,7 @@ export const NOTE_MAX_LENGTH = 1000;
 
 function validateBody(input: string): string {
   const body = input.trim();
-  if (body.length === 0) throw new ValidationError("Write something in the note.", "body");
+  if (!hasVisibleText(body)) throw new ValidationError("Write something in the note.", "body");
   if (body.length > NOTE_MAX_LENGTH) {
     throw new ValidationError(`The note can have at most ${NOTE_MAX_LENGTH} characters.`, "body");
   }

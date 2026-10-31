@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/documentRepository";
 import {
@@ -41,7 +42,7 @@ function validateFields(
 ): { title: string; kind: DocumentKind; body: string } {
   const title = titleInput.trim();
   const body = bodyInput.trim();
-  if (title.length === 0) throw new ValidationError("Enter a document title.", "title");
+  if (!hasVisibleText(title)) throw new ValidationError("Enter a document title.", "title");
   if (title.length > DOCUMENT_TITLE_MAX_LENGTH) {
     throw new ValidationError(`The title can have at most ${DOCUMENT_TITLE_MAX_LENGTH} characters.`, "title");
   }

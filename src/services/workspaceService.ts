@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { todayDateText } from "../lib/dueDate";
 import { ValidationError } from "../lib/errors";
 import { calculateProgress } from "../lib/progress";
@@ -11,7 +12,7 @@ export const WORKSPACE_NAME_MAX_LENGTH = 60;
 // Business rules for a workspace name. Returns the cleaned name or throws a ValidationError.
 function validateName(input: string): string {
   const name = input.trim();
-  if (name.length === 0) throw new ValidationError("Enter a workspace name.");
+  if (!hasVisibleText(name)) throw new ValidationError("Enter a workspace name.");
   if (name.length > WORKSPACE_NAME_MAX_LENGTH) {
     throw new ValidationError(`The name can have at most ${WORKSPACE_NAME_MAX_LENGTH} characters.`);
   }

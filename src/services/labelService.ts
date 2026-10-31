@@ -1,3 +1,4 @@
+import { hasVisibleText } from "../lib/text";
 import { ValidationError } from "../lib/errors";
 import * as repository from "../repositories/labelRepository";
 import { LABEL_COLORS, type Label, type LabelColor } from "../types/label";
@@ -7,7 +8,7 @@ export const LABEL_NAME_MAX_LENGTH = 30;
 // Business rules for the fields of a label. Returns the cleaned values or throws a ValidationError.
 function validateFields(nameInput: string, color: string): { name: string; color: LabelColor } {
   const name = nameInput.trim();
-  if (name.length === 0) throw new ValidationError("Enter a label name.", "name");
+  if (!hasVisibleText(name)) throw new ValidationError("Enter a label name.", "name");
   if (name.length > LABEL_NAME_MAX_LENGTH) {
     throw new ValidationError(`The name can have at most ${LABEL_NAME_MAX_LENGTH} characters.`, "name");
   }

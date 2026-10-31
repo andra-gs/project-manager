@@ -14,6 +14,7 @@ export type IconName =
   | "close"
   | "more"
   | "search"
+  | "pencil"
   | "arrowLeft"
   | "arrowRight"
   | "windowMinimize"
@@ -67,6 +68,7 @@ const PATHS: Record<IconName, ReactNode> = {
   chevronsRight: <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />,
   close: <path d="M6 6l12 12M18 6L6 18" />,
   more: <path d="M12 5h.01M12 12h.01M12 19h.01" />,
+  pencil: <path d="M4 20h4L19 9a2.1 2.1 0 0 0-4-4L4 16v4zM13.5 6.5l4 4" />,
   search: (
     <>
       <circle cx="11" cy="11" r="6.5" />
