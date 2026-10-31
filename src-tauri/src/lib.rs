@@ -56,6 +56,7 @@ pub fn run() {
         // "Save as" and "Open" windows, and file access limited to the files chosen in them.
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_notification::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

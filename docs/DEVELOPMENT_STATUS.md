@@ -186,6 +186,7 @@ No automated tests exist and no test framework is installed. Commands actually r
 | run by Claude 2026-10-31 | Node (`--experimental-strip-types`) on a scratch copy of `hasVisibleText`; partial `tsc --noEmit` | Empty text, spaces, and zero-width characters give false; letters, Japanese text, and an emoji give true. `tsc`: no errors except the known noise. The services and screens were not run |
 | reported 2026-10-31 | `npm run tauri dev` (step 4c validation fix, pencil icon for checklist, note action menu, search box id), checks 1 to 4 | Passed, all as expected; the inspector no longer shows the form-field issue |
 | reported 2026-10-31 | `npm run build` (step 4c) | Passed: `tsc` and Vite build (180 modules) without errors |
+| run by Claude 2026-10-31 | Node (`--experimental-strip-types`) on scratch copies of `isReminderDue`, `buildReminderMessage`, and `isValidReminderTime`; partial `tsc --noEmit` | The message counts due-today and overdue tasks that are not done (2 due today and 3 overdue for the sample, titles of today's tasks first, "and 2 more"); no message when nothing is due or the list is empty; the reminder is due only when enabled, at or after the chosen time, and not yet handled today; times such as `24:00`, `9:00`, `12:60`, and empty are invalid. `tsc`: no errors except the known noise. The Rust side (plugin, permission `notification:default`) could not be compiled in the Claude workspace, so the notification itself is untested |
 | run by Claude 2026-10-31 | Python `sqlite3` in memory against migrations 1 to 6 with the four search queries of `searchRepository.ts`; Node (`--experimental-strip-types`) on the pure functions of `searchService.ts` (`cleanSearchText`, `toLikePattern`, `makeSnippet`); partial `tsc --noEmit` | SQL: a match in a name, description, title, or text is found regardless of letter case; `50%` and `_menu` match only those characters after escaping; no match gives empty lists. Functions: text under 2 characters gives no search, spaces are collapsed, `%` and `_` are escaped, the snippet is cut with an ellipsis and is empty when the text is not in the body. `tsc`: no errors except the known noise. The app was not built or run in the Claude workspace, so the screens (search box, activity page, label menu, bar colors) are untested |
 | run by Claude 2026-10-29 | Python `sqlite3` in memory against migrations 1 to 5 and the SQL of `documentRepository.ts`; partial `tsc --noEmit` | SQL: empty title, unknown type, and missing project rejected; list newest first without body; only active projects offered; update and delete report missing rows; deleting a project deletes its documents. `tsc`: no errors except missing-package noise and the known `database.ts(17,3)`. The app was not built or run in the Claude workspace, so the document screens are untested until the developer's run |
 | reported 2026-10-24 | `npm run build` (step 6, after the fix) | Passed: `tsc` and Vite build (74 modules) without errors |
@@ -248,13 +249,29 @@ The TypeScript check (`tsc`) is part of `npm run build`, so it passed as part of
   - [x] 4a Backup and restore (verified 2026-10-30; the wording of the wrong-version messages was changed afterwards, 2026-10-31, and not yet re-tested)
   - [x] 4b Search and filters (verified 2026-10-31: search box and the task filters)
   - [x] 4c Validation review (verified 2026-10-31)
-  - [ ] 4d Local notifications
+  - [ ] 4d Local notifications (written 2026-10-31, awaiting the developer's test)
 - [ ] Phases 5 to 7: GitHub integration, online architecture, platform expansion and AI (Future)
 
 ## Next task (exact)
 
 **0. Developer, done:** the Windows icon of `project-manager.exe` and the taskbar (reported 2026-10-31), drag and drop in the release program (reported 2026-10-31), and the new screenshots in `docs/screenshots/` (pushed 2026-10-31).
 
-**1. Claude, waiting for the developer's decision on step 4d (local notifications):** where the reminder settings are stored, and whether reminders work only while the app is open. Design sent 2026-10-31; no code written yet.
+**1. Developer: test step 4d, deadline reminders (written 2026-10-31).** A new package and a new Rust crate are needed, so:
+
+```powershell
+git pull origin phase-3-kanban
+npm install
+npm run tauri dev
+```
+
+The first run downloads and compiles the notification crate. If it fails, copy the error text to Claude (the Rust side could not be compiled in the Claude workspace; in particular the permission name `notification:default` is from memory and unchecked). In `npm run tauri dev`, Windows shows notifications with the name and icon of PowerShell; that is expected. Then:
+
+1. Settings has a "Reminders" section: a tick box, a time box (default 09:00), a "Send a test notification" button, and four notes about the limits.
+2. "Send a test notification": a Windows notification appears (bottom right). If not, check Focus Assist or Do not disturb, and tell Claude what the section says.
+3. Create tasks assigned to you (the default) in an active project: one due today, one due yesterday, one due tomorrow, one due today but marked done. Tick "Remind me…": the box stays ticked; set the time to one or two minutes from now. At that time one notification appears saying `1 due today · 1 overdue` with the titles (not the tomorrow task, not the done task).
+4. It appears only once that day: close and reopen the app, no second notification. Set the time later today: nothing until then. Untick the box: nothing appears.
+5. Set the time to earlier than now with the box ticked, and delete the stored day (not needed to test: reopening the app after the time on a new day shows it once).
+6. Set the time box empty while typing: no error; the last valid time is kept after restart.
+7. `npm run build` passes. The notification with the Avenqor name needs an installed build; that is part of the installer test (release preparation).
 
 **2. After 4d:** the findings of the validation review are in ARCHITECTURE.md (step notes); then release preparation (tested installer, database folder decision, trademark check, installer and uninstaller look). Plans for documents as files and the Whiteboard are in [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) (Future). Merging `phase-3-kanban` into `main` is the developer's to do, when ready.

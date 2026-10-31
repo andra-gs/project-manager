@@ -2,6 +2,7 @@ import { Card } from "../components/ui/Card";
 import { ListRow } from "../components/ui/ListRow";
 import { SectionHeading } from "../components/ui/SectionHeading";
 import { BackupSection } from "../features/backup/BackupSection";
+import { ReminderSection } from "../features/reminders/ReminderSection";
 import { ProfileEditor } from "../features/profile/ProfileEditor";
 import { WorkspaceManager } from "../features/workspaces/WorkspaceManager";
 import { useDatabaseStatus, type DatabaseStatusState } from "../hooks/useDatabaseStatus";
@@ -51,6 +52,8 @@ export function SettingsPage() {
           </div>
         </Card>
       </section>
+
+      <ReminderSection />
 
       <BackupSection />
     </div>

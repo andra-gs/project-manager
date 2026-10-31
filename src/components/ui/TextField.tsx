@@ -4,8 +4,8 @@ import { FieldFooter } from "./FieldFooter";
 // className is not accepted on purpose: the look lives here and in the tokens.
 interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "id" | "type"> {
   label: string;
-  // "date" shows a date picker; its value is written "YYYY-MM-DD".
-  type?: "text" | "date";
+  // "date" shows a date picker; its value is written "YYYY-MM-DD". "time" shows a time box, written "HH:MM".
+  type?: "text" | "date" | "time";
   error?: string;
 }
 
